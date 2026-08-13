@@ -1,0 +1,39 @@
+
+services:
+
+  api:
+    build: .
+    ports:
+      - '80:80'
+
+    environment:
+      DB_URL: ${DB_URL}
+      SECRET_KEY_JWT: ${SECRET_KEY_JWT}
+      ALGORITHM: ${ALGORITHM}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_APP_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d usuarios"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
