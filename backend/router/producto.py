@@ -1,175 +1,89 @@
-from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from models.categorias import Categoria
-from sqlmodel import select
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from sqlmodel import Session
+from typing import List
 from database.engine import SessionDep
-from models.productos import ProductCreate, ProductUpdate, Producto, ProductoPublic
-from utils.auth import get_current_user, require_admin
-from utils.upload_image import upload_image
+from models.productos import ProductCreate, ProductUpdate, ProductoPublic
+from services.ProductoService.ProductoService import ProductoService
+from services.CategoriaService.CategoriaService import CategoriaService
+from services.ImagenService.ImagenService import ImagenService
+from utils.auth import require_admin
+from exceptions.producto import ProductoNoEncontradoError
+
 router = APIRouter()
+
+# Instanciar servicios
+categoria_service = CategoriaService()
+imagen_service = ImagenService()
+producto_service = ProductoService(categoria_service, imagen_service)
 
 
 @router.get('/productos', response_model=list[ProductoPublic])
-async def get_all_products(session: SessionDep, q: str |None = None):
-    if q:
-
-        productos = session.exec(
-            select(Producto).where(
-                Producto.nombre.ilike(f'%{q}%'),
-                Producto.eliminado_at == None,
-                Producto.producto_activo == True
-            )
-        ).all()
-
-        return productos
-
-    productos = session.exec(select(Producto).where(Producto.eliminado_at == None,
-                                                    Producto.producto_activo == True)).all()
-
-    return productos
-
-
-@router.get('/productos/{product_id}', response_model=ProductoPublic)
-async def get_product(session: SessionDep, product_id: int):
-    product = session.get(Producto, product_id)
-    if not product:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
-    return product
-
-
-@router.post('/productos', response_model=ProductoPublic)
-async def post_product(session: SessionDep, product: ProductCreate, current_user = Depends(require_admin)):
-    
-    categorias_db = session.exec(select(Categoria).where(Categoria.id.in_(product.categoria))).all()
-    
-    db_product = Producto.model_validate(product, update={'user_email': current_user['email'],
-                                                          'categoria': categorias_db})
-
-    
-
-    #db_product.user_email = current_user['email']
-    session.add(db_product)
-    session.commit()
-    session.refresh(db_product)
-
-    return db_product
-
-
-@router.patch('/productos/{product_id}', response_model=ProductoPublic, dependencies=[Depends(require_admin)])
-async def patch_product(session: SessionDep, product_id: int, product: ProductUpdate):
-    product_db = session.get(Producto, product_id)
-    
-    if not product_db:
-        raise HTTPException(status_code=404, detail='Producto no encontrado')
-    
-    
-    product_data = product.model_dump(exclude_unset=True)
-
-    if 'categoria' in product_data:
-
-        categorias_db = session.exec(
-            select(Categoria).where(
-                Categoria.id.in_(product_data['categoria'])
-            )
-        ).all()
-
-        product_db.categoria = categorias_db
-
-        del product_data['categoria']
-
-    for key, value in product_data.items():
-        setattr(product_db, key, value)
-    
-    product_db.updated_at = datetime.now(timezone.utc)
-
-    session.add(product_db)
-    session.commit()
-    session.refresh(product_db)
-   
-    return product_db
-
-
-@router.delete('/productos/{product_id}', dependencies=[Depends(require_admin)])
-async def delete_product(session: SessionDep, product_id: int):
-
-    product_db = session.get(Producto, product_id)
-
-    if not product_db:
-        raise HTTPException(status_code=404, detail= 'Producto no encontrado')
-    
+async def get_all_products(session: SessionDep, q: str | None = None):
     try:
-        session.delete(product_db)
-        session.commit()
-    except:
-        session.rollback()
-        product_db.eliminado_at = datetime.now(timezone.utc)
-        product_db.producto_activo = False
-        session.commit()
+        productos = producto_service.listar_productos(session, q, solo_activos=True, incluir_eliminados=False)
+        return productos
+    except Exception as e:
+        raise HTTPException(500, str(e))
 
 
-    return {'message': 'Producto eliminado'}
+@router.get('/productos/{producto_id}', response_model=ProductoPublic)
+async def get_product(session: SessionDep, producto_id: int):
+    try:
+        return producto_service.consultar_producto(session, producto_id)
+    except ProductoNoEncontradoError:
+        raise HTTPException(404, "Producto no encontrado")
 
 
-@router.post('/productos/{product_id}/imagenes', dependencies=[Depends(require_admin)], response_model=ProductoPublic)
-async def agregar_imagen_producto(session: SessionDep, product_id: int, archivos: list[UploadFile] = File(...)):
 
 
-    product_db = session.get(Producto, product_id)
+@router.post('/productos', response_model=ProductoPublic, dependencies=[Depends(require_admin)])
+async def post_product(session: SessionDep, producto: ProductCreate, current_user=Depends(require_admin)):
+    try:
+        return producto_service.crear_producto(session, producto, current_user)
+    except Exception as e:
+        raise HTTPException(400, str(e))
 
-    if not product_db:
-        raise HTTPException(status_code=404, detail= 'Producto no encontrado')
+    
+@router.patch('/productos/{producto_id}', response_model=ProductoPublic, dependencies=[Depends(require_admin)])
+async def patch_product(session: SessionDep, producto_id: int, producto_update: ProductUpdate):
+    try:
+        return producto_service.actualizar_producto(session, producto_id, producto_update)
+    except ProductoNoEncontradoError:
+        raise HTTPException(404, "Producto no encontrado")
+    except Exception as e:
+        raise HTTPException(400, str(e))
     
 
-    if len(archivos) > 5:
-        raise HTTPException(status_code=400, detail='No se pueden cargar mas de 5 imagenes')
+@router.delete('/productos/{producto_id}', dependencies=[Depends(require_admin)])
+async def delete_product(session: SessionDep, producto_id: int):
+    try:
+        return producto_service.eliminar_producto(session, producto_id)
+    except ProductoNoEncontradoError:
+        raise HTTPException(404, "Producto no encontrado")
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
+@router.post('/productos/{producto_id}/imagenes', response_model=ProductoPublic, dependencies=[Depends(require_admin)])
+async def agregar_imagen_producto(
+    session: SessionDep,
+    producto_id: int,
+    archivos: list[UploadFile] = File(...)
+):
+    try:
+        return producto_service.agregar_imagenes(session, producto_id, archivos)
+    except ProductoNoEncontradoError:
+        raise HTTPException(404, "Producto no encontrado")
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(500, str(e))
     
-    imagenes_actuales_url = product_db.imagen_url or [] 
-
-    print(imagenes_actuales_url)
-
-    if len(imagenes_actuales_url) + len(archivos) > 5:
-        raise HTTPException(
-            status_code=400, 
-            detail=f'El producto ya tiene {len(imagenes_actuales_url)} imágenes. No puedes superar un total de 5.'
-        )
-    
-    imagen_nuevas_url = []
-
-    print(imagen_nuevas_url)
-
-    for archivo in archivos:
-        try:
-            file = archivo.file
-            upload_result = upload_image(file)
-            imagen_nuevas_url.append(upload_result['secure_url'])
-
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f'no se pudo cargar la imagen, error: {e}')
-        
-    product_db.imagen_url = imagenes_actuales_url + imagen_nuevas_url
-
-    print(product_db)
-
-    session.add(product_db)
-    session.commit()
-    session.refresh(product_db)
-    return product_db
-
-
 
 @router.get('/admin/productos', response_model=list[ProductoPublic], dependencies=[Depends(require_admin)])
-async def get_all_products(session: SessionDep, q: str | None = None):
-    if q:
-
-        productos = session.exec(
-            select(Producto).where(
-                Producto.nombre.ilike(f'%{q}%'),
-                Producto.eliminado_at == None,
-            )
-        ).all()
-
+async def get_all_products_admin(session: SessionDep, q: str | None = None):
+    try:
+        productos = producto_service.listar_productos(session, q, solo_activos=False, incluir_eliminados=False)
         return productos
-
-    productos = session.exec(select(Producto).where(Producto.eliminado_at == None)).all()
-
-    return productos
+    except Exception as e:
+        raise HTTPException(500, str(e))
