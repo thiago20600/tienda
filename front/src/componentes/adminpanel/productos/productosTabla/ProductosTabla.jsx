@@ -12,7 +12,6 @@ const ProductosTabla = ({ sortConfig }) => { // 👈 Recibimos sortConfig por pr
   const { eliminarProducto, message } = useBorrarProducto()
   const { productos, cargando, statusError } = useProductosAdmin();
 
-  // 👈 Le pasamos los productos que vinieron de la API y el criterio de ordenamiento
   const { datosOrdenados } = useOrdenamiento(productos, sortConfig);
 
 
@@ -34,7 +33,7 @@ const ProductosTabla = ({ sortConfig }) => { // 👈 Recibimos sortConfig por pr
   return (
     <TablaProductos>
       <ul>
-        {datosOrdenados.map((producto) => ( // 👈 Usamos datosOrdenados aquí
+        {datosOrdenados.map((producto) => ( 
           <li key={producto.id}>
             <NavLink to={`/admin/productos/${producto.id}`}>
               <img 

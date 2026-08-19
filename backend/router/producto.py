@@ -8,6 +8,8 @@ from services.CategoriaService import CategoriaService
 from services.ImagenService import ImagenService
 from utils.auth import require_admin
 from exceptions.producto import ProductoNoEncontradoError
+from fastapi_pagination import Page, Params
+
 
 router = APIRouter()
 
@@ -17,10 +19,18 @@ imagen_service = ImagenService()
 producto_service = ProductoService(categoria_service, imagen_service)
 
 
-@router.get('/productos', response_model=list[ProductoPublic])
-async def get_all_products(session: SessionDep, q: str | None = None):
+@router.get('/productos', response_model=Page[ProductoPublic])
+async def get_all_products(session: SessionDep, 
+                           q: str | None = None, 
+                           categoria_id: int | None = None,
+                           params: Params = Depends()):
     try:
-        productos = producto_service.listar_productos(session, q, solo_activos=True, incluir_eliminados=False)
+        productos = producto_service.listar_productos(session, 
+                                                      q=q, 
+                                                      solo_activos=True, 
+                                                      incluir_eliminados=False, 
+                                                      params=params, 
+                                                      categoria_id=categoria_id)
         return productos
     except Exception as e:
         raise HTTPException(500, str(e))
@@ -80,10 +90,15 @@ async def agregar_imagen_producto(
         raise HTTPException(500, str(e))
     
 
-@router.get('/admin/productos', response_model=list[ProductoPublic], dependencies=[Depends(require_admin)])
-async def get_all_products_admin(session: SessionDep, q: str | None = None):
+@router.get('/admin/productos', response_model=Page[ProductoPublic], dependencies=[Depends(require_admin)])
+async def get_all_products_admin(session: SessionDep, q: str | None = None, categoria_id: int | None = None, params: Params = Depends()):
     try:
-        productos = producto_service.listar_productos(session, q, solo_activos=False, incluir_eliminados=False)
+        productos = producto_service.listar_productos(session, 
+                                                      q=q,
+                                                      solo_activos=False,
+                                                      incluir_eliminados=False,
+                                                      params=params,
+                                                      categoria_id=categoria_id)
         return productos
     except Exception as e:
         raise HTTPException(500, str(e))

@@ -1,4 +1,5 @@
 from fastapi import UploadFile
+from models.categorias import Categoria
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone
@@ -7,7 +8,8 @@ from models.productos import ProductCreate, ProductUpdate, Producto
 from exceptions.producto import ProductoNoEncontradoError, StockInsuficienteError
 from services.CategoriaService import CategoriaService
 from services.ImagenService import ImagenService
-
+from fastapi_pagination import Params
+from fastapi_pagination.ext.sqlmodel import paginate
 
 class OperacionStock(Enum):
     AUMENTAR = 'AUMENTAR'
@@ -27,17 +29,19 @@ class ProductoService:
         return producto
 
 
-    def listar_productos(self, session: Session, q: str | None = None, solo_activos: bool = True, incluir_eliminados: bool = False) -> list[Producto]:
+    def listar_productos(self, session: Session, q: str | None = None, solo_activos: bool = True, incluir_eliminados: bool = False, params: Params | None = None, categoria_id: int | None = None):
         query = select(Producto)
 
         if not incluir_eliminados:
             query = query.where(Producto.eliminado_at == None)
         if solo_activos:
             query = query.where(Producto.producto_activo == True)
-        if q:
+        if q is not None:
             query = query.where(Producto.nombre.ilike(f'%{q}%'))
+        if categoria_id is not None:
+            query = query.join(Producto.categoria).where(Categoria.id == categoria_id)
 
-        return session.exec(query).all()
+        return paginate(session, query, params)
 
 
     def actualizar_stock(self, producto: Producto, cantidad: int, operacion: OperacionStock) -> Producto:

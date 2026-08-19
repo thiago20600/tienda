@@ -21,7 +21,7 @@ export default function useProductosAdmin() {
                     setStatusError(response.status)
                 } else {
                     const data = await response.json()
-                    setProductos(data)
+                    setProductos(data.items)
                     setStatusError(null)
                 }
             } catch (error) {

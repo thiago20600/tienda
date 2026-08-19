@@ -10,6 +10,7 @@ from models.categorias import Categoria
 from models.productos import Producto
 from fastapi.middleware.cors import CORSMiddleware
 from router.mercado_pago import router as mercadopagoRouter
+from fastapi_pagination import add_pagination
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,7 +19,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-
+add_pagination(app)
 
 app.add_middleware(
     CORSMiddleware,

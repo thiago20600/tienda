@@ -43,7 +43,7 @@ const BaseLayout = () => {
 
             const data = await respuesta.json()
 
-            setProductos(data)
+            setProductos(data.items)
         }
 
         RealizarBusqueda()
