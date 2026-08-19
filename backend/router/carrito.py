@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
-from services.CarritoService.CarritoItemService import CarritoItemService
-from services.ProductoService.ProductoService import ProductoService
+from services.CarritoItemService import CarritoItemService
+from services.ProductoService import ProductoService
 from exceptions.carrito import CarritoNoEncontradoError, ItemNoEncontradoError, StockInsuficienteError
-from services.CarritoService.CarritoService import CarritoService
+from services.CarritoService import CarritoService
 from sqlmodel import select
 from database.engine import SessionDep
 from models.carrito import Carrito, CarritoItem, CarritoItemUpdate, CarritoPublic, ConfirmarCarrito, EstadoCarrito

@@ -1,24 +1,23 @@
-from fastapi import Depends, HTTPException, UploadFile
+from fastapi import UploadFile
 from sqlmodel import Session, select
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone
 from enum import Enum
 from models.productos import ProductCreate, ProductUpdate, Producto
-from models.categorias import Categoria
 from exceptions.producto import ProductoNoEncontradoError, StockInsuficienteError
-from services.CategoriaService.CategoriaService import CategoriaService
-from services.ImagenService.ImagenService import ImagenService
-from utils.auth import require_admin
+from services.CategoriaService import CategoriaService
+from services.ImagenService import ImagenService
+
 
 class OperacionStock(Enum):
     AUMENTAR = 'AUMENTAR'
     RESTAR = 'RESTAR'
 
+
 class ProductoService:
     def __init__(self, categoria_service: CategoriaService | None = None, imagen_service: ImagenService | None = None):
         self.categoria_service = categoria_service or CategoriaService()
         self.imagen_service = imagen_service or ImagenService()
-
-
 
 
     def consultar_producto(self, session: Session, producto_id: int) -> Producto:
@@ -33,10 +32,8 @@ class ProductoService:
 
         if not incluir_eliminados:
             query = query.where(Producto.eliminado_at == None)
-
         if solo_activos:
             query = query.where(Producto.producto_activo == True)
-
         if q:
             query = query.where(Producto.nombre.ilike(f'%{q}%'))
 
@@ -57,11 +54,9 @@ class ProductoService:
 
 
     def crear_producto(self, session: Session, producto: ProductCreate, current_user: dict) -> Producto:
-        categorias = self.categoria_service.Consultar_por_id(session, producto.categoria)
+        categorias = self.categoria_service.consultar_por_id(session, producto.categoria)
 
-        producto_db = Producto.model_validate(
-            producto,
-            update={'user_email': current_user['email'],'categoria': categorias})
+        producto_db = Producto.model_validate(producto, update={'user_email': current_user['email'], 'categoria': categorias})
         session.add(producto_db)
         session.commit()
         session.refresh(producto_db)
@@ -69,57 +64,50 @@ class ProductoService:
 
 
     def actualizar_producto(self, session: Session, producto_id: int, producto_update: ProductUpdate) -> Producto:
-        producto_db = session.get(Producto, producto_id)
-        if not producto_db:
-            raise ProductoNoEncontradoError(producto_id)
-
+        producto = self.consultar_producto(session=session, producto_id=producto_id)
         update_data = producto_update.model_dump(exclude_unset=True)
 
-        # Actualizar categorías si vienen
         if 'categoria' in update_data:
-            categorias = self.categoria_service.Consultar_por_id(session, update_data['categoria'])
-            producto_db.categoria = categorias
-            del update_data['categoria']
+            producto.categoria = self.categoria_service.consultar_por_id(session, update_data.pop('categoria'))
 
-        # Actualizar el resto de campos
         for key, value in update_data.items():
-            setattr(producto_db, key, value)
+            setattr(producto, key, value)
 
-        producto_db.updated_at = datetime.now(timezone.utc)
-        session.add(producto_db)
+        producto.updated_at = datetime.now(timezone.utc)
+        session.add(producto)
         session.commit()
-        session.refresh(producto_db)
-        return producto_db
+        session.refresh(producto)
+        return producto
+
 
     def eliminar_producto(self, session: Session, producto_id: int) -> dict:
-        producto_db = session.get(Producto, producto_id)
-        if not producto_db:
-            raise ProductoNoEncontradoError(producto_id)
+        producto = self.consultar_producto(session=session, producto_id=producto_id)
 
         try:
-            session.delete(producto_db)
+            session.delete(producto)
             session.commit()
-            return {"message": "Producto eliminado físicamente"}
-        except Exception:  # En caso de violación de integridad (ej: tiene pedidos)
+            return {"message": "Producto eliminado"}
+        except IntegrityError:
             session.rollback()
-            producto_db.eliminado_at = datetime.now(timezone.utc)
-            producto_db.producto_activo = False
-            session.commit()
-            return {"message": "Producto desactivado (soft delete) por tener relaciones activas"}
+            return self._desactivar_producto(session, producto)
+
+
+    def _desactivar_producto(self, session: Session, producto: Producto) -> dict:
+        producto.eliminado_at = datetime.now(timezone.utc)
+        producto.producto_activo = False
+        session.add(producto)
+        session.commit()
+        return {"message": "Producto desactivado"}
 
 
     def agregar_imagenes(self, session: Session, producto_id: int, archivos: list[UploadFile]) -> Producto:
-        producto_db = session.get(Producto, producto_id)
-        if not producto_db:
-            raise ProductoNoEncontradoError(producto_id)
+        producto = self.consultar_producto(session=session, producto_id=producto_id)
 
-        imagenes_actuales = producto_db.imagen_url or []
+        imagenes_actuales = producto.imagen_url or []
         self.imagen_service.validar_cantidad(archivos, imagenes_actuales)
 
-        nuevas_urls = self.imagen_service.subir_imagenes(archivos)
-        producto_db.imagen_url = imagenes_actuales + nuevas_urls
-
-        session.add(producto_db)
+        producto.imagen_url = imagenes_actuales + self.imagen_service.subir_imagenes(archivos)
+        session.add(producto)
         session.commit()
-        session.refresh(producto_db)
-        return producto_db
+        session.refresh(producto)
+        return producto

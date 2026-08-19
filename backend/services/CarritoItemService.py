@@ -1,4 +1,4 @@
-from services.ProductoService.ProductoService import OperacionStock, ProductoService
+from services.ProductoService import OperacionStock, ProductoService
 from exceptions.carrito import ItemNoEncontradoError
 from sqlmodel import Session, select
 from models.carrito import Carrito, CarritoItem

@@ -3,9 +3,9 @@ from sqlmodel import Session
 from typing import List
 from database.engine import SessionDep
 from models.productos import ProductCreate, ProductUpdate, ProductoPublic
-from services.ProductoService.ProductoService import ProductoService
-from services.CategoriaService.CategoriaService import CategoriaService
-from services.ImagenService.ImagenService import ImagenService
+from services.ProductoService import ProductoService
+from services.CategoriaService import CategoriaService
+from services.ImagenService import ImagenService
 from utils.auth import require_admin
 from exceptions.producto import ProductoNoEncontradoError
 
