@@ -9,11 +9,13 @@ const ProductDetail = () => {
 
     const { id } = useParams()
     const [producto, setProducto] = useState(null)
+    const [error, setError] = useState(false)
 
     useEffect(() => {
 
     const obtenerProducto = async () => {
 
+        try {
         const respuesta = await tiendaRequest(`/productos/${id}`)
 
         if (!respuesta.ok) {
@@ -24,17 +26,21 @@ const ProductDetail = () => {
         const data = await respuesta.json()
 
         setProducto(data)
+        } catch (requestError) {
+            console.error('Error cargando producto:', requestError)
+            setError(true)
+        }
     }
 
     obtenerProducto()
 
     }, [id])
 
-    if (producto === null) {
+    if (producto === null && !error) {
     return <p>Cargando...</p>
     }
 
-    if (producto === false) {
+    if (error || producto === false) {
         return <p>Producto no encontrado</p>
     }
 

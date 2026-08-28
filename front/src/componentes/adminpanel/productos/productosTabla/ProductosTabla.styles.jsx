@@ -38,13 +38,14 @@ export const TablaProductos = styled.div`
     flex: 1; /* 👈 Toma todo el ancho disponible */
     display: grid;
     /* Ajustamos las columnas para dejar espacio fluido al contenido */
-    grid-template-columns: 60px 2fr 1.5fr 1fr 1fr 80px; 
+    grid-template-columns: 60px minmax(0, 2fr) minmax(0, 1.5fr) repeat(4, minmax(0, 1fr));
     align-items: center;
     gap: 16px;
     padding: 12px 16px;
     text-decoration: none;
     color: #333333;
     font-size: 14px;
+    min-width: 0;
   }
 
   img {
@@ -92,6 +93,17 @@ export const TablaProductos = styled.div`
       font-weight: 500;
     }
   }
+
+  @media (max-width: 900px) {
+    padding: 1rem;
+    overflow-x: auto;
+    a { min-width: 760px; }
+  }
+`;
+
+export const MensajeTabla = styled.p`
+  padding: 1rem 2rem;
+  color: ${({ $error, $success }) => $error ? '#b91c1c' : $success ? '#15803d' : '#64748b'};
 `;
 
 export const BotonEliminar = styled.button`
@@ -114,5 +126,35 @@ export const BotonEliminar = styled.button`
 
   &:active {
     transform: scale(0.95);
+  }
+`;
+
+export const BotonEstado = styled.button`
+  min-width: 0;
+  width: 100%;
+  border: 1px solid ${({ $activo }) => ($activo ? '#b7e4c7' : '#f5b7b1')};
+  border-radius: 6px;
+  padding: 6px 8px;
+  background-color: ${({ $activo }) => ($activo ? '#ecfdf3' : '#fff1f0')};
+  color: ${({ $activo }) => ($activo ? '#18864b' : '#c0392b')};
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  span {
+    margin-right: 4px;
+    font-size: 15px;
+  }
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.96);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.65;
   }
 `;

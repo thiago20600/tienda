@@ -62,8 +62,10 @@ export const LoginForm = () => {
         <LoginFormContainer>
             <h1>Iniciar sesion</h1>
             <LoginFormStyle onSubmit={EnviarLoginForm}>
-                <input  type="email" placeholder="ingrese su email" value={email} onChange={(e) => setEmail(e.target.value)}></input>
-                <input type="password" placeholder="ingrese su contraseña" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                <label htmlFor="login-email">Correo electrónico</label>
+                <input id="login-email" type="email" placeholder="ingrese su email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required></input>
+                <label htmlFor="login-password">Contraseña</label>
+                <input id="login-password" type="password" placeholder="ingrese su contraseña" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required></input>
             
                 <label>
                     <input type='checkbox' checked={recordarEmail} onChange={(e) => setRecordarEmail(e.target.checked)}></input>

@@ -27,12 +27,15 @@ export default function useEliminarProducto() {
             const data = await response.json().catch(() => ({}))
             if (!response.ok) {
                 setMessage(data.detail || `Error ${response.status}`)
+                return false
             } else {
                 setMessage(data.message || 'Producto eliminado')
+                return true
             }
         } catch (error) {
             console.error('Error eliminando producto:', error)
             setMessage('Error de conexión al eliminar el producto.')
+            return false
         }
 
 

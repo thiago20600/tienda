@@ -56,7 +56,7 @@ const CategoryMenu = () => {
                 aria-expanded={abierto}
                 aria-haspopup="true"
             >
-                Categorías <span aria-hidden="true">⌄</span>
+                Categorías <span aria-hidden="true"></span>
             </CategoryMenuButton>
             {abierto && (
                 <CategoryMenuPanel>

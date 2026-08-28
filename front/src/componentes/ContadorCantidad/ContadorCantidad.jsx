@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { ContadorCantidadContainer, BotonAumentarCantidad, BotonDisminuirCantidad, CantidadProducto } from "./ContadorCantidad.styles"
 
-const ContadorCantidad=({valorInicial, onChange, stockMaximo})=>{
+const ContadorCantidad=({valorInicial, onChange, stockMaximo, disabled = false})=>{
     const [cantidad, setCantidad] = useState(valorInicial)
 
 const aumentarCantidad = () => {
@@ -39,9 +39,9 @@ const aumentarCantidad = () => {
 
     return(
         <ContadorCantidadContainer>
-            <BotonDisminuirCantidad onClick={disminuirCantidad}>-</BotonDisminuirCantidad>
+            <BotonDisminuirCantidad type="button" disabled={disabled} onClick={disminuirCantidad} aria-label="Disminuir cantidad">-</BotonDisminuirCantidad>
             <CantidadProducto>{cantidad}</CantidadProducto>
-            <BotonAumentarCantidad onClick={aumentarCantidad}>+</BotonAumentarCantidad>
+            <BotonAumentarCantidad type="button" disabled={disabled} onClick={aumentarCantidad} aria-label="Aumentar cantidad">+</BotonAumentarCantidad>
         </ContadorCantidadContainer>
     )
 

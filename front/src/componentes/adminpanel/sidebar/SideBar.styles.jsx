@@ -8,6 +8,14 @@ export const SideBarContainer = styled.div`
   border-right: 1px solid #e0e0e0;
   padding: 1.5rem 1rem;
   box-sizing: border-box;
+
+  @media (max-width: 800px) {
+    width: 100%;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0.75rem;
+  }
 `;
 
 export const ListaSeccionContainer = styled.ul`
@@ -17,10 +25,19 @@ export const ListaSeccionContainer = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+
+  @media (max-width: 800px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 `;
 
 export const SeccionItem = styled.li`
   width: 100%;
+
+  @media (max-width: 800px) {
+    width: auto;
+  }
 `;
 
 export const SeccionLink = styled(NavLink)`

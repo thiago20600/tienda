@@ -11,7 +11,8 @@ export const TablaPedidos = styled.div`
   a { display: grid; grid-template-columns: 1.5fr 2fr 1.2fr 1fr 0.8fr 1.1fr 1fr; gap: 14px; align-items: center; padding: 14px 16px; color: #333333; text-decoration: none; }
 
   @media (max-width: 650px) {
-    a { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    overflow-x: auto;
+    a { min-width: 680px; gap: 8px; }
   }
 `;
 
@@ -25,7 +26,7 @@ export const EncabezadoTabla = styled.div`
   font-weight: 600;
 
   @media (max-width: 650px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 680px;
     gap: 8px;
   }
 `;

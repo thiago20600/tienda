@@ -53,3 +53,4 @@ class ProductUpdate(SQLModel):
     stock: int | None = None
     descripcion: str | None = None
     imagen_url: list[str] | None = None
+    producto_activo: bool | None = None

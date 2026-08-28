@@ -1,8 +1,10 @@
 import styled from 'styled-components';
+import { NavLink } from 'react-router-dom';
 
 export const UsuariosContainer = styled.main`
   padding: 2rem;
   color: #1e293b;
+  overflow-x: auto;
   h1 { margin: 0 0 1.25rem; font-size: 1.5rem; }
   @media (max-width: 600px) { padding: 1rem; }
 `;
@@ -15,10 +17,60 @@ export const UsuariosTable = styled.table`
   th, td { padding: 0.85rem 1rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
   th { background: #f8fafc; color: #64748b; font-size: 0.8rem; }
   td { color: #334155; }
+  tbody tr[tabindex] { cursor: pointer; outline: none; }
+  tbody tr[tabindex]:hover, tbody tr[tabindex][aria-selected='true'] { background: #f0f9ff; }
+  tbody tr[tabindex]:focus-visible { box-shadow: inset 0 0 0 2px #009ee3; }
   @media (max-width: 650px) {
-    display: block;
-    overflow-x: auto;
+    min-width: 620px;
     white-space: nowrap;
+  }
+`;
+
+export const PedidosUsuario = styled.div`
+  padding: 0.5rem 0;
+
+  h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    color: #1e293b;
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+  }
+
+  ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+`;
+
+export const PedidoUsuarioLink = styled(NavLink)`
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  color: #334155;
+  text-decoration: none;
+
+  &:hover {
+    border-color: #009ee3;
+    color: #0369a1;
+  }
+
+  span:first-of-type { text-transform: capitalize; }
+  span:last-of-type { color: #009ee3; font-weight: 600; }
+
+  @media (max-width: 650px) {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
   }
 `;
 

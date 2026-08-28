@@ -10,7 +10,7 @@ export const ContadorCantidadContainer = styled.div`
     border-radius: 6px;
     border: 1px solid #e0e0e0;
     width: fit-content;
-    margin: 0 auto;
+    margin: 0;
 `
 
 const BotonBaseContador = styled.button`
@@ -32,6 +32,11 @@ const BotonBaseContador = styled.button`
 
     &:active {
         transform: scale(0.9);
+    }
+
+    &:disabled {
+        cursor: wait;
+        opacity: 0.5;
     }
 `
 

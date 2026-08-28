@@ -7,8 +7,11 @@ from sqlmodel import Session, select
 
 class PedidoService:
 
-    def consultar_pedidos(self, session: Session) -> list[Pedido]:
-        return session.exec(select(Pedido)).all()
+    def consultar_pedidos(self, session: Session, user_email: str | None = None) -> list[Pedido]:
+        query = select(Pedido)
+        if user_email:
+            query = query.where(Pedido.user_email == user_email)
+        return session.exec(query).all()
 
     def consultar_pedido_id(self, session: Session, id: int) -> Pedido:
         pedido = session.get(Pedido, id)

@@ -1,5 +1,4 @@
-import { loadMercadoPago } from "@mercadopago/sdk-js"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { CheckoutWrapper, PaymentGrid, AmountText, PagoExitosoContainer, CheckoutColumns, OrderSummary, CheckoutError, ProcessingMessage } from "./checkout.styles"
 import { initMercadoPago } from "@mercadopago/sdk-react"
 import useCarrito from "../../hooks/cart/useCarrito"
@@ -8,6 +7,7 @@ import BricksForm from "../../componentes/Checkout/BrickForm/BricksForm"
 import { useNavigate } from "react-router-dom"
 import { tiendaRequest } from "../../services/api/apiClient"
 
+let claveMercadoPagoInicializada = null
 
 const Checkout = () => {
     const MP_PUBLIC_KEY = import.meta.env.VITE_MP_PUBLIC_KEY
@@ -17,35 +17,41 @@ const Checkout = () => {
     const formDataMPRef = useRef({})
     const [pedido, setPedido] = useState(null)
     const [errorPago, setErrorPago] = useState(null)
+    const [errorBrick, setErrorBrick] = useState(null)
     const [procesandoPago, setProcesandoPago] = useState(false)
     const { carrito, statusError: carritoError, cargando: carritoCargando } = useCarrito()
-    const amount = { amount: carrito?.total }
+    const amount = useMemo(() => ({ amount: carrito?.total }), [carrito?.total])
+    const errorConfiguracion = MP_PUBLIC_KEY ? null : 'Falta configurar la clave pública de Mercado Pago.'
 
     useEffect(() => {
+        if (!MP_PUBLIC_KEY) {
+            return
+        }
 
-        initMercadoPago(`${MP_PUBLIC_KEY}`, { locale: 'es-AR' })
+        if (claveMercadoPagoInicializada !== MP_PUBLIC_KEY) {
+            initMercadoPago(MP_PUBLIC_KEY, { locale: 'es-AR' })
+            claveMercadoPagoInicializada = MP_PUBLIC_KEY
+        }
     }, [MP_PUBLIC_KEY])
 
     useEffect(() => {
         const listarMetodosPago = async () => {
-            await loadMercadoPago()
+            try {
+                const response = await tiendaRequest('/metodos-pago')
+                const data = await response.json()
 
-            const response = await tiendaRequest('/metodos-pago')
-
-            const data = await response.json()
-
-            if (Array.isArray(data)) {
-                setMetodosPago(data)
-            } else if (data && Array.isArray(data.metodos)) {
-                setMetodosPago(data.metodos)
-            } else {
+                if (Array.isArray(data)) setMetodosPago(data)
+                else if (data && Array.isArray(data.metodos)) setMetodosPago(data.metodos)
+                else setMetodosPago([])
+            } catch (error) {
+                console.error('Error cargando métodos de pago:', error)
                 setMetodosPago([])
             }
         }
         listarMetodosPago()
     }, [])
 
-    const payload_tarjeta = async (paramTarjeta, formDataMP) => {
+    const payload_tarjeta = useCallback(async (paramTarjeta) => {
         setProcesandoPago(true)
         setErrorPago(null)
         try {
@@ -63,16 +69,16 @@ const Checkout = () => {
             }
 
             const datosAdicionalesMP = {
-                nombre: formDataMP.nombre,
-                apellido: formDataMP.apellido,
-                telefono_area: String(formDataMP.telefonoArea),
-                telefono_numero: String(formDataMP.telefonoNumero),
-                codigo_postal: formDataMP.codigoPostal,
-                nombre_calle: formDataMP.nombreCalle,
-                numero_calle: String(formDataMP.numeroCalle),
-                provincia: formDataMP.provincia,
-                localidad: formDataMP.localidad,
-                detalle_direccion: formDataMP.detalleDireccion || null,
+                nombre: formDataMPRef.current.nombre,
+                apellido: formDataMPRef.current.apellido,
+                telefono_area: String(formDataMPRef.current.telefonoArea),
+                telefono_numero: String(formDataMPRef.current.telefonoNumero),
+                codigo_postal: formDataMPRef.current.codigoPostal,
+                nombre_calle: formDataMPRef.current.nombreCalle,
+                numero_calle: String(formDataMPRef.current.numeroCalle),
+                provincia: formDataMPRef.current.provincia,
+                localidad: formDataMPRef.current.localidad,
+                detalle_direccion: formDataMPRef.current.detalleDireccion || null,
             }
 
             const payloadFinal = { ...datosTarjeta, ...datosAdicionalesMP }
@@ -103,7 +109,16 @@ const Checkout = () => {
         }
 
 
-    }
+    }, [metodosPago])
+
+    const handleBrickError = useCallback((error) => {
+        console.error('Error inicializando Mercado Pago Brick:', error)
+        setErrorBrick('No se pudo cargar el formulario de pago. Recargá la página e intentá nuevamente.')
+    }, [])
+
+    const handleBrickReady = useCallback(() => {
+        setErrorBrick(null)
+    }, [])
 
     if (carritoCargando) return <CheckoutWrapper><p>Cargando checkout...</p></CheckoutWrapper>
     if (carritoError) return <CheckoutWrapper><p>No se pudo cargar el carrito (código: {carritoError}).</p></CheckoutWrapper>
@@ -128,6 +143,7 @@ const Checkout = () => {
                 <>
         <AmountText>Total a pagar: ${amount?.amount?.toLocaleString('es-AR')}</AmountText>
         {errorPago && <CheckoutError>{errorPago}</CheckoutError>}
+        {(errorConfiguracion || errorBrick) && <CheckoutError>{errorConfiguracion || errorBrick}</CheckoutError>}
         {procesandoPago && <ProcessingMessage>Procesando pago...</ProcessingMessage>}
         <CheckoutColumns>
             <OrderSummary>
@@ -144,10 +160,12 @@ const Checkout = () => {
             <div>
                 <DatosAdicionalesForm
                     onChangeFormData={(data) => { formDataMPRef.current = data; }}/>
-                {!procesandoPago && <BricksForm
+                {!procesandoPago && !errorConfiguracion && !errorBrick && <BricksForm
                     amount={amount}
                     paymentId={paymentId}
-                    onSubmit={(param) => payload_tarjeta(param, formDataMPRef.current)}/>} 
+                    onSubmit={payload_tarjeta}
+                    onError={handleBrickError}
+                    onReady={handleBrickReady}/>} 
             </div>
         </CheckoutColumns>
         </>)}

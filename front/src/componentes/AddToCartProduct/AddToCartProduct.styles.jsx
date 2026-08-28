@@ -2,7 +2,8 @@ import styled from "styled-components";
 
 
 export const AddToCartContainer = styled.div`
-  width: 100%;
+  width: min(100%, 320px);
+  align-self: flex-start;
   box-sizing: border-box;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
@@ -12,7 +13,7 @@ export const AddToCartContainer = styled.div`
 
   display: flex;
   flex-direction: column;
-  align-items: center;
+    align-items: flex-start;
   gap: 1.25rem;
   height: fit-content;
 
@@ -42,7 +43,8 @@ export const PrecioProducto = styled.h2`
 
 
 export const AgregarProductoBoton = styled.button`
-    width: 100%;
+    width: fit-content;
+    align-self: flex-start;
     padding: 0.75rem;
     background-color: #1a1a1a;
     color: #ffffff;

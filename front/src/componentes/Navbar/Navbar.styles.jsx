@@ -8,13 +8,20 @@ export const NavbarContainer = styled.header`
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
-  height: 99px;
+  min-height: 99px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 5%;              /* Usa porcentaje para padding adaptable */
   background: rgba(59, 197, 197, 0.23);
   box-sizing: border-box;
+
+  @media (max-width: 760px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1rem 5%;
+  }
 `;
 
 // Grupos de enlaces flexibles
@@ -22,6 +29,7 @@ export const GrupoLinks = styled.nav`
   display: flex;
   align-items: center;
   gap: 24px;
+  flex-wrap: wrap;
 
   /* Estilos para los enlaces <a> dentro del grupo */
   a {
@@ -57,5 +65,10 @@ export const GrupoLinks = styled.nav`
       background: #333333;
       color: #ffffff;
     }
+  }
+
+  @media (max-width: 760px) {
+    justify-content: flex-start;
+    gap: 12px 18px;
   }
 `;

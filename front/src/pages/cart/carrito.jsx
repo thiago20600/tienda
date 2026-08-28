@@ -9,6 +9,8 @@ const Carrito = () => {
     const navigate = useNavigate();
     const [deleteMessage, setDeleteMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [itemActualizando, setItemActualizando] = useState(null);
+    const [itemEliminando, setItemEliminando] = useState(null);
 
 
     const { carrito, cargando, statusError, recargarCarrito } = useCarrito();
@@ -35,6 +37,8 @@ const Carrito = () => {
 
 
     const modificarCantidad = async (productoId, nuevaCantidad) => {
+        if (itemActualizando === productoId) return;
+        setItemActualizando(productoId);
         try {
             const response = await tiendaRequest(`/mi-carrito/item/${productoId}`, {
                 method: 'PATCH',
@@ -55,10 +59,14 @@ const Carrito = () => {
         } catch (error) {
             console.error("Error de red al modificar cantidad:", error);
             setErrorMessage("Error de conexión al actualizar la cantidad.");
+        } finally {
+            setItemActualizando(null);
         }
     }
 
     const eliminarItemCarrito = async (productoId) => {
+        if (itemEliminando === productoId) return;
+        setItemEliminando(productoId);
         try {
             const response = await tiendaRequest(`/mi-carrito/${productoId}`, {
                 method: 'DELETE',
@@ -76,6 +84,8 @@ const Carrito = () => {
         } catch (error) {
             console.error("Error de red al eliminar producto:", error);
             setDeleteMessage("Error al intentar eliminar el producto.");
+        } finally {
+            setItemEliminando(null);
         }
     }
 
@@ -100,6 +110,7 @@ const Carrito = () => {
                                         <ContadorCantidad 
                                             stockMaximo={item.producto.stock + item.cantidad} 
                                             valorInicial={item.cantidad} 
+                                            disabled={itemActualizando === item.producto_id || itemEliminando === item.producto_id}
                                             onChange={(nueva) => modificarCantidad(item.producto_id, nueva)}
                                         />
                                         <PreciosProducto>
@@ -107,7 +118,7 @@ const Carrito = () => {
                                             <span>{formatearPrecio(item.subtotal)}</span>
                                         </PreciosProducto>
                                     </AccionesProducto>
-                                    <DeleteButton onClick={() => eliminarItemCarrito(item.producto_id)}>🗑️</DeleteButton>
+                                    <DeleteButton disabled={itemEliminando === item.producto_id || itemActualizando === item.producto_id} onClick={() => eliminarItemCarrito(item.producto_id)} aria-label={`Eliminar ${item.producto.nombre}`}>🗑️</DeleteButton>
                                 </ItemContainer>
                             ))
                                 

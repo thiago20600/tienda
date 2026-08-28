@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
 import { tiendaRequest } from '../../services/api/apiClient';
 
-export default function usePedidosAdmin() {
+export default function usePedidosAdmin({ userEmail = '', enabled = true } = {}) {
   const [pedidos, setPedidos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [statusError, setStatusError] = useState(null);
 
   useEffect(() => {
     const obtenerPedidos = async () => {
+      if (!enabled) {
+        setPedidos([]);
+        setCargando(false);
+        return;
+      }
       setCargando(true);
       try {
-        const response = await tiendaRequest('/pedidos/', {
+        const filtroUsuario = userEmail ? `?user_email=${encodeURIComponent(userEmail)}` : '';
+        const response = await tiendaRequest(`/pedidos/${filtroUsuario}`, {
           method: 'GET',
           auth: true
         });
@@ -31,7 +37,7 @@ export default function usePedidosAdmin() {
     };
 
     obtenerPedidos();
-  }, []);
+  }, [userEmail, enabled]);
 
   return { pedidos, cargando, statusError };
 }

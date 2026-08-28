@@ -5,6 +5,10 @@ export const LayoutAdminContainer = styled.div`
   width: 100%;
   min-height: 100vh;
   background-color: #f8f9fa; /* Fondo gris muy suave para el área de contenido */
+
+  @media (max-width: 800px) {
+    flex-direction: column;
+  }
 `;
 
 export const MainContent = styled.main`

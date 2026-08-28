@@ -8,7 +8,7 @@ export const ProductDetailStyle = styled.div`
   margin: 0 auto;
   padding: 3rem 2rem;
   box-sizing: border-box;
-  align-items: center;
+  align-items: start;
 
   @media (max-width: 800px) {
     grid-template-columns: 1fr;

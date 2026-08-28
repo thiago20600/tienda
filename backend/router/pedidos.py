@@ -11,8 +11,8 @@ pedido_service = PedidoService()
 
 
 @router.get('/pedidos/', response_model=list[PedidoPublic], dependencies=[Depends(require_admin)])
-async def get_pedidos(session: SessionDep):
-    return pedido_service.consultar_pedidos(session=session)
+async def get_pedidos(session: SessionDep, user_email: str | None = None):
+    return pedido_service.consultar_pedidos(session=session, user_email=user_email)
 
 
 @router.get('/pedidos/{pedido_id}', response_model=PedidoPublic, dependencies=[Depends(require_admin)])
