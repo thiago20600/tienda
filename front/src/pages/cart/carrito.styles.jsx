@@ -18,6 +18,12 @@ export const CarritoContainer = styled.div`
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 `;
 
+export const TituloCarrito = styled.h1`
+  margin: 0 0 1.5rem;
+  color: #1e293b;
+  font-size: 1.6rem;
+`;
+
 
 export const ContenidoCarrito = styled.div`
   display: flex;
@@ -64,7 +70,7 @@ export const CarritoResumen = styled.div`
 export const ItemContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   padding: 1.2rem 1.5rem;
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
@@ -76,6 +82,12 @@ export const ItemContainer = styled.div`
     transform: translateY(-2px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     border-color: #cbd5e1;
+  }
+
+  @media (max-width: 560px) {
+    flex-wrap: wrap;
+    padding: 1rem;
+    gap: 0.75rem;
   }
 `;
 
@@ -218,4 +230,56 @@ export const CarritoNotFound = styled.div`
       background-color: #006895;
     }
   }
+`;
+
+export const ImagenProducto = styled.img`
+  width: 92px;
+  height: 92px;
+  flex: 0 0 92px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+`;
+
+export const InformacionProducto = styled.div`
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+`;
+
+export const NombreProducto = styled.span`
+  overflow: hidden;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+export const DetalleProducto = styled.span`
+  color: #64748b;
+  font-size: 0.85rem;
+`;
+
+export const AccionesProducto = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  @media (max-width: 560px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+`;
+
+export const PreciosProducto = styled.div`
+  min-width: 90px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  span:first-child { color: #64748b; font-size: 0.8rem; }
+  span:last-child { color: #059669; font-size: 1rem; font-weight: 700; }
 `;

@@ -28,6 +28,14 @@ export const ProductTitle = styled.h3`
     margin: 0;
 `
 
+export const ProductImage = styled.img`
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #f1f5f9;
+`
+
 export const ProductItem = styled.p`
     margin: 0;
 `

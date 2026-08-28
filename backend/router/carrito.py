@@ -32,9 +32,9 @@ async def get_mi_carrito(session: SessionDep, current_user = Depends(get_current
 @router.post('/mi-carrito/{producto_id}', response_model=CarritoPublic)
 async def agregar_unidad_producto(session: SessionDep, producto_id: int, current_user = Depends(get_current_user)):
     try:
+        producto_service = ProductoService()
         carrito_item_service = CarritoItemService()
-        producto_service = ProductoService(carrito_item_service, producto_service)
-        carrito_service = CarritoService()
+        carrito_service = CarritoService(producto_service, carrito_item_service) 
         carrito = carrito_service.agregar_producto(
             session=session,
             usuario_email=current_user['email'],
@@ -57,7 +57,10 @@ async def agregar_desde_detalle_producto(session: SessionDep, carrito_item_updat
 ):
     carrito_item_service = CarritoItemService()
     producto_service = ProductoService()
-    carrito_service = CarritoService(carrito_item_service, producto_service)
+    carrito_service = CarritoService(
+        producto_service=producto_service,
+        carrito_item_service=carrito_item_service
+    )
 
     try:
         carrito = carrito_service.agregar_producto(session=session, 

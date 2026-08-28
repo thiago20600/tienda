@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react"
+import { tiendaRequest } from "../../services/api/apiClient"
 
 export default function useCategorias() {
 
         const [categorias, setCategorias] = useState([])
         const [cargando, setCargando] = useState(true)
-        const UrlApiBaseProductos = import.meta.env.VITE_API_URL
         const [statusError, setStatusError] = useState(null) 
     
         useEffect(() => {
             const obtenerProductos = async () => {
                 try {
-                    const response = await fetch(`${UrlApiBaseProductos}/categorias`, {
+                    const response = await tiendaRequest('/categorias', {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'
@@ -33,7 +33,7 @@ export default function useCategorias() {
     
             obtenerProductos()
     
-        }, [UrlApiBaseProductos])
+        }, [])
     
         return { categorias, statusError, cargando }
 }

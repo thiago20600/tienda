@@ -3,11 +3,9 @@ import Buscador from "../../Buscador/Buscador"
 import { HeaderContainer } from "../../productos/productosHeader/ProductosHeader.styles"
 import useCrearCategoria from "../../../../hooks/categorias/useCrearCategoria"
 import { AgregarCategoria, AgregarCategoriaBoton } from "./HeaderCategorias.styles"
-import { useNavigate } from "react-router-dom"
 
 const HeaderCategorias = ({ onCategoriaCreada }) => {
-    const navigate = useNavigate()
-    const { crearCategoria, statusError } = useCrearCategoria() 
+    const { crearCategoria } = useCrearCategoria()
     const [instanciaCrearCategoria, setInstanciaCrearCategoria] = useState(false)  
     const [nombreCategoria, setNombreCategoria] = useState('')
     const handleInputChange = (e) => {setNombreCategoria(e.target.value)}

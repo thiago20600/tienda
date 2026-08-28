@@ -3,18 +3,18 @@ import { useParams } from "react-router-dom"
 import ProductDetailCard from "../../componentes/ProductDetailCard/ProductDetailCard"
 import { ProductDetailStyle, ProductDetailWrapper } from "./ProductDetail.styles"
 import AddToCartProduct from "../../componentes/AddToCartProduct/AddToCartProduct"
+import { tiendaRequest } from "../../services/api/apiClient"
 
 const ProductDetail = () => {
 
     const { id } = useParams()
-    const UrlApiBase = import.meta.env.VITE_API_URL
     const [producto, setProducto] = useState(null)
 
     useEffect(() => {
 
     const obtenerProducto = async () => {
 
-        const respuesta = await fetch(`${UrlApiBase}/productos/${id}`)
+        const respuesta = await tiendaRequest(`/productos/${id}`)
 
         if (!respuesta.ok) {
             setProducto(false)

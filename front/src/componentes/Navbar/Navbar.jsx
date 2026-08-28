@@ -1,6 +1,9 @@
 import { NavbarContainer } from './Navbar.styles'
 import { GrupoLinks } from './Navbar.styles'
 import SearchBar from '../SearchBar/SearchBar'
+import { DesplegableUsuario } from '../DesplegableUsuario/DesplegableUsuario'
+import { NavLink } from 'react-router-dom'
+import CategoryMenu from './CategoryMenu'
 
 const Navbar = ({ usuario, setQuery }) => {
     
@@ -10,8 +13,8 @@ const Navbar = ({ usuario, setQuery }) => {
 
             <GrupoLinks>
 
-                <a href="/">Inicio</a>
-                <a href="/categorias">Categorías</a>
+                <NavLink to="/">Inicio</NavLink>
+                <CategoryMenu />
 
             </GrupoLinks>
 
@@ -21,15 +24,15 @@ const Navbar = ({ usuario, setQuery }) => {
 
                 {!usuario && (
                     <>
-                        <a href="/login">Login</a>
-                        <a href="/registrarse">Registrarse</a>
+                        <NavLink to="/login">Login</NavLink>
+                        <NavLink to="/register">Registrarse</NavLink>
                     </>
                 )}
 
-                <a href="/carrito">Carrito</a>
+                <NavLink to="/carrito">Carrito</NavLink>
 
                 {usuario && (
-                    <button>{usuario.username}</button>
+                    <DesplegableUsuario usuario={usuario}></DesplegableUsuario>
                 )}
 
             </GrupoLinks>

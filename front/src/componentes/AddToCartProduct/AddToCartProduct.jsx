@@ -2,27 +2,21 @@ import { useState } from "react"
 import { AddToCartContainer, PrecioProducto, AgregarProductoBoton } from "./AddToCartProduct.styles"
 import ContadorCantidad from "../ContadorCantidad/ContadorCantidad"
 import { useNavigate } from "react-router-dom"
+import { tiendaRequest } from "../../services/api/apiClient"
 
 const AddToCartProduct = ({ producto }) => {
 
-    const UrlApiBaseUsuarios = import.meta.env.VITE_API_URL_USUARIOS
-    const UrlApiBaseProductos = import.meta.env.VITE_API_URL
     const [cantidad, setCantidad] = useState(1)
     const [message, setMessage] = useState('')
     const navigate = useNavigate()
 
     const addToCart = async () => {
 
-        const token = localStorage.getItem('token')
-
         try{
-        const response = await fetch(`${UrlApiBaseProductos}/mi-carrito/${producto.id}`,{
+        const response = await tiendaRequest(`/mi-carrito/${producto.id}`,{
                                         method: 'PATCH',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'Authorization': `Bearer ${token}`
-                                        },
-                                        body: JSON.stringify({cantidad: cantidad})}
+                                        auth: true,
+                                        body: {cantidad: cantidad}}
                                     )
 
 
@@ -36,11 +30,12 @@ const AddToCartProduct = ({ producto }) => {
                                             return
                                             }
                                         
-                                        const carritoActualizado = await response.json()
+                                        await response.json()
                                         setMessage("¡Producto agregado con éxito!")
 
                                     } catch (error) {
-                                        setMessage(error.detail)
+                                        console.error('Error de red al agregar al carrito:', error)
+                                        setMessage('Error de conexión al agregar el producto.')
                                     }
 
     }

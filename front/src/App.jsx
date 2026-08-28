@@ -15,9 +15,15 @@ import ProductosAdmin from "./pages/admin/productos/productosAdmin"
 import CategoriasAdmin from "./pages/admin/categorias/categoriasAdmin"
 import ConfiguracionAdmin from "./pages/admin/configuracion/configuracionAdmin"
 import PedidosAdmin from "./pages/admin/pedidos/pedidosAdmin"
+import PedidoDetalleAdmin from "./componentes/adminpanel/pedidos/PedidoDetalleAdmin"
 import RutaProtegida from "./auth/RutaProtegida"
 import AgregarProductoNuevo from "./componentes/adminpanel/productos/AgregarProductoNuevo/AgregarProductoNuevo"
 import ModificarProducto from "./componentes/adminpanel/productos/ModificarProducto/ModificarProducto"
+import NoEncontrado from "./componentes/estado/NoEncontrado"
+import Configuracion from "./pages/configuracion/Configuracion"
+import ModificarCategoria from "./componentes/adminpanel/categorias/ModificarCategoria/ModificarCategoria"
+import ActivateAccount from "./pages/auth/activate/ActivateAccount"
+import UsuariosAdmin from './pages/admin/usuarios/UsuariosAdmin'
 
 function App() {
 
@@ -33,10 +39,14 @@ function App() {
       <Route element={<AuthLayout/>}>
         <Route path='/login' element={<LoginPage/>}/>
         <Route path='/register' element={<RegisterPage/>}/>
+        <Route path='/activate_account/:token' element={<ActivateAccount/>}/>
       </Route>
 
       <Route element={<BaseLayout/>}>
         <Route path='/carrito' element={<Carrito/>}/>
+        <Route element={<RutaProtegida />}>
+          <Route path='/configuracion' element={<Configuracion />} />
+        </Route>
       </Route>
 
       <Route element={<CheckoutLayout/>}>
@@ -51,10 +61,15 @@ function App() {
             <Route path='/admin/productos/nuevo' element={<AgregarProductoNuevo/>}></Route>
             <Route path='/admin/productos/:id' element={<ModificarProducto/>}/>
           <Route path='/admin/categorias' element={<CategoriasAdmin/>} />
+          <Route path='/admin/categorias/:id' element={<ModificarCategoria/>} />
           <Route path='/admin/configuracion' element={<ConfiguracionAdmin/>} />
+          <Route path='/admin/usuarios' element={<UsuariosAdmin/>} />
           <Route path='/admin/pedidos' element={<PedidosAdmin/>} />
+          <Route path='/admin/pedidos/:id' element={<PedidoDetalleAdmin/>} />
         </Route>
       </Route>
+
+      <Route path="*" element={<NoEncontrado />} />
 
     </Routes>
 

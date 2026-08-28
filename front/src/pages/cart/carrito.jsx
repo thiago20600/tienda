@@ -1,17 +1,19 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { CarritoNotFound, DeleteButton, CarritoContainer, ListaItemsContainer, ItemContainer, AtributoItem, ContenidoCarrito, ErrorMessage, StyledLink, CarritoResumen, PrecioTotal, BotonContinuarCompra } from "./carrito.styles"
+import { CarritoNotFound, DeleteButton, CarritoContainer, ListaItemsContainer, ItemContainer, ContenidoCarrito, ErrorMessage, StyledLink, CarritoResumen, PrecioTotal, BotonContinuarCompra, TituloCarrito, ImagenProducto, InformacionProducto, NombreProducto, DetalleProducto, AccionesProducto, PreciosProducto } from "./carrito.styles"
 import ContadorCantidad from "../../componentes/ContadorCantidad/ContadorCantidad"
 import useCarrito from "../../hooks/cart/useCarrito"
+import { tiendaRequest } from "../../services/api/apiClient"
 
 const Carrito = () => {
-    const UrlApiBaseProductos = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
     const [deleteMessage, setDeleteMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
 
-    const { carrito, cargando, statusError, message, recargarCarrito } = useCarrito();
+    const { carrito, cargando, statusError, recargarCarrito } = useCarrito();
+    const imagenFallback = 'https://res.cloudinary.com/dfnnundpn/image/upload/v1781797763/sistema_1/mirsnducpj6tdy5hjewy.jpg';
+    const formatearPrecio = (precio) => `$${Number(precio).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
 
     if (statusError === 404) {
         return (
@@ -23,18 +25,21 @@ const Carrito = () => {
         )
     }
 
+    if (cargando) {
+        return <CarritoContainer><p>Cargando carrito...</p></CarritoContainer>;
+    }
+
+    if (statusError) {
+        return <CarritoContainer><ErrorMessage>No se pudo cargar el carrito (código: {statusError}).</ErrorMessage></CarritoContainer>;
+    }
+
 
     const modificarCantidad = async (productoId, nuevaCantidad) => {
-        const accessToken = localStorage.getItem('token');
-        
         try {
-            const response = await fetch(`${UrlApiBaseProductos}/mi-carrito/item/${productoId}`, {
+            const response = await tiendaRequest(`/mi-carrito/item/${productoId}`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                },
-                body: JSON.stringify({ cantidad: nuevaCantidad })
+                auth: true,
+                body: { cantidad: nuevaCantidad }
             });
             
             if (!response.ok) {
@@ -54,15 +59,10 @@ const Carrito = () => {
     }
 
     const eliminarItemCarrito = async (productoId) => {
-        const accessToken = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`${UrlApiBaseProductos}/mi-carrito/${productoId}`, {
+            const response = await tiendaRequest(`/mi-carrito/${productoId}`, {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                },
+                auth: true,
             });
 
             const data = await response.json();
@@ -81,23 +81,33 @@ const Carrito = () => {
 
     return (
         <CarritoContainer>
+            <TituloCarrito>Mi carrito</TituloCarrito>
             {carrito ? (
                 <ContenidoCarrito>
                     <ListaItemsContainer>
                         {carrito.items && carrito.items.length > 0 ? (
                             carrito.items.map((item) => (
                                 <ItemContainer key={item.id}>
+                                    <ImagenProducto src={item.producto.imagen_url?.[0] || imagenFallback} alt={item.producto.nombre} />
+                                    <InformacionProducto>
+                                        <StyledLink to={`/productos/${item.producto_id}`}>
+                                            <NombreProducto>{item.producto.nombre}</NombreProducto>
+                                        </StyledLink>
+                                        <DetalleProducto>Precio unitario: {formatearPrecio(item.precio_unitario)}</DetalleProducto>
+                                        <DetalleProducto>Stock disponible: {item.producto.stock}</DetalleProducto>
+                                    </InformacionProducto>
+                                    <AccionesProducto>
+                                        <ContadorCantidad 
+                                            stockMaximo={item.producto.stock + item.cantidad} 
+                                            valorInicial={item.cantidad} 
+                                            onChange={(nueva) => modificarCantidad(item.producto_id, nueva)}
+                                        />
+                                        <PreciosProducto>
+                                            <span>Subtotal</span>
+                                            <span>{formatearPrecio(item.subtotal)}</span>
+                                        </PreciosProducto>
+                                    </AccionesProducto>
                                     <DeleteButton onClick={() => eliminarItemCarrito(item.producto_id)}>🗑️</DeleteButton>
-                                    <StyledLink to={`/productos/${item.producto_id}`}>
-                                        <AtributoItem>producto: {item.producto.nombre}</AtributoItem>
-                                    </StyledLink>
-                                    <ContadorCantidad 
-                                        stockMaximo={item.producto.stock + item.cantidad} 
-                                        valorInicial={item.cantidad} 
-                                        onChange={(nueva) => modificarCantidad(item.producto_id, nueva)}
-                                    />
-                                    <AtributoItem>precio: {item.precio_unitario.toLocaleString('es-AR')}</AtributoItem>
-                                    <AtributoItem>subtotal: {item.subtotal.toLocaleString('es-AR')}</AtributoItem>
                                 </ItemContainer>
                             ))
                                 
@@ -114,11 +124,11 @@ const Carrito = () => {
                     )}
                 </ContenidoCarrito>
             ) : (
-                <p>{errorMessage || "Cargando carrito..."}</p>
+                <p>{errorMessage || "No hay información del carrito."}</p>
             )}
             
-            {(message || errorMessage || deleteMessage) && (
-                <ErrorMessage>{errorMessage || deleteMessage || message}</ErrorMessage>
+            {(errorMessage || deleteMessage) && (
+                <ErrorMessage>{errorMessage || deleteMessage}</ErrorMessage>
             )}
         </CarritoContainer>
     );

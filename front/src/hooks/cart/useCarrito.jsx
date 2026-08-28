@@ -1,25 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { tiendaRequest } from '../../services/api/apiClient';
 
 export default function useCarrito() {
     const [carrito, setCarrito] = useState(null);
-    const [message, setMessage] = useState('');
     const [cargando, setCargando] = useState(true);
     const [statusError, setStatusError] = useState(null)
 
     const navigate = useNavigate();
-    const UrlApiBaseProductos = import.meta.env.VITE_API_URL;
 
     // 1. Definimos la función de carga fuera del useEffect
     const cargarCarrito = useCallback(async () => {
-        const accessToken = localStorage.getItem('token');
+        setCargando(true);
         try {
-            const response = await fetch(`${UrlApiBaseProductos}/mi-carrito`, {
+            const response = await tiendaRequest('/mi-carrito', {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                }
+                auth: true
             });
             
             if (!response.ok) {
@@ -39,17 +35,18 @@ export default function useCarrito() {
         } finally {
             setCargando(false);
         }
-    }, [UrlApiBaseProductos, navigate]);
+    }, [navigate]);
 
     // 2. El useEffect la ejecuta solo al montar el componente
     useEffect(() => {
+        // La carga sincroniza el estado con el carrito persistido del usuario.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         cargarCarrito();
     }, [cargarCarrito]);
 
     // 3. Devolvemos 'recargarCarrito' (que es cargarCarrito) para refrescar desde las vistas
     return { 
         carrito, 
-        message, 
         cargando,
         statusError,
         recargarCarrito: cargarCarrito 

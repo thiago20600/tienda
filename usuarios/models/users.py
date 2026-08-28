@@ -22,6 +22,7 @@ class UserPublic(SQLModel):
     username: str
     email: str
     active: bool
+    rol: str
 
 
 class UserUpdate(SQLModel):

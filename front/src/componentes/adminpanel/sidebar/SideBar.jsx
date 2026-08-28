@@ -1,14 +1,13 @@
-import { useState } from "react"
-import { NavLink } from "react-router-dom"
 import { SideBarContainer, ListaSeccionContainer, SeccionItem, SeccionLink } from "./SideBar.styles"
 
-const SideBar = ({ onSeccionChange }) => {
+const SideBar = () => {
 
     const sideBarSecciones = [
         {name: 'Inicio', path: '/admin'}, 
         {name: 'Pedidos', path: '/admin/pedidos'},
         {name: 'Categorias', path: '/admin/categorias'}, 
         {name: 'Productos', path: '/admin/productos'}, 
+        {name: 'Usuarios', path: '/admin/usuarios'},
         {name: 'Configuracion', path: '/admin/configuracion'}]
 
 

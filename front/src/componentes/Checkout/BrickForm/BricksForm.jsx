@@ -1,4 +1,4 @@
-import { CardPayment, StatusScreen } from "@mercadopago/sdk-react"
+import { CardPayment } from "@mercadopago/sdk-react"
 
 const BricksForm = ({ amount, paymentId, onSubmit }) => {
     return (

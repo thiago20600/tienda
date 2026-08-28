@@ -71,6 +71,7 @@ class PedidoPublic(SQLModel):
     detalles: list[DetallePedidoPublic] = []
     mp_payment_id: str | None = Field(default=None)
     mp_response_raw: dict | None = None
+    user_email: str
 
 
 class PedidoUpdate(SQLModel):

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AgregarProductoContainer, FormTitle, AgregarProductoForm, FormGroup, Label, Input, Select, TextArea, AgregarProductoBoton, CargarImagenContainer, DropzoneLabel, FileInputHidden, PrevisualizacionInfo, ImagenesGrid, ImagenCard, AccionesGrupo, BotonAccion, EstadoMensaje } from './AgregarProductoNuevo.styles';
 import useCategorias from '../../../../hooks/categorias/useCategorias';
 import { useNavigate } from 'react-router-dom';
+import { tiendaRequest } from '../../../../services/api/apiClient';
 
 const CAMPOS_FORMULARIO = [
   { name: 'nombre', label: 'Nombre *', type: 'text', required: true, placeholder: 'Ej: Remera Oversize' },
@@ -19,8 +20,6 @@ const AgregarProductoNuevo = ({ onSubmit }) => {
   const [message, setMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [exitoMessage, setExitoMessage] = useState(null)
-  const UrlApiBaseProductos = import.meta.env.VITE_API_URL
-  const accessToken = localStorage.getItem('token')
   const [formData, setFormData] = useState({
     nombre: '',
     categoria: [], // Guardará solo un array de IDs numericos: [1, 2]
@@ -57,13 +56,10 @@ const AgregarProductoNuevo = ({ onSubmit }) => {
       descripcion: formData.descripcion || null
     };
 
-    const response = await fetch(`${UrlApiBaseProductos}/productos`, {
+    const response = await tiendaRequest('/productos', {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'authorization': `Bearer ${accessToken}`
-      },
-      body: JSON.stringify(payload)
+      auth: true,
+      body: payload
     })
 
     const data = await response.json()
@@ -107,11 +103,9 @@ const AgregarProductoNuevo = ({ onSubmit }) => {
     });
 
     try {
-      const response = await fetch(`${UrlApiBaseProductos}/productos/${id}/imagenes`, {
+      const response = await tiendaRequest(`/productos/${id}/imagenes`, {
         method: 'POST',
-        headers: {
-          'authorization': `Bearer ${accessToken}`
-        },
+        auth: true,
         body: payloadImagenes
       });
 

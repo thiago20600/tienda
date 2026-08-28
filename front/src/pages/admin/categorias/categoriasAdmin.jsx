@@ -16,7 +16,7 @@ const CategoriasAdmin = () => {
     return (
         <div>
             <HeaderCategorias></HeaderCategorias>
-            <TablaHeader areasFiltrar={filtroCategorias}></TablaHeader>
+            <TablaHeader areasFiltrar={filtroCategorias} onSortChange={setSortConfig}></TablaHeader>
             <TablaCategorias sortConfig={sortConfig}></TablaCategorias>
         </div>
     )

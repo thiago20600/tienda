@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { tiendaRequest } from "../../services/api/apiClient"
 
 
 export default function useEliminarProducto() {
@@ -7,32 +8,31 @@ export default function useEliminarProducto() {
     const navigate = useNavigate()
     const [message, setMessage] = useState('') 
     const accessToken = localStorage.getItem('token')
-    const UrlApiBaseProductos = import.meta.env.VITE_API_URL
-
-    if (!accessToken){
-        setMessage('Sesion no valida')
-        navigate('/login')
-    }
 
     const eliminarProducto = async (id) => {
+        if (!accessToken) {
+            setMessage('Sesion no valida')
+            navigate('/login')
+            return
+        }
         
-        const response = await fetch(`${UrlApiBaseProductos}/productos/${id}`,
-            {
-                method: 'DELETE',
-                headers: {
-                    'content-type': 'application/json',
-                    'authorization': `Bearer ${accessToken}`
+        try {
+            const response = await tiendaRequest(`/productos/${id}`,
+                {
+                    method: 'DELETE',
+                    auth: true
                 }
+            )
+
+            const data = await response.json().catch(() => ({}))
+            if (!response.ok) {
+                setMessage(data.detail || `Error ${response.status}`)
+            } else {
+                setMessage(data.message || 'Producto eliminado')
             }
-        )
-
-
-
-        if (!response.ok){
-            setMessage(response.status)
-        }else{
-            const data = await response.json()
-            setMessage(data.detail)
+        } catch (error) {
+            console.error('Error eliminando producto:', error)
+            setMessage('Error de conexión al eliminar el producto.')
         }
 
 

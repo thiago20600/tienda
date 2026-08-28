@@ -1,22 +1,18 @@
 import { useState } from "react"
+import { tiendaRequest } from "../../services/api/apiClient"
 
 export default function useCrearCategoria () {
 
 
-    const accessToken = localStorage.getItem('token')
-    const UrlApiBaseProductos = import.meta.env.VITE_API_URL
     const [statusError, setStatusError] = useState(null) 
 
     const crearCategoria = async (data) => {
 
         try {
-            const response = await fetch(`${UrlApiBaseProductos}/categorias/`, {
+            const response = await tiendaRequest('/categorias/', {
                 method: 'POST',
-                headers: {
-                    'Content-type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                },
-                body: JSON.stringify(data)
+                auth: true,
+                body: data
             })
 
             if (!response.ok){

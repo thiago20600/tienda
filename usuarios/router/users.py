@@ -3,14 +3,14 @@ from database.engine import SessionDep
 from sqlmodel import Session, select
 from models.users import User, UserCreate, UserPublic, UserUpdate
 from bcrypt import hashpw, gensalt
-from auth.auth import get_current_user
+from auth.auth import get_current_user, require_admin
 from utils.mail import send_mail_innactive_account
 from models.mail import EmailSchema
 
 router = APIRouter()
 
 
-@router.get('/users', response_model=list[UserPublic], dependencies=[Depends(get_current_user)])
+@router.get('/users', response_model=list[UserPublic], dependencies=[Depends(require_admin)])
 async def get_users(session: SessionDep):
     users = session.exec(select(User)).all()
     return users

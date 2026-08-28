@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { SearchBarContainer, SearchInput, SearchButton } from "./SearchBar.styles";
 
 

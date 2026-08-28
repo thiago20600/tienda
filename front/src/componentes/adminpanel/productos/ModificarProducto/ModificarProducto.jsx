@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ModificarProductoContainer, ModificarProductoForm, FormTitle, FormGroup, Label, Input, Select,TextArea, ModificarProductoBoton, CargarImagenContainer, DropzoneLabel,FileInputHidden,PrevisualizacionInfo,ImagenesGrid,ImagenCard,AccionesGrupo,BotonAccion,EstadoMensaje,ImagenesExistentesGrid,ImagenExistenteCard,ImagenExistenteImg,ImagenExistenteInfo} from "./ModificarProducto.styles";
 import useCategorias from "../../../../hooks/categorias/useCategorias";
+import { tiendaRequest } from "../../../../services/api/apiClient";
 
 const CAMPOS_FORMULARIO = [
   { name: 'nombre', label: 'Nombre *', type: 'text', required: true, placeholder: 'Ej: Remera Oversize' },
@@ -14,8 +15,6 @@ const ModificarProducto = () => {
   const { id } = useParams(); 
   const navigate = useNavigate();
   const { categorias } = useCategorias();
-  const UrlApiBaseProductos = import.meta.env.VITE_API_URL;
-  const accessToken = localStorage.getItem('token');
 
   // Estados para el formulario
   const [formData, setFormData] = useState({
@@ -42,13 +41,7 @@ const ModificarProducto = () => {
   useEffect(() => {
     const cargarProducto = async () => {
       try {
-        const response = await fetch(`${UrlApiBaseProductos}/productos/${id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          }
-        });
+        const response = await tiendaRequest(`/productos/${id}`, { auth: true });
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -78,7 +71,7 @@ const ModificarProducto = () => {
     if (id) {
       cargarProducto();
     }
-  }, [id, UrlApiBaseProductos, accessToken]);
+  }, [id]);
 
   // Handlers para el formulario
   const handleChange = (e) => {
@@ -104,13 +97,10 @@ const ModificarProducto = () => {
     };
 
     try {
-      const response = await fetch(`${UrlApiBaseProductos}/productos/${id}`, {
+      const response = await tiendaRequest(`/productos/${id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify(payload)
+        auth: true,
+        body: payload
       });
 
       const data = await response.json();
@@ -156,11 +146,9 @@ const ModificarProducto = () => {
     });
 
     try {
-      const response = await fetch(`${UrlApiBaseProductos}/productos/${productoId}/imagenes`, {
+      const response = await tiendaRequest(`/productos/${productoId}/imagenes`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        },
+        auth: true,
         body: payloadImagenes
       });
 

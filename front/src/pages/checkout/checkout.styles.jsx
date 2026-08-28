@@ -14,13 +14,45 @@ export const PaymentGrid = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 540px;
+  max-width: 900px;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
   padding: 24px;
   box-sizing: border-box;
   gap: 20px;
+`;
+
+export const CheckoutColumns = styled.div`
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
+  gap: 2rem;
+  @media (max-width: 700px) { grid-template-columns: 1fr; }
+`;
+
+export const OrderSummary = styled.section`
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  h2 { margin: 0 0 1rem; font-size: 1.05rem; color: #1e293b; }
+  ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+  li { display: flex; justify-content: space-between; gap: 0.75rem; color: #475569; font-size: 0.9rem; }
+  li strong { color: #1e293b; }
+`;
+
+export const CheckoutError = styled.p`
+  padding: 0.75rem;
+  margin: 0;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 0.9rem;
+`;
+
+export const ProcessingMessage = styled.p`
+  margin: 0;
+  color: #0369a1;
+  font-size: 0.9rem;
 `;
 
 export const AmountText = styled.p`

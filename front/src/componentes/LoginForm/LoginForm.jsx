@@ -1,30 +1,24 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { LoginFormContainer, LoginFormStyle } from "./LoginForm.styles"
 import { useNavigate } from "react-router-dom"
+import { usuariosRequest } from "../../services/api/apiClient"
+import { useAuth } from "../../services/auth/useAuth"
 
 export const LoginForm = () => {
 
-    const UrlApiBaseUsuarios = import.meta.env.VITE_API_URL_USUARIOS
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState(() => localStorage.getItem("email") || '')
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('')
-    const [recordarEmail, setRecordarEmail] = useState(false)
+    const [enviando, setEnviando] = useState(false)
+    const [recordarEmail, setRecordarEmail] = useState(() => Boolean(localStorage.getItem("email")))
     const navigate = useNavigate()
-
-    /* Obtener email guardado */
-    useEffect(() => {
-        const emailGuardado = localStorage.getItem("email")
-        
-
-        if (emailGuardado) {
-            setEmail(emailGuardado)
-            setRecordarEmail(true)
-            }
-        }, [])
+    const { login } = useAuth()
 
     /* Enviar formulario para loguear */
     const EnviarLoginForm = async (e) => {
         e.preventDefault()
+        setEnviando(true)
+        setMessage('')
 
         const datos = new FormData()
 
@@ -32,30 +26,33 @@ export const LoginForm = () => {
         datos.append('password', password)
         
 
-        const response = await fetch(`${UrlApiBaseUsuarios}/login`, {
-            method: 'POST',
-            body: datos
-        })
+        try {
+            const response = await usuariosRequest('/login', {
+                method: 'POST',
+                body: datos
+            })
 
-        if (response.ok) {
-            const data = await response.json()
+            if (response.ok) {
+                const data = await response.json()
 
-            console.log(data)
+                if (recordarEmail) {
+                    localStorage.setItem("email", email)
+                } else {
+                    localStorage.removeItem("email")
+                }
 
-            if (recordarEmail) {
-                localStorage.setItem("email", email)
+                await login(data.access)
+                navigate('/')
+
             } else {
-                localStorage.removeItem("email")
+                const data = await response.json().catch(() => ({}))
+                setMessage(data.detail || 'No se pudo iniciar sesión.')
             }
-
-            localStorage.setItem("token", data.access)
-            setMessage('Login exitoso')
-            navigate('/')
-
-            
-        }else{ 
-            const data = await response.json()
-            setMessage(data.detail)            
+        } catch (error) {
+            console.error('Error de red al iniciar sesión:', error)
+            setMessage('Error de conexión con el servidor.')
+        } finally {
+            setEnviando(false)
         }
     }
     
@@ -72,10 +69,10 @@ export const LoginForm = () => {
                     <input type='checkbox' checked={recordarEmail} onChange={(e) => setRecordarEmail(e.target.checked)}></input>
                     Recordar email
                 </label>
-                <button type="submit">Iniciar sesion</button>
+                <button type="submit" disabled={enviando}>{enviando ? 'Ingresando...' : 'Iniciar sesion'}</button>
             </LoginFormStyle>
             {message && <p>{message}</p>}
-            <a href=''>Recuperar contraseña</a>
+            <span>Recuperar contraseña próximamente</span>
         </LoginFormContainer>
     )
 

@@ -20,16 +20,16 @@ async def get_all_categorias(session: SessionDep):
 @router.get('/categorias/{categoria_id}', response_model=CategoriaPublic)
 async def get_unique_categoria(session: SessionDep, categoria_id:int):
     try:
-        categoria = categoria_service.consultar_unica_categoria(session=session, id=id)
+        categoria = categoria_service.consultar_unica_categoria(session=session, id=categoria_id)
         return categoria
     except CategoriaNoEncontradaError as e:
         raise HTTPException(status_code=404, detail=e.message)
 
 
 @router.delete('/categorias/{categoria_id}', dependencies=[Depends(require_admin)])
-async def delete_categoria(session: SessionDep, id:int):
+async def delete_categoria(session: SessionDep, categoria_id:int):
     try:
-        categoria_service.eliminar_categoria(session=session, id=id)
+        return categoria_service.eliminar_categoria(session=session, id=categoria_id)
     except CategoriaNoEncontradaError as e:
         raise HTTPException(status_code=404, detail=e.message) 
 
@@ -44,9 +44,9 @@ async def post_categoria(session: SessionDep, categoria: CategoriaCreate):
 
 
 @router.patch('/categorias/{categoria_id}', response_model=CategoriaPublic, dependencies=[Depends(require_admin)])
-async def patch_categoria(session: SessionDep, categoria: CategoriaUpdate, id:int):
+async def patch_categoria(session: SessionDep, categoria: CategoriaUpdate, categoria_id:int):
     try:
-        categoria_actualizada = categoria_service.modificar_categoria(session=session, categoria=categoria, id=id)
+        categoria_actualizada = categoria_service.modificar_categoria(session=session, categoria=categoria, id=categoria_id)
         return categoria_actualizada
     except CategoriaNoEncontradaError as e:
         raise HTTPException(status_code=400, detail=e.message)

@@ -31,8 +31,8 @@ class PedidoService:
 
 
     def _validar_modificable(self, pedido: Pedido) -> None:
-        if pedido.estado in (EstadoPedido.entregado, EstadoPedido.cancelado):
-            raise HTTPException(status_code=400, detail='No se puede modificar un pedido entregado o cancelado')
+        if pedido.estado in (EstadoPedido.entregado, EstadoPedido.cancelado, EstadoPedido.rechazado):
+            raise HTTPException(status_code=400, detail='No se puede modificar un pedido entregado, rechazado o cancelado')
 
 
     def _aplicar_cambios(self, pedido: Pedido, pedido_update: PedidoUpdate) -> None:

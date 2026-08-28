@@ -6,7 +6,7 @@ import useEliminarCategoria from "../../../../hooks/categorias/useEliminarCatego
 
 const TablaCategorias = ({ sortConfig }) => {
 
-    const { eliminarCategoria, statusErrorEliminar } = useEliminarCategoria()
+    const { eliminarCategoria, statusError: statusErrorEliminar } = useEliminarCategoria()
     const { categorias, statusError, cargando } = useCategorias()
     const { datosOrdenados } = useOrdenamiento(categorias, sortConfig);
     if (statusError === 401) {
@@ -19,6 +19,10 @@ const TablaCategorias = ({ sortConfig }) => {
     if (cargando) {
         return <div>Cargando categorias...</div>;
     } 
+
+    if (statusErrorEliminar) {
+        return <div>Error al eliminar categoria (Código: {statusErrorEliminar})</div>;
+    }
         
 
     return (
@@ -29,8 +33,9 @@ const TablaCategorias = ({ sortConfig }) => {
                     <li key={categoria.id}>
                         <NavLink to={`/admin/categorias/${categoria.id}`}>
                             <p>{categoria.nombre}</p>
+                            <p>{categoria.estado ? 'Activa' : 'Inactiva'}</p>
                         </NavLink>
-                        <BotonEliminar onClick={async () => {await eliminarCategoria(categoria.id)}}>🗑</BotonEliminar>
+                        <BotonEliminar onClick={async () => {if (window.confirm(`¿Eliminar ${categoria.nombre}?`)) await eliminarCategoria(categoria.id)}}>🗑</BotonEliminar>
                     </li>
                     ))}
                 </ul>

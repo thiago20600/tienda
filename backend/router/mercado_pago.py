@@ -64,6 +64,8 @@ async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, curr
         })
     print("payment_method_type recibido:", checkout_data.payment_method_type)
 
+
+    print("llega hasta linea 68")
     MAPEO_PAYMENT_TYPE = {
     'prepaid_card': 'credit_card',
     'credit_card': 'credit_card',
@@ -73,13 +75,14 @@ async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, curr
     'wallet': 'wallet',
     }
 
+    print("llega hasta linea 78")
     payment_method_type_normalizado = MAPEO_PAYMENT_TYPE.get(
         checkout_data.payment_method_type,
         checkout_data.payment_method_type
     )
 
 
-
+    print("llega hasta linea 85")
     payload_mp = {
         'type': 'online',
         'external_reference': pedido.numero_pedido,
@@ -113,7 +116,7 @@ async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, curr
                 'street_number': checkout_data.numero_calle,
                 'state': checkout_data.provincia,
                 'city': checkout_data.localidad,
-                'complement': checkout_data.detalle_direccion
+                'complement': checkout_data.detalle_direccion or "N/A"
             }
         },
         'shipment': {
@@ -123,7 +126,7 @@ async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, curr
                     'street_number': checkout_data.numero_calle,
                     'state': checkout_data.provincia,
                     'city': checkout_data.localidad,
-                    'complement': checkout_data.detalle_direccion
+                    'complement': checkout_data.detalle_direccion or "N/A"
             }
         },
         'total_amount': str(pedido.precio_total),
@@ -140,19 +143,26 @@ async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, curr
                     }
         }
     }
-
+    print("llega hasta linea 146")
     async with httpx.AsyncClient() as client:
         response = await client.post(url_mp, json=payload_mp, headers=headers)
 
+
+    print("llega hasta linea 149")
     if response.status_code not in [200, 201]:
         pedido.estado = EstadoPedido.rechazado
         session.add(pedido)
         session.commit()
+        print("llega hasta linea 156")
         try:
+            print("llega hasta linea 158")
             error_data = response.json()
         except Exception:
+            print("llega hasta linea 160")
             error_data = {"message": "Error al procesar el pago en la pasarela"}
 
+        print("llega hasta linea 164")
+        print("ERROR DE MERCADOPAGO:", error_data)
         raise HTTPException(
             status_code=response.status_code,
             detail=error_data

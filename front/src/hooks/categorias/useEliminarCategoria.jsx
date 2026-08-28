@@ -1,9 +1,8 @@
 import { useState } from "react"
+import { tiendaRequest } from "../../services/api/apiClient"
 
 export default function useEliminarCategoria () {
 
-    const accessToken = localStorage.getItem('token')
-    const UrlApiBaseProductos = import.meta.env.VITE_API_URL
     const [statusError, setStatusError] = useState(null)
 
 
@@ -11,22 +10,21 @@ export default function useEliminarCategoria () {
         
 
         try{
-            response = await fetch(`${UrlApiBaseProductos}/categorias/${id}`, {
+            const response = await tiendaRequest(`/categorias/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Content-type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                }
+                auth: true
             })
 
             if (!response.ok){
                 setStatusError(response.status)
+                return null
             }
 
             const data = await response.json()
             return data
 
-        }catch{
+        }catch(error){
+            console.error('Error eliminando categoria:', error)
             setStatusError(0)
             return null
         }

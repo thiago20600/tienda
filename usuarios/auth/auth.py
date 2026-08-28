@@ -38,3 +38,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         
     except JWTError:
         raise credentials_exception
+
+
+async def require_admin(current_user = Depends(get_current_user)):
+    if current_user['rol'] != 'admin':
+        raise HTTPException(status_code=403, detail='Sin permisos')
+    return current_user
