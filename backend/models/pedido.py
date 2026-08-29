@@ -39,6 +39,7 @@ class Pedido(SQLModel, table=True):
     idempotency_key: str = Field(default_factory=lambda: str(uuid.uuid4()))
     mp_payment_id: str | None = Field(default=None)
     mp_response_raw: dict | None = Field(default=None, sa_column=Column(JSONB))
+    
 
 
 class DetallePedido(SQLModel, table=True):

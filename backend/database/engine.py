@@ -3,12 +3,14 @@ from config import settings
 from typing import Annotated
 from fastapi import Depends
 from sqlmodel import SQLModel, Session, create_engine
+from database.migrations import migrate_schema
 
 
 engine = create_engine(settings.DB_URL)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+    migrate_schema(engine)
 
 
 def get_session():

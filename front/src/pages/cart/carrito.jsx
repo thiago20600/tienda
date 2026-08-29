@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { CarritoNotFound, DeleteButton, CarritoContainer, ListaItemsContainer, ItemContainer, ContenidoCarrito, ErrorMessage, StyledLink, CarritoResumen, PrecioTotal, BotonContinuarCompra, TituloCarrito, ImagenProducto, InformacionProducto, NombreProducto, DetalleProducto, AccionesProducto, PreciosProducto } from "./carrito.styles"
 import ContadorCantidad from "../../componentes/ContadorCantidad/ContadorCantidad"
+import PrecioProducto from "../../componentes/PrecioProducto/PrecioProducto"
 import useCarrito from "../../hooks/cart/useCarrito"
 import { tiendaRequest } from "../../services/api/apiClient"
 
@@ -103,7 +104,8 @@ const Carrito = () => {
                                         <StyledLink to={`/productos/${item.producto_id}`}>
                                             <NombreProducto>{item.producto.nombre}</NombreProducto>
                                         </StyledLink>
-                                        <DetalleProducto>Precio unitario: {formatearPrecio(item.precio_unitario)}</DetalleProducto>
+                                        <DetalleProducto>Precio unitario</DetalleProducto>
+                                        <PrecioProducto precio={item.producto.precio} precioDescuento={item.precio_unitario} compacto />
                                         <DetalleProducto>Stock disponible: {item.producto.stock}</DetalleProducto>
                                     </InformacionProducto>
                                     <AccionesProducto>

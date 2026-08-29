@@ -2,7 +2,8 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from services.CarritoItemService import CarritoItemService
 from services.ProductoService import ProductoService
-from exceptions.carrito import CarritoNoEncontradoError, ItemNoEncontradoError, StockInsuficienteError
+from exceptions.carrito import CarritoNoEncontradoError, ItemNoEncontradoError
+from exceptions.producto import ProductoNoEncontradoError, StockInsuficienteError
 from services.CarritoService import CarritoService
 from sqlmodel import select
 from database.engine import SessionDep
@@ -11,7 +12,6 @@ from models.pedido import DetallePedido, MetodoPago, Pedido
 from models.productos import Producto
 from utils.auth import get_current_user
 from utils.pedido import crear_pedido
-from exceptions.producto import ProductoNoEncontradoError
 
 router = APIRouter()
 

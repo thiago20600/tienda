@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone
 from enum import Enum
 from models.productos import ProductCreate, ProductUpdate, Producto
-from exceptions.producto import ProductoNoEncontradoError, StockInsuficienteError
+from exceptions.producto import ProductoNoEncontradoError, StockInsuficienteError, DescuentoNoValido
 from services.CategoriaService import CategoriaService
 from services.ImagenService import ImagenService
 from fastapi_pagination import Params
@@ -61,6 +61,10 @@ class ProductoService:
         categorias = self.categoria_service.consultar_por_id(session, producto.categoria)
 
         producto_db = Producto.model_validate(producto, update={'user_email': current_user['email'], 'categoria': categorias})
+
+        if producto_db.precio_descuento is not None:
+            self._validar_descuento(precio=producto_db.precio, precio_descuento=producto_db.precio_descuento)
+
         session.add(producto_db)
         session.commit()
         session.refresh(producto_db)
@@ -73,6 +77,10 @@ class ProductoService:
 
         if 'categoria' in update_data:
             producto.categoria = self.categoria_service.consultar_por_id(session, update_data.pop('categoria'))
+
+        if 'precio_descuento' in update_data:
+            precio = update_data.get('precio', producto.precio)
+            self._validar_descuento(precio, update_data['precio_descuento'])
 
         for key, value in update_data.items():
             setattr(producto, key, value)
@@ -115,3 +123,8 @@ class ProductoService:
         session.commit()
         session.refresh(producto)
         return producto
+
+
+    def _validar_descuento(self, precio: float, precio_descuento:float):
+        if precio < precio_descuento:
+            raise DescuentoNoValido()

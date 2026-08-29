@@ -15,3 +15,11 @@ class StockInsuficienteError(BusinessError):
             message=f"Stock insuficiente para '{producto_nombre}'. Disponible: {stock_disponible}, solicitado: {solicitado}",
             code="STOCK_INSUFICIENTE" 
         )
+
+
+class DescuentoNoValido(BusinessError):
+     def __init__(self):
+          super().__init__(
+               message="El precio del descuento no puede ser mayor al precio original",
+               code="DECUENTO_NO_VALIDO"
+          )

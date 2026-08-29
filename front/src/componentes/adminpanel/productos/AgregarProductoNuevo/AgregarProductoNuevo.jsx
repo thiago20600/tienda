@@ -8,6 +8,7 @@ const CAMPOS_FORMULARIO = [
   { name: 'nombre', label: 'Nombre *', type: 'text', required: true, placeholder: 'Ej: Remera Oversize' },
   { name: 'sku', label: 'SKU (Opcional)', type: 'number', required: false, placeholder: '10024' },
   { name: 'precio', label: 'Precio ($) *', type: 'number', step: '0.01', required: true, placeholder: '1500.50' },
+  { name: 'precio_descuento', label: 'Precio promocional ($)', type: 'number', step: '0.01', required: false, placeholder: 'Dejá vacío si no hay descuento' },
   { name: 'stock', label: 'Stock *', type: 'number', required: true, placeholder: '10' },
 ];
 
@@ -25,6 +26,7 @@ const AgregarProductoNuevo = ({ onSubmit }) => {
     categoria: [], // Guardará solo un array de IDs numericos: [1, 2]
     sku: '',
     precio: '',
+    precio_descuento: '',
     stock: '',
     descripcion: ''
   });
@@ -52,6 +54,7 @@ const AgregarProductoNuevo = ({ onSubmit }) => {
       categoria: formData.categoria, // Array de enteros: [1, 3]
       sku: formData.sku ? Number(formData.sku) : null,
       precio: parseFloat(formData.precio),
+      precio_descuento: formData.precio_descuento ? parseFloat(formData.precio_descuento) : null,
       stock: parseInt(formData.stock, 10),
       descripcion: formData.descripcion || null
     };

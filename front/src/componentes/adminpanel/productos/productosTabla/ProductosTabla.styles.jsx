@@ -74,24 +74,22 @@ export const TablaProductos = styled.div`
       font-size: 13px;
     }
 
-    /* 3. Precio */
+    /* 3. SKU */
     &:nth-of-type(3) {
-      font-weight: 600;
-      color: #009ee3;
-    }
-
-    /* 4. SKU */
-    &:nth-of-type(4) {
       color: #777777;
       font-size: 13px;
       font-family: monospace;
     }
 
-    /* 5. Stock */
-    &:nth-of-type(5) {
+    /* 4. Stock */
+    &:nth-of-type(4) {
       color: #555555;
       font-weight: 500;
     }
+  }
+
+  .product-price {
+    min-width: 0;
   }
 
   @media (max-width: 900px) {

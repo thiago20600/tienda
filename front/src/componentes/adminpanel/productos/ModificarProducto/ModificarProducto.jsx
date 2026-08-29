@@ -8,6 +8,7 @@ const CAMPOS_FORMULARIO = [
   { name: 'nombre', label: 'Nombre *', type: 'text', required: true, placeholder: 'Ej: Remera Oversize' },
   { name: 'sku', label: 'SKU (Opcional)', type: 'number', required: false, placeholder: '10024' },
   { name: 'precio', label: 'Precio ($) *', type: 'number', step: '0.01', required: true, placeholder: '1500.50' },
+  { name: 'precio_descuento', label: 'Precio promocional ($)', type: 'number', step: '0.01', required: false, placeholder: 'Dejá vacío para quitarlo' },
   { name: 'stock', label: 'Stock *', type: 'number', required: true, placeholder: '10' },
 ];
 
@@ -22,6 +23,7 @@ const ModificarProducto = () => {
     categoria: [],
     sku: '',
     precio: '',
+    precio_descuento: '',
     stock: '',
     descripcion: ''
   });
@@ -56,6 +58,7 @@ const ModificarProducto = () => {
           categoria: data.categoria?.map(cat => cat.id) || [],
           sku: data.sku || '',
           precio: data.precio || '',
+          precio_descuento: data.precio_descuento || '',
           stock: data.stock || '',
           descripcion: data.descripcion || ''
         });
@@ -92,6 +95,7 @@ const ModificarProducto = () => {
       categoria: formData.categoria,
       sku: formData.sku ? Number(formData.sku) : null,
       precio: parseFloat(formData.precio),
+      precio_descuento: formData.precio_descuento ? parseFloat(formData.precio_descuento) : null,
       stock: parseInt(formData.stock, 10),
       descripcion: formData.descripcion || null
     };

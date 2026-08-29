@@ -16,7 +16,23 @@ class CarritoService:
         carrito = session.exec(select(Carrito).where(Carrito.user_email == usuario_email, Carrito.estado == EstadoCarrito.abierto)).first()
         if not carrito:
             raise CarritoNoEncontradoError(usuario_email)
+
+        self._actualizar_precio_carrito(session=session, carrito=carrito)
         return carrito
+
+
+    def _actualizar_precio_carrito(self, session: Session, carrito: Carrito) -> None:
+        precios_actualizados = False
+        for item in carrito.items:
+            precio_actual = item.producto.precio_descuento or item.producto.precio
+            if item.precio_unitario != precio_actual:
+                item.precio_unitario = precio_actual
+                session.add(item)
+                precios_actualizados = True
+
+        if precios_actualizados:
+            session.commit()
+            session.refresh(carrito)
     
 
     def crear_carrito(self, session: Session, usuario_email: str) -> Carrito:
@@ -63,7 +79,8 @@ class CarritoService:
             item = self.carrito_item_service.consultar_item(session=session, carrito_id=carrito.id, producto_id=producto.id)
             self.carrito_item_service.actualizar_cantidad(item=item, cantidad_nueva=cantidad, operacion_item=OperacionCantidadItem.AUMENTAR)
         except ItemNoEncontradoError:
-            self.carrito_item_service.crear_item(session=session, carrito_id=carrito.id, producto_id=producto.id, precio_unitario=producto.precio, cantidad=cantidad)
+            precio_unitario = producto.precio_descuento or producto.precio
+            self.carrito_item_service.crear_item(session=session, carrito_id=carrito.id, producto_id=producto.id, precio_unitario=precio_unitario, cantidad=cantidad)
 
         session.commit()
         session.refresh(carrito)

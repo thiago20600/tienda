@@ -53,3 +53,25 @@ export const ProductLink = styled(Link)`
 
     display: block;
 `
+
+export const NoDisponibleBar = styled.div`
+    width: 120%;
+    margin-left: -10%;
+    background-color: #dc3545;
+    color: white;
+    text-align: center;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+`;
+
+export const UltimasUnidadesBar = styled.div`
+    width: 120%;
+    margin-left: -10%;
+    background-color: #ffc107;
+    color: #212529;
+    text-align: center;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+`;

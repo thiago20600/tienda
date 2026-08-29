@@ -6,6 +6,10 @@ from models.pedido import DetallePedido, MetodoPago, Pedido
 
 
 def crear_pedido(session: SessionDep, carrito: Carrito, metodo_pago: MetodoPago, user_email: str):
+    for item in carrito.items:
+        item.precio_unitario = item.producto.precio_descuento or item.producto.precio
+        session.add(item)
+
     total = sum(item.cantidad * item.precio_unitario for item in carrito.items)
 
     pedido = Pedido(

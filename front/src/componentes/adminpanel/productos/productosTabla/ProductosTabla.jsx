@@ -5,6 +5,7 @@ import { TablaProductos, BotonEliminar, BotonEstado, MensajeTabla } from "./Prod
 import useBorrarProducto from '../../../../hooks/productos/useBorrarProducto'
 
 import useOrdenamiento from "../../../../hooks/useOrdenar";
+import PrecioProducto from "../../../PrecioProducto/PrecioProducto";
 
 
 const ProductosTabla = ({ productos, cargando, statusError, sortConfig }) => {
@@ -78,7 +79,7 @@ const ProductosTabla = ({ productos, cargando, statusError, sortConfig }) => {
                   ? producto.categoria.map((cat) => (typeof cat === 'object' ? cat.nombre : cat)).join(', ')
                   : producto.categoria?.nombre || producto.categoria}
               </p>
-              <p>${producto.precio}</p>
+              <div className="product-price"><PrecioProducto precio={producto.precio} precioDescuento={producto.precio_descuento} compacto /></div>
               <p>{producto.sku}</p>
               <p>{producto.stock} un.</p>
               <BotonEstado

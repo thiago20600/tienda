@@ -8,13 +8,6 @@ class ItemNoEncontradoError(BusinessError):
             code="ITEM_NOT_FOUND" 
         )
 
-class StockInsuficienteError(BusinessError):
-    def __init__(self, producto_nombre: str, stock_disponible: int, solicitado: int):
-        super().__init__(
-            message=f"Stock insuficiente para '{producto_nombre}'. Disponible: {stock_disponible}, solicitado: {solicitado}",
-            code="STOCK_INSUFICIENTE" 
-        )
-
 class CarritoNoEncontradoError(BusinessError):
     def __init__(self, usuario_identificador: str | int):
         super().__init__(

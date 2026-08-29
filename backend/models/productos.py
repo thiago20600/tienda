@@ -20,6 +20,7 @@ class Producto(SQLModel, table=True):
     imagen_url: list[str] | None = Field(default_factory=list, sa_column=Column(JSON), max_length=5)
     producto_activo: bool = Field(default=True)
     eliminado_at: datetime | None = Field(default=None)
+    precio_descuento: float | None = Field(gt=0, index=True)
 
 
 
@@ -33,6 +34,7 @@ class ProductoPublic(SQLModel):
     descripcion: str | None = None
     imagen_url: list[str] = []
     producto_activo: bool
+    precio_descuento: float | None = None
 
 
 class ProductCreate(SQLModel):
@@ -40,6 +42,7 @@ class ProductCreate(SQLModel):
     categoria: list[int]
     sku: int | None
     precio: float
+    precio_descuento: float | None = None
     stock: int
     descripcion: str | None
 
@@ -54,3 +57,4 @@ class ProductUpdate(SQLModel):
     descripcion: str | None = None
     imagen_url: list[str] | None = None
     producto_activo: bool | None = None
+    precio_descuento: float | None = None
