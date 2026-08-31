@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import useUsuariosAdmin from '../../../hooks/usuarios/useUsuariosAdmin';
 import usePedidosAdmin from '../../../hooks/pedidos/usePedidosAdmin';
 import CambiarPagina from '../../../componentes/adminpanel/tablas/CambiarPagina/CambiarPagina.jsx';
+import useDebounce from '../../../../utils/useDebounce';
 import {
   UsuariosContainer,
   UsuariosTable,
@@ -10,7 +11,9 @@ import {
   MensajeUsuarios,
   RolUsuario,
   PedidosUsuario,
-  PedidoUsuarioLink
+  PedidoUsuarioLink,
+  BusquedaContainer,
+  BusquedaInput
 } from './UsuariosAdmin.styles';
 
 const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-AR');
@@ -21,8 +24,11 @@ const UsuariosAdmin = () => {
   const [paginaUsuarios, setPaginaUsuarios] = useState(1);
   const [paginaPedidosUsuario, setPaginaPedidosUsuario] = useState(1);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
+  const [busqueda, setBusqueda] = useState('');
+  const busquedaDebounce = useDebounce(busqueda, 500);
 
   const { usuarios, cargando, statusError, page: pageUsuarios, pages: pagesUsuarios, cambiarPagina: cambiarPaginaUsuarios } = useUsuariosAdmin({
+    q: busquedaDebounce,
     page: paginaUsuarios,
     size: TAMANO_PAGINA_USUARIOS,
   });
@@ -40,6 +46,10 @@ const UsuariosAdmin = () => {
     setPaginaPedidosUsuario(1);
   }, [usuarioSeleccionado]);
 
+  useEffect(() => {
+    setPaginaUsuarios(1);
+  }, [busquedaDebounce]);
+
   if (cargando) return <MensajeUsuarios>Cargando usuarios...</MensajeUsuarios>;
   if (statusError) return <MensajeUsuarios $error>Error al cargar usuarios (código: {statusError}).</MensajeUsuarios>;
   if (!usuarios.length) return <MensajeUsuarios>No hay usuarios registrados.</MensajeUsuarios>;
@@ -47,6 +57,14 @@ const UsuariosAdmin = () => {
   return (
     <UsuariosContainer>
       <h1>Usuarios</h1>
+      <BusquedaContainer>
+        <BusquedaInput
+          type="text"
+          placeholder="Buscar por email..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+      </BusquedaContainer>
       <UsuariosTable>
         <thead>
           <tr><th>Usuario</th><th>Email</th><th>Rol</th><th>Estado</th></tr>

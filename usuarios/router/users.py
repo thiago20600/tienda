@@ -1,7 +1,7 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from database.engine import SessionDep
 from sqlmodel import Session, select
-from models.users import User, UserCreate, UserPublic, UserUpdate
+from models.users import User, Rol, UserCreate, UserPublic, UserUpdate
 from bcrypt import hashpw, gensalt
 from auth.auth import get_current_user, require_admin
 from utils.mail import send_mail_innactive_account
@@ -20,9 +20,17 @@ async def get_users(session: SessionDep, q: str | None = None, params: Params = 
 
 @router.post('/users', response_model=UserPublic)
 async def post_user(session: SessionDep, user: UserCreate, background_tasks: BackgroundTasks):
+    rol_cliente = session.exec(select(Rol).where(Rol.nombre == 'cliente')).first()
+
+    if not rol_cliente:
+        raise HTTPException(status_code=500, detail='Rol cliente no encontrado en la base de datos')
+
     db_user = User.model_validate(user)
     hash_pw = hashpw(db_user.password.encode('utf-8'), gensalt()).decode('utf-8')
     db_user.password = hash_pw
+    db_user.rol = 'cliente'
+    db_user.rol_id = rol_cliente.id
+
     session.add(db_user)
     session.commit()
     session.refresh(db_user)

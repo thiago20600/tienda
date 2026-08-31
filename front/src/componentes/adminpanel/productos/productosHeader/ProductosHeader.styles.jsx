@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export const HeaderContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
   width: 100%;
   padding: 1.5rem 2rem;
@@ -18,7 +18,7 @@ export const ActionsGroup = styled.div`
   gap: 12px;
 `;
 
-// Botón secundario en formato NavLink
+
 export const ImportarProductos = styled(NavLink)`
   display: inline-flex;
   align-items: center;
@@ -45,7 +45,7 @@ export const ImportarProductos = styled(NavLink)`
   }
 `;
 
-// Botón primario en formato NavLink
+
 export const AgregarProducto = styled(NavLink)`
   display: inline-flex;
   align-items: center;

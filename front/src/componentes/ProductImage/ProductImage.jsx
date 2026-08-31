@@ -1,4 +1,4 @@
-import { ImageContainer, ProductImageElement } from "./ProductImageStyles";
+import { ImageContainer, ProductImageElement, PlaceholderImage } from "./ProductImageStyles";
 import { useState } from "react";
 
 const ProductImage = ({ imagenes }) => {
@@ -7,7 +7,7 @@ const ProductImage = ({ imagenes }) => {
     const ultimoIndice = (imagenes?.length || 0) - 1
 
     if (!imagenes || imagenes.length === 0) {
-        return <img src="https://res.cloudinary.com/dfnnundpn/image/upload/v1781797763/sistema_1/mirsnducpj6tdy5hjewy.jpg" style={{width: '250px'}}></img>
+        return <PlaceholderImage src="https://res.cloudinary.com/dfnnundpn/image/upload/v1781797763/sistema_1/mirsnducpj6tdy5hjewy.jpg" alt="Imagen no disponible" />
     }
 
     return (

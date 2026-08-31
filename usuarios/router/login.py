@@ -22,6 +22,7 @@ async def login(session:SessionDep, form_data: Annotated[OAuth2PasswordRequestFo
         raise HTTPException(status_code=403, detail='Cuenta no activada')
 
     if checkpw(password=form_data.password.encode('utf-8') ,hashed_password=db_user.password.encode('utf-8')):
-        return {'access': create_access_token(db_user.email, db_user.rol)}
+        rol_nombre = db_user.rol_obj.nombre if db_user.rol_obj else db_user.rol
+        return {'access': create_access_token(db_user.email, rol_nombre)}
     else:
         raise HTTPException(status_code=403, detail='Error de autenticacion')

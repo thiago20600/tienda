@@ -23,3 +23,9 @@ export const ProductImageElement = styled.img`
     border-radius: 8px;
 
 `
+
+export const PlaceholderImage = styled.img`
+    width: 250px;
+    height: auto;
+    object-fit: contain;
+`;

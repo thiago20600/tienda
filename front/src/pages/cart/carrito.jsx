@@ -20,7 +20,7 @@ const Carrito = () => {
 
     if (statusError === 404) {
         return (
-            <CarritoNotFound style={{ textAlign: 'center', padding: '40px' }}>
+            <CarritoNotFound>
                 <h2>🛒 Carrito no encontrado</h2>
                 <p>No pudimos encontrar tu carrito.</p>
                 <button onClick={() => navigate('/')}>Ir a la tienda</button>

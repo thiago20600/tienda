@@ -88,3 +88,21 @@ export const MensajeUsuarios = styled.p`
   padding: 2rem;
   color: ${(props) => props.$error ? '#b91c1c' : '#64748b'};
 `;
+
+export const BusquedaContainer = styled.div`
+  margin-bottom: 20px;
+`;
+
+export const BusquedaInput = styled.input`
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 300px;
+  
+  &:focus {
+    outline: none;
+    border-color: #009ee3;
+    box-shadow: 0 0 0 2px rgba(0, 158, 227, 0.1);
+  }
+`;

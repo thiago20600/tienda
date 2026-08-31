@@ -27,14 +27,6 @@ const PedidosAdmin = () => {
 
     return (
         <div>
-            <TablaHeader
-                areasFiltrar={[
-                    { key: 'numero_pedido', label: 'Número' },
-                    { key: 'estado', label: 'Estado' },
-                    { key: 'metodo_pago', label: 'Método de pago' },
-                    { key: 'precio_total', label: 'Precio total' }
-                ]}
-            />
             <FiltrosPedidos filtros={filtros} onFiltroChange={cambiarFiltro} />
             <PedidosTabla pedidos={pedidos} cargando={cargando} statusError={statusError} />
             <CambiarPagina paginaActual={pagina} totalPaginas={totalPaginas} onPageChange={(nuevaPagina) => {
