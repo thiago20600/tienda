@@ -5,39 +5,66 @@ import { useState } from "react";
 import useProductosAdmin from "../../../hooks/productos/useProductosAdmin.jsx";
 import CambiarPagina from "../../../componentes/adminpanel/tablas/CambiarPagina/CambiarPagina.jsx";
 import FiltrosProductosAdmin from "../../../componentes/adminpanel/productos/FiltrosProductosAdmin";
+import useDebounce from "../../../../utils/useDebounce";
 
 const ProductosAdmin = () => {
-  const filtroProductos = [
-    { key: 'nombre', label: 'Nombre' },
-    { key: 'precio', label: 'Precio' },
-    { key: 'stock', label: 'Stock' },
-    { key: 'sku', label: 'Sku' }
-  ];
-
-  const [sortConfig, setSortConfig] = useState({ campo: null, direccion: 'asc' });
-  const [filtros, setFiltros] = useState({ q: '', categoriaId: '', estado: '' });
-
-
-  const {productos, cargando, statusError, page, pages, cambiarPagina} = useProductosAdmin(filtros);
-  const productosFiltrados = productos.filter((producto) => {
-    if (filtros.estado === 'activo') return producto.producto_activo;
-    if (filtros.estado === 'inactivo') return !producto.producto_activo;
-    return true;
+  const [pagina, setPagina] = useState(1);
+  const [filtros, setFiltros] = useState({
+    q: '',
+    categoriaId: '',
+    estado: '',
+    precioMin: '',
+    precioMax: '',
+    stockMin: '',
+    stockMax: '',
+    sku: ''
   });
+  const [ordenamiento, setOrdenamiento] = useState({ campo: null, direccion: 'asc' });
+  
+  const qDebounce = useDebounce(filtros.q, 500);
+
+  const { productos, cargando, statusError, page, pages, cambiarPagina } = useProductosAdmin({
+    q: qDebounce,
+    categoriaId: filtros.categoriaId,
+    estado: filtros.estado,
+    precioMin: filtros.precioMin,
+    precioMax: filtros.precioMax,
+    stockMin: filtros.stockMin,
+    stockMax: filtros.stockMax,
+    sku: filtros.sku,
+    ordenarPor: ordenamiento.campo,
+    orden: ordenamiento.direccion,
+    page: pagina,
+    size: 10
+  });
+
+  const handleFiltroChange = (campo, valor) => {
+    setFiltros((actuales) => ({ ...actuales, [campo]: valor }));
+    setPagina(1);
+  };
+
+  const handleOrdenamiento = (configuracion) => {
+    setOrdenamiento(configuracion);
+    setPagina(1);
+  };
 
   return (
     <div>
       <ProductosHeader />
-      <FiltrosProductosAdmin filtros={filtros} onFiltroChange={(campo, valor) => {
-        setFiltros((actuales) => ({ ...actuales, [campo]: valor }));
-        if (campo !== 'estado') cambiarPagina(1);
+      <FiltrosProductosAdmin filtros={filtros} onFiltroChange={handleFiltroChange} />
+      <TablaHeader areasFiltrar={[
+        { key: 'nombre', label: 'Nombre' },
+        { key: 'precio', label: 'Precio' },
+        { key: 'stock', label: 'Stock' },
+        { key: 'sku', label: 'Sku' }
+      ]} onSortChange={handleOrdenamiento} />
+
+      <ProductosTabla productos={productos} cargando={cargando} statusError={statusError} />
+
+      <CambiarPagina paginaActual={pagina} totalPaginas={pages} onPageChange={(nuevaPagina) => {
+        setPagina(nuevaPagina);
+        cambiarPagina(nuevaPagina);
       }} />
-      <TablaHeader areasFiltrar={filtroProductos} onSortChange={setSortConfig} />
-      
-
-      <ProductosTabla productos={productosFiltrados} cargando={cargando} statusError={statusError} sortConfig={sortConfig}/>
-
-      <CambiarPagina paginaActual={page} totalPaginas={pages} onPageChange={cambiarPagina}/>
     </div>
   );
 };

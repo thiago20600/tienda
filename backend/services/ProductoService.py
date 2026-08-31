@@ -29,19 +29,101 @@ class ProductoService:
         return producto
 
 
-    def listar_productos(self, session: Session, q: str | None = None, solo_activos: bool = True, incluir_eliminados: bool = False, params: Params | None = None, categoria_id: int | None = None):
+    def listar_productos(
+        self,
+        session: Session,
+        q: str | None = None,
+        estado: bool | None = None,
+        precio_min: float | None = None,
+        precio_max: float | None = None,
+        stock_min: int | None = None,
+        stock_max: int | None = None,
+        sku: int | None = None,
+        categoria_id: int | None = None,
+        ordenar_por: str | None = None,
+        orden: str = 'asc',
+        solo_activos: bool = True,
+        incluir_eliminados: bool = False,
+        params: Params | None = None
+    ):
         query = select(Producto)
+
 
         if not incluir_eliminados:
             query = query.where(Producto.eliminado_at == None)
-        if solo_activos:
+
+        if solo_activos and estado is None:
             query = query.where(Producto.producto_activo == True)
+
+        if estado is not None:
+            query = self._aplicar_filtro_estado(query, estado)
+
         if q is not None:
-            query = query.where(Producto.nombre.ilike(f'%{q}%'))
+            query = self._aplicar_filtro_nombre(query, q)
+
+        if precio_min is not None or precio_max is not None:
+            query = self._aplicar_filtro_precio(query, precio_min, precio_max)
+
+        if stock_min is not None or stock_max is not None:
+            query = self._aplicar_filtro_stock(query, stock_min, stock_max)
+
+        if sku is not None:
+            query = self._aplicar_filtro_sku(query, sku)
+
         if categoria_id is not None:
-            query = query.join(Producto.categoria).where(Categoria.id == categoria_id)
+            query = self._aplicar_filtro_categoria(query, categoria_id)
+
+        # Aplicar ordenamiento
+        if ordenar_por is not None:
+            query = self._aplicar_ordenamiento(query, ordenar_por, orden)
 
         return paginate(session, query, params)
+
+
+    def _aplicar_filtro_estado(self, query, estado: bool):
+        return query.where(Producto.producto_activo == estado)
+
+
+    def _aplicar_filtro_nombre(self, query, q: str):
+        return query.where(Producto.nombre.ilike(f'%{q}%'))
+
+
+    def _aplicar_filtro_precio(self, query, precio_min: float | None, precio_max: float | None):
+        if precio_min is not None:
+            query = query.where(Producto.precio >= precio_min)
+        if precio_max is not None:
+            query = query.where(Producto.precio <= precio_max)
+        return query
+
+
+    def _aplicar_filtro_stock(self, query, stock_min: int | None, stock_max: int | None):
+        if stock_min is not None:
+            query = query.where(Producto.stock >= stock_min)
+        if stock_max is not None:
+            query = query.where(Producto.stock <= stock_max)
+        return query
+
+
+    def _aplicar_filtro_sku(self, query, sku: int):
+        return query.where(Producto.sku == sku)
+
+
+    def _aplicar_filtro_categoria(self, query, categoria_id: int):
+        return query.join(Producto.categoria).where(Categoria.id == categoria_id)
+
+
+    def _aplicar_ordenamiento(self, query, ordenar_por: str, orden: str = 'asc'):
+        campos_validos = {'nombre', 'precio', 'stock', 'sku'}
+        
+        if ordenar_por not in campos_validos:
+            return query
+
+        campo = getattr(Producto, ordenar_por)
+        
+        if orden.lower() == 'desc':
+            return query.order_by(campo.desc())
+        else:
+            return query.order_by(campo.asc())
 
 
     def actualizar_stock(self, producto: Producto, cantidad: int, operacion: OperacionStock) -> Producto:
@@ -78,7 +160,7 @@ class ProductoService:
         if 'categoria' in update_data:
             producto.categoria = self.categoria_service.consultar_por_id(session, update_data.pop('categoria'))
 
-        if 'precio_descuento' in update_data:
+        if 'precio_descuento' in update_data and update_data['precio_descuento'] is not None:
             precio = update_data.get('precio', producto.precio)
             self._validar_descuento(precio, update_data['precio_descuento'])
 
@@ -125,6 +207,8 @@ class ProductoService:
         return producto
 
 
-    def _validar_descuento(self, precio: float, precio_descuento:float):
+    def _validar_descuento(self, precio: float, precio_descuento: float):
+        if precio is None or precio_descuento is None:
+            return
         if precio < precio_descuento:
             raise DescuentoNoValido()

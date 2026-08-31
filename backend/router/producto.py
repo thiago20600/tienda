@@ -20,17 +20,37 @@ producto_service = ProductoService(categoria_service, imagen_service)
 
 
 @router.get('/productos', response_model=Page[ProductoPublic])
-async def get_all_products(session: SessionDep, 
-                           q: str | None = None, 
-                           categoria_id: int | None = None,
-                           params: Params = Depends()):
+async def get_all_products(
+    session: SessionDep,
+    q: str | None = None,
+    estado: bool | None = None,
+    precio_min: float | None = None,
+    precio_max: float | None = None,
+    stock_min: int | None = None,
+    stock_max: int | None = None,
+    sku: int | None = None,
+    categoria_id: int | None = None,
+    ordenar_por: str | None = None,
+    orden: str = 'asc',
+    params: Params = Depends()
+):
     try:
-        productos = producto_service.listar_productos(session, 
-                                                      q=q, 
-                                                      solo_activos=True, 
-                                                      incluir_eliminados=False, 
-                                                      params=params, 
-                                                      categoria_id=categoria_id)
+        productos = producto_service.listar_productos(
+            session,
+            q=q,
+            estado=estado,
+            precio_min=precio_min,
+            precio_max=precio_max,
+            stock_min=stock_min,
+            stock_max=stock_max,
+            sku=sku,
+            categoria_id=categoria_id,
+            ordenar_por=ordenar_por,
+            orden=orden,
+            solo_activos=True,
+            incluir_eliminados=False,
+            params=params
+        )
         return productos
     except Exception as e:
         raise HTTPException(500, str(e))
@@ -91,14 +111,37 @@ async def agregar_imagen_producto(
     
 
 @router.get('/admin/productos', response_model=Page[ProductoPublic], dependencies=[Depends(require_admin)])
-async def get_all_products_admin(session: SessionDep, q: str | None = None, categoria_id: int | None = None, params: Params = Depends()):
+async def get_all_products_admin(
+    session: SessionDep,
+    q: str | None = None,
+    estado: bool | None = None,
+    precio_min: float | None = None,
+    precio_max: float | None = None,
+    stock_min: int | None = None,
+    stock_max: int | None = None,
+    sku: int | None = None,
+    categoria_id: int | None = None,
+    ordenar_por: str | None = None,
+    orden: str = 'asc',
+    params: Params = Depends()
+):
     try:
-        productos = producto_service.listar_productos(session, 
-                                                      q=q,
-                                                      solo_activos=False,
-                                                      incluir_eliminados=False,
-                                                      params=params,
-                                                      categoria_id=categoria_id)
+        productos = producto_service.listar_productos(
+            session,
+            q=q,
+            estado=estado,
+            precio_min=precio_min,
+            precio_max=precio_max,
+            stock_min=stock_min,
+            stock_max=stock_max,
+            sku=sku,
+            categoria_id=categoria_id,
+            ordenar_por=ordenar_por,
+            orden=orden,
+            solo_activos=False,
+            incluir_eliminados=False,
+            params=params
+        )
         return productos
     except Exception as e:
         raise HTTPException(500, str(e))

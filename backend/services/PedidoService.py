@@ -3,14 +3,42 @@ from fastapi import HTTPException
 from models.pedido import EstadoPedido, Pedido, PedidoUpdate
 from exceptions.pedido import PedidoNoEncontrado
 from sqlmodel import Session, select
+from fastapi_pagination import Params
+from fastapi_pagination.ext.sqlmodel import paginate
 
 
 class PedidoService:
 
-    def consultar_pedidos(self, session: Session, user_email: str | None = None) -> list[Pedido]:
+    def consultar_pedidos(
+        self,
+        session: Session,
+        user_email: str | None = None,
+        numero_pedido: str | None = None,
+        estado: str | None = None,
+        metodo_pago: str | None = None,
+        precio_total: str | None = None,
+        params: Params | None = None
+    ):
         query = select(Pedido)
-        if user_email:
-            query = query.where(Pedido.user_email == user_email)
+
+        if user_email is not None and user_email.strip():
+            query = query.where(Pedido.user_email.ilike(f'%{user_email.strip()}%'))
+
+        if numero_pedido is not None and numero_pedido.strip():
+            query = query.where(Pedido.numero_pedido.ilike(f'%{numero_pedido.strip()}%'))
+
+        if estado is not None and estado.strip():
+            query = query.where(Pedido.estado == estado.strip())
+
+        if metodo_pago is not None and metodo_pago.strip():
+            query = query.where(Pedido.metodo_pago == metodo_pago.strip())
+
+        if precio_total is not None and precio_total.strip():
+            query = query.where(Pedido.precio_total == float(precio_total.strip()))
+
+        if params is not None:
+            return paginate(session, query, params)
+
         return session.exec(query).all()
 
     def consultar_pedido_id(self, session: Session, id: int) -> Pedido:

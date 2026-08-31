@@ -4,11 +4,10 @@ import { tiendaRequest } from "../../../../services/api/apiClient";
 import { TablaProductos, BotonEliminar, BotonEstado, MensajeTabla } from "./ProductosTabla.styles";
 import useBorrarProducto from '../../../../hooks/productos/useBorrarProducto'
 
-import useOrdenamiento from "../../../../hooks/useOrdenar";
 import PrecioProducto from "../../../PrecioProducto/PrecioProducto";
 
 
-const ProductosTabla = ({ productos, cargando, statusError, sortConfig }) => {
+const ProductosTabla = ({ productos, cargando, statusError }) => {
   const { eliminarProducto, message } = useBorrarProducto();
   const [estadosLocales, setEstadosLocales] = useState({});
   const [productosEliminados, setProductosEliminados] = useState(new Set());
@@ -21,7 +20,6 @@ const ProductosTabla = ({ productos, cargando, statusError, sortConfig }) => {
       ...producto,
       producto_activo: estadosLocales[producto.id] ?? producto.producto_activo
     }));
-  const { datosOrdenados } = useOrdenamiento(productosActuales, sortConfig);
 
   const cambiarEstado = async (event, producto) => {
     event.preventDefault();
@@ -69,7 +67,7 @@ const ProductosTabla = ({ productos, cargando, statusError, sortConfig }) => {
       {message && <MensajeTabla $success={!message.toLowerCase().includes('error')}>{message}</MensajeTabla>}
       {estadoError && <MensajeTabla $error>{estadoError}</MensajeTabla>}
       <ul>
-        {datosOrdenados.map((producto) => (
+        {productosActuales.map((producto) => (
           <li key={producto.id}>
             <NavLink to={`/admin/productos/${producto.id}`}>
               <img src={producto.imagen_url?.[0] || '/placeholder.png'} alt={producto.nombre}/>

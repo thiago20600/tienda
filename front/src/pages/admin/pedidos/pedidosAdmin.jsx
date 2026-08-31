@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import TablaHeader from '../../../componentes/adminpanel/tablas/TablaHeader/TablaHeader.jsx';
 import CambiarPagina from '../../../componentes/adminpanel/tablas/CambiarPagina/CambiarPagina.jsx';
 import FiltrosPedidos from '../../../componentes/adminpanel/pedidos/FiltrosPedidos.jsx';
@@ -8,30 +8,17 @@ import usePedidosAdmin from '../../../hooks/pedidos/usePedidosAdmin.jsx';
 const TAMANO_PAGINA = 10;
 
 const PedidosAdmin = () => {
-    const { pedidos, cargando, statusError } = usePedidosAdmin();
-    const [sortConfig, setSortConfig] = useState({ campo: null, direccion: 'asc' });
-    const [filtros, setFiltros] = useState({ numero_pedido: '', estado: '', metodo_pago: '', precio_total: '' });
     const [pagina, setPagina] = useState(1);
+    const [filtros, setFiltros] = useState({ numero_pedido: '', estado: '', metodo_pago: '', precio_total: '' });
 
-    const pedidosFiltrados = useMemo(() => pedidos.filter((pedido) => (
-        (pedido.numero_pedido || '').toLowerCase().includes(filtros.numero_pedido.toLowerCase())
-        && (!filtros.estado || pedido.estado === filtros.estado)
-        && (!filtros.metodo_pago || pedido.metodo_pago === filtros.metodo_pago)
-        && (!filtros.precio_total || String(pedido.precio_total).includes(filtros.precio_total))
-    )), [pedidos, filtros]);
-
-    const pedidosOrdenados = useMemo(() => {
-        if (!sortConfig.campo) return pedidosFiltrados;
-        return [...pedidosFiltrados].sort((a, b) => {
-            const valorA = a[sortConfig.campo] ?? '';
-            const valorB = b[sortConfig.campo] ?? '';
-            const comparacion = String(valorA).localeCompare(String(valorB), undefined, { numeric: true });
-            return sortConfig.direccion === 'asc' ? comparacion : -comparacion;
-        });
-    }, [pedidosFiltrados, sortConfig]);
-
-    const totalPaginas = Math.max(1, Math.ceil(pedidosOrdenados.length / TAMANO_PAGINA));
-    const pedidosPagina = pedidosOrdenados.slice((pagina - 1) * TAMANO_PAGINA, pagina * TAMANO_PAGINA);
+    const { pedidos, cargando, statusError, pages: totalPaginas, cambiarPagina } = usePedidosAdmin({
+        page: pagina,
+        size: TAMANO_PAGINA,
+        numeroPedido: filtros.numero_pedido,
+        estado: filtros.estado,
+        metodoPago: filtros.metodo_pago,
+        precioTotal: filtros.precio_total,
+    });
 
     const cambiarFiltro = (campo, valor) => {
         setFiltros((actuales) => ({ ...actuales, [campo]: valor }));
@@ -47,11 +34,13 @@ const PedidosAdmin = () => {
                     { key: 'metodo_pago', label: 'Método de pago' },
                     { key: 'precio_total', label: 'Precio total' }
                 ]}
-                onSortChange={(configuracion) => { setSortConfig(configuracion); setPagina(1); }}
             />
             <FiltrosPedidos filtros={filtros} onFiltroChange={cambiarFiltro} />
-            <PedidosTabla pedidos={pedidosPagina} cargando={cargando} statusError={statusError} />
-            <CambiarPagina paginaActual={pagina} totalPaginas={totalPaginas} onPageChange={setPagina} />
+            <PedidosTabla pedidos={pedidos} cargando={cargando} statusError={statusError} />
+            <CambiarPagina paginaActual={pagina} totalPaginas={totalPaginas} onPageChange={(nuevaPagina) => {
+                setPagina(nuevaPagina);
+                cambiarPagina(nuevaPagina);
+            }} />
         </div>
     );
 };

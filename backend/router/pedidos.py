@@ -4,15 +4,32 @@ from database.engine import SessionDep
 from exceptions.pedido import PedidoNoEncontrado
 from services.PedidoService import PedidoService
 from utils.auth import require_admin
+from fastapi_pagination import Page, Params
 
 
 router = APIRouter()
 pedido_service = PedidoService()
 
 
-@router.get('/pedidos/', response_model=list[PedidoPublic], dependencies=[Depends(require_admin)])
-async def get_pedidos(session: SessionDep, user_email: str | None = None):
-    return pedido_service.consultar_pedidos(session=session, user_email=user_email)
+@router.get('/pedidos/', response_model=Page[PedidoPublic], dependencies=[Depends(require_admin)])
+async def get_pedidos(
+    session: SessionDep,
+    user_email: str | None = None,
+    numero_pedido: str | None = None,
+    estado: str | None = None,
+    metodo_pago: str | None = None,
+    precio_total: str | None = None,
+    params: Params = Depends()
+):
+    return pedido_service.consultar_pedidos(
+        session=session,
+        user_email=user_email,
+        numero_pedido=numero_pedido,
+        estado=estado,
+        metodo_pago=metodo_pago,
+        precio_total=precio_total,
+        params=params
+    )
 
 
 @router.get('/pedidos/{pedido_id}', response_model=PedidoPublic, dependencies=[Depends(require_admin)])

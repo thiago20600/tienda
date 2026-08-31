@@ -42,8 +42,8 @@ const FiltrosProductosAdmin = ({ filtros, onFiltroChange }) => {
           onChange={(event) => onFiltroChange('estado', event.target.value)}
         >
           <option value="">Todos</option>
-          <option value="activo">Activos</option>
-          <option value="inactivo">Inactivos</option>
+          <option value="true">Activos</option>
+          <option value="false">Inactivos</option>
         </FiltroSelect>
       </FiltroGrupo>
     </FiltrosProductosContainer>

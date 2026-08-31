@@ -6,14 +6,16 @@ from bcrypt import hashpw, gensalt
 from auth.auth import get_current_user, require_admin
 from utils.mail import send_mail_innactive_account
 from models.mail import EmailSchema
+from fastapi_pagination import Page, Params
+from services.UserService import UserService
 
 router = APIRouter()
+user_service = UserService()
 
 
-@router.get('/users', response_model=list[UserPublic], dependencies=[Depends(require_admin)])
-async def get_users(session: SessionDep):
-    users = session.exec(select(User)).all()
-    return users
+@router.get('/users', response_model=Page[UserPublic], dependencies=[Depends(require_admin)])
+async def get_users(session: SessionDep, q: str | None = None, params: Params = Depends()):
+    return user_service.listar_usuarios(session=session, q=q, params=params)
 
 
 @router.post('/users', response_model=UserPublic)

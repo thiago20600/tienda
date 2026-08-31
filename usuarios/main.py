@@ -5,6 +5,7 @@ from router.users import router as users
 from router.login import router as login
 from router.activate_acc import router as activate_account
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -13,6 +14,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+add_pagination(app)
 
 app.include_router(users)
 app.include_router(login)

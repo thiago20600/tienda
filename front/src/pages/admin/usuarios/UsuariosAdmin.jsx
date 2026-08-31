@@ -1,7 +1,8 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import useUsuariosAdmin from '../../../hooks/usuarios/useUsuariosAdmin';
 import usePedidosAdmin from '../../../hooks/pedidos/usePedidosAdmin';
+import CambiarPagina from '../../../componentes/adminpanel/tablas/CambiarPagina/CambiarPagina.jsx';
 import {
   UsuariosContainer,
   UsuariosTable,
@@ -13,15 +14,31 @@ import {
 } from './UsuariosAdmin.styles';
 
 const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-AR');
+const TAMANO_PAGINA_USUARIOS = 10;
+const TAMANO_PAGINA_PEDIDOS = 5;
 
 const UsuariosAdmin = () => {
-  const { usuarios, cargando, statusError } = useUsuariosAdmin();
+  const [paginaUsuarios, setPaginaUsuarios] = useState(1);
+  const [paginaPedidosUsuario, setPaginaPedidosUsuario] = useState(1);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
-  const usuarioActivo = usuarios.find(({ id }) => id === usuarioSeleccionado);
-  const { pedidos, cargando: cargandoPedidos, statusError: pedidosError } = usePedidosAdmin({
-    userEmail: usuarioActivo?.email,
-    enabled: Boolean(usuarioActivo)
+
+  const { usuarios, cargando, statusError, page: pageUsuarios, pages: pagesUsuarios, cambiarPagina: cambiarPaginaUsuarios } = useUsuariosAdmin({
+    page: paginaUsuarios,
+    size: TAMANO_PAGINA_USUARIOS,
   });
+
+  const usuarioActivo = usuarios.find(({ id }) => id === usuarioSeleccionado);
+
+  const { pedidos, cargando: cargandoPedidos, statusError: pedidosError, pages: pagesPedidos, cambiarPagina: cambiarPaginaPedidos } = usePedidosAdmin({
+    userEmail: usuarioActivo?.email,
+    enabled: Boolean(usuarioActivo),
+    page: paginaPedidosUsuario,
+    size: TAMANO_PAGINA_PEDIDOS,
+  });
+
+  useEffect(() => {
+    setPaginaPedidosUsuario(1);
+  }, [usuarioSeleccionado]);
 
   if (cargando) return <MensajeUsuarios>Cargando usuarios...</MensajeUsuarios>;
   if (statusError) return <MensajeUsuarios $error>Error al cargar usuarios (código: {statusError}).</MensajeUsuarios>;
@@ -37,7 +54,6 @@ const UsuariosAdmin = () => {
         <tbody>
           {usuarios.map((usuario) => {
             const estaSeleccionado = usuarioSeleccionado === usuario.id;
-            const pedidosUsuario = pedidos;
 
             return (
               <Fragment key={usuario.id}>
@@ -68,22 +84,32 @@ const UsuariosAdmin = () => {
                         <h2>Pedidos de {usuario.username}</h2>
                         {cargandoPedidos && <p>Cargando pedidos...</p>}
                         {pedidosError && <p>No se pudieron cargar los pedidos.</p>}
-                        {!cargandoPedidos && !pedidosError && pedidosUsuario.length === 0 && (
+                        {!cargandoPedidos && !pedidosError && pedidos.length === 0 && (
                           <p>Este usuario no tiene pedidos.</p>
                         )}
-                        {!cargandoPedidos && !pedidosError && pedidosUsuario.length > 0 && (
-                          <ul>
-                            {pedidosUsuario.map((pedido) => (
-                              <li key={pedido.id}>
-                                <PedidoUsuarioLink as={NavLink} to={`/admin/pedidos/${pedido.id}`} onClick={(event) => event.stopPropagation()}>
-                                  <strong>{pedido.numero_pedido || `Pedido #${pedido.id}`}</strong>
-                                  <span>{pedido.estado.replaceAll('_', ' ')}</span>
-                                  <span>{formatearFecha(pedido.created_at)}</span>
-                                  <span>${Number(pedido.precio_total).toFixed(2)}</span>
-                                </PedidoUsuarioLink>
-                              </li>
-                            ))}
-                          </ul>
+                        {!cargandoPedidos && !pedidosError && pedidos.length > 0 && (
+                          <>
+                            <ul>
+                              {pedidos.map((pedido) => (
+                                <li key={pedido.id}>
+                                  <PedidoUsuarioLink as={NavLink} to={`/admin/pedidos/${pedido.id}`} onClick={(event) => event.stopPropagation()}>
+                                    <strong>{pedido.numero_pedido || `Pedido #${pedido.id}`}</strong>
+                                    <span>{pedido.estado.replaceAll('_', ' ')}</span>
+                                    <span>{formatearFecha(pedido.created_at)}</span>
+                                    <span>${Number(pedido.precio_total).toFixed(2)}</span>
+                                  </PedidoUsuarioLink>
+                                </li>
+                              ))}
+                            </ul>
+                            <CambiarPagina
+                              paginaActual={paginaPedidosUsuario || 1}
+                              totalPaginas={pagesPedidos || 1}
+                              onPageChange={(nuevaPagina) => {
+                                setPaginaPedidosUsuario(nuevaPagina);
+                                cambiarPaginaPedidos(nuevaPagina);
+                              }}
+                            />
+                          </>
                         )}
                       </PedidosUsuario>
                     </td>
@@ -94,6 +120,14 @@ const UsuariosAdmin = () => {
           })}
         </tbody>
       </UsuariosTable>
+      <CambiarPagina
+        paginaActual={pageUsuarios}
+        totalPaginas={pagesUsuarios}
+        onPageChange={(nuevaPagina) => {
+          setPaginaUsuarios(nuevaPagina);
+          cambiarPaginaUsuarios(nuevaPagina);
+        }}
+      />
     </UsuariosContainer>
   );
 };
