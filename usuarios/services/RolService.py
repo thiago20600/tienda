@@ -1,5 +1,7 @@
 from sqlmodel import Session, select
-from models.users import Rol, Permiso, RolPermisoLink
+from models.rol import Rol
+from models.permisos import Permiso
+from models.links import RolPermisoLink
 from exceptions.rol import (
     RolNoEncontradoError,
     RolNombreDuplicadoError,

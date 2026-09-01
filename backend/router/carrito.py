@@ -10,14 +10,14 @@ from database.engine import SessionDep
 from models.carrito import Carrito, CarritoItem, CarritoItemUpdate, CarritoPublic, ConfirmarCarrito, EstadoCarrito
 from models.pedido import DetallePedido, MetodoPago, Pedido
 from models.productos import Producto
-from utils.auth import get_current_user
+from utils.permisos import permisos
 from utils.pedido import crear_pedido
 
 router = APIRouter()
 
 
 @router.get('/mi-carrito/', response_model=CarritoPublic)
-async def get_mi_carrito(session: SessionDep, current_user = Depends(get_current_user)):
+async def get_mi_carrito(session: SessionDep, current_user = Depends(permisos.require_permission("carrito:read:own"))):
 
     service = CarritoService()
     try:
@@ -30,7 +30,7 @@ async def get_mi_carrito(session: SessionDep, current_user = Depends(get_current
 
 
 @router.post('/mi-carrito/{producto_id}', response_model=CarritoPublic)
-async def agregar_unidad_producto(session: SessionDep, producto_id: int, current_user = Depends(get_current_user)):
+async def agregar_unidad_producto(session: SessionDep, producto_id: int, current_user = Depends(permisos.require_permission("carrito:create:own"))):
     try:
         producto_service = ProductoService()
         carrito_item_service = CarritoItemService()
@@ -53,7 +53,7 @@ async def agregar_unidad_producto(session: SessionDep, producto_id: int, current
 
 
 @router.patch('/mi-carrito/{product_id}', response_model=CarritoPublic)
-async def agregar_desde_detalle_producto(session: SessionDep, carrito_item_update: CarritoItemUpdate, product_id: int, current_user = Depends(get_current_user)
+async def agregar_desde_detalle_producto(session: SessionDep, carrito_item_update: CarritoItemUpdate, product_id: int, current_user = Depends(permisos.require_permission("carrito:update:own"))
 ):
     carrito_item_service = CarritoItemService()
     producto_service = ProductoService()
@@ -78,7 +78,7 @@ async def agregar_desde_detalle_producto(session: SessionDep, carrito_item_updat
 
 
 @router.delete('/mi-carrito/{producto_id}')
-async def delete_item_carrito(session:SessionDep, producto_id:int, current_user=Depends(get_current_user)):
+async def delete_item_carrito(session:SessionDep, producto_id:int, current_user=Depends(permisos.require_permission("carrito:delete:own"))):
 
 
     producto_service = ProductoService()
@@ -106,7 +106,7 @@ async def delete_item_carrito(session:SessionDep, producto_id:int, current_user=
 
 
 @router.patch('/mi-carrito/item/{producto_id}', response_model=CarritoPublic)
-async def actualizar_cantidad_carritoitem(session: SessionDep, producto_id: int, carrito_item_update: CarritoItemUpdate , current_user=Depends(get_current_user)):
+async def actualizar_cantidad_carritoitem(session: SessionDep, producto_id: int, carrito_item_update: CarritoItemUpdate , current_user=Depends(permisos.require_permission("carrito:update:own"))):
     try:
         producto_service = ProductoService()
         carrito_item_service = CarritoItemService()

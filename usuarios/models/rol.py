@@ -1,6 +1,7 @@
-from sqlmodel import SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional
-from models.users import Rol
+from models.permisos import Permiso, PermisoResponse
+from models.links import RolPermisoLink
 
 
 class RolCreate(SQLModel):
@@ -13,13 +14,6 @@ class RolUpdate(SQLModel):
     activo: Optional[bool] = None
 
 
-class PermisosAsignacion(SQLModel):
-    permiso_ids: list[int]
-
-
-class PermisoResponse(SQLModel):
-    id: int
-    nombre: str
 
 
 class RolResponse(SQLModel):
@@ -29,6 +23,14 @@ class RolResponse(SQLModel):
     permisos: list[PermisoResponse] = []
 
     @classmethod
-    def from_rol(cls, rol: Rol) -> "RolResponse":
+    def from_rol(cls, rol: "Rol") -> "RolResponse":
         permisos = [PermisoResponse(id=p.id, nombre=p.nombre) for p in rol.permisos]
         return cls(id=rol.id, nombre=rol.nombre, activo=rol.activo, permisos=permisos)
+
+
+class Rol(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    nombre: str = Field(index=True, unique=True)
+    activo: bool = True
+    usuarios: list["User"] = Relationship(back_populates="rol_obj")
+    permisos: list['Permiso'] = Relationship(back_populates='roles', link_model=RolPermisoLink)

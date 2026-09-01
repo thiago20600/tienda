@@ -19,7 +19,7 @@ def main():
         stock = random.randint(0, 30)
         sku = random.randint(100000, 200000)
         user_email = {'email': 'tavellathiagolautaro@gmail.com'}
-        categoria = random.randint(9, 15)
+        categoria = random.randint(1, 10)
 
 
         producto = ProductCreate(nombre=nombre_producto,categoria=[categoria], sku=sku, precio=precio, stock=stock, descripcion=None)

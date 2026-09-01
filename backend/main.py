@@ -11,10 +11,12 @@ from models.productos import Producto
 from fastapi.middleware.cors import CORSMiddleware
 from router.mercado_pago import router as mercadopagoRouter
 from fastapi_pagination import add_pagination
+from utils.permisos import permisos
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
+    await permisos.enviar_permisos()
     yield
 
 

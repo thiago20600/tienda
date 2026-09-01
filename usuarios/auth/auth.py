@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Header, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from datetime import datetime, timezone, timedelta
@@ -6,6 +6,8 @@ from config import settings
 from typing import Optional
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login") 
+
+PERMISOS_REGISTRADOS: set[str] = set()
 
 def create_access_token(subject: str, rol: str = "cliente", permisos: list[str] = None):
     if permisos is None:
@@ -50,8 +52,11 @@ async def require_admin(current_user = Depends(get_current_user)):
     return current_user
 
 
+
+
 def require_permission(required_permission: str):
     """Dependency factory that returns a function to check specific permissions"""
+    PERMISOS_REGISTRADOS.add(required_permission)
     async def check_permission(token: str = Depends(oauth2_scheme)):
         credentials_exception = HTTPException(
             status_code=401,
@@ -84,3 +89,13 @@ def require_permission(required_permission: str):
             raise credentials_exception
     
     return check_permission
+
+
+
+def servicio_interno(x_internal_key: str = Header(...)):
+    if x_internal_key != settings.TOKEN_SERVICIO_INTERNO_API:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acceso denegado: Firma de servicio a servicio inválida"
+        )
+    return True

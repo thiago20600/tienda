@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     ALGORITHM: str
     MAIL_USERNAME: str
     MAIL_APP_PASSWORD: str
+    TOKEN_SERVICIO_INTERNO_API: str
     model_config = SettingsConfigDict(env_file='.env')
 
 

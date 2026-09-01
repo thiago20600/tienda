@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from database.engine import SessionDep
-from models.users import User, Rol
+from models.users import User
 from bcrypt import checkpw
 from auth.auth import create_access_token
 from sqlmodel import select

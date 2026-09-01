@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_DB: str
     POSTGRES_PASSWORD: str
-
+    TOKEN_SERVICIO_INTERNO_API: str
+    API_USUARIOS_URL: str
 
     model_config = SettingsConfigDict(env_file='.env')
 

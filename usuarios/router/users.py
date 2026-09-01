@@ -1,9 +1,10 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from database.engine import SessionDep
 from sqlmodel import Session, select
-from models.users import User, Rol, UserCreate, UserPublic, UserUpdate
+from models.users import User, UserCreate, UserPublic, UserUpdate
+from models.rol import Rol
 from bcrypt import hashpw, gensalt
-from auth.auth import get_current_user, require_admin
+from auth.auth import require_permission
 from utils.mail import send_mail_innactive_account
 from models.mail import EmailSchema
 from fastapi_pagination import Page, Params
@@ -13,7 +14,7 @@ router = APIRouter()
 user_service = UserService()
 
 
-@router.get('/users', response_model=Page[UserPublic], dependencies=[Depends(require_admin)])
+@router.get('/users', response_model=Page[UserPublic], dependencies=[Depends(require_permission("usuarios:read:admin"))])
 async def get_users(session: SessionDep, q: str | None = None, params: Params = Depends()):
     return user_service.listar_usuarios(session=session, q=q, params=params)
 
@@ -39,7 +40,7 @@ async def post_user(session: SessionDep, user: UserCreate, background_tasks: Bac
 
 
 @router.patch('/users/{user_id}', response_model=UserPublic)
-async def user_update(session: SessionDep, user_id: int, user: UserUpdate, current_user = Depends(get_current_user)):
+async def user_update(session: SessionDep, user_id: int, user: UserUpdate, current_user = Depends(require_permission("usuarios:update:own"))):
     db_user = session.get(User, user_id)
 
     if not db_user:
@@ -64,7 +65,7 @@ async def user_update(session: SessionDep, user_id: int, user: UserUpdate, curre
 
 
 @router.delete('/users/{user_id}', response_model=UserPublic)
-async def user_delete(session: SessionDep, user_id: int, current_user = Depends(get_current_user)):
+async def user_delete(session: SessionDep, user_id: int, current_user = Depends(require_permission("usuarios:delete:own"))):
     db_user = session.get(User, user_id)
 
     if not db_user:
@@ -79,7 +80,7 @@ async def user_delete(session: SessionDep, user_id: int, current_user = Depends(
 
 
 @router.get('/users/me', response_model=UserPublic)
-async def get_me_user(session:SessionDep, current_user = Depends(get_current_user)):
+async def get_me_user(session:SessionDep, current_user = Depends(require_permission("usuarios:read:own"))):
     
     user = session.exec(select(User).where(User.email == current_user["email"])).first()
 

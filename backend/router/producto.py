@@ -6,7 +6,7 @@ from models.productos import ProductCreate, ProductUpdate, ProductoPublic
 from services.ProductoService import ProductoService
 from services.CategoriaService import CategoriaService
 from services.ImagenService import ImagenService
-from utils.auth import require_admin
+from utils.permisos import permisos
 from exceptions.producto import ProductoNoEncontradoError
 from fastapi_pagination import Page, Params
 
@@ -66,15 +66,15 @@ async def get_product(session: SessionDep, producto_id: int):
 
 
 
-@router.post('/productos', response_model=ProductoPublic, dependencies=[Depends(require_admin)])
-async def post_product(session: SessionDep, producto: ProductCreate, current_user=Depends(require_admin)):
+@router.post('/productos', response_model=ProductoPublic, dependencies=[Depends(permisos.require_permission("productos:create:admin"))])
+async def post_product(session: SessionDep, producto: ProductCreate, current_user=Depends(permisos.require_permission("productos:create:admin"))):
     try:
         return producto_service.crear_producto(session, producto, current_user)
     except Exception as e:
         raise HTTPException(400, str(e))
 
     
-@router.patch('/productos/{producto_id}', response_model=ProductoPublic, dependencies=[Depends(require_admin)])
+@router.patch('/productos/{producto_id}', response_model=ProductoPublic, dependencies=[Depends(permisos.require_permission("productos:update:admin"))])
 async def patch_product(session: SessionDep, producto_id: int, producto_update: ProductUpdate):
     try:
         return producto_service.actualizar_producto(session, producto_id, producto_update)
@@ -84,7 +84,7 @@ async def patch_product(session: SessionDep, producto_id: int, producto_update: 
         raise HTTPException(400, str(e))
     
 
-@router.delete('/productos/{producto_id}', dependencies=[Depends(require_admin)])
+@router.delete('/productos/{producto_id}', dependencies=[Depends(permisos.require_permission("productos:delete:admin"))])
 async def delete_product(session: SessionDep, producto_id: int):
     try:
         return producto_service.eliminar_producto(session, producto_id)
@@ -94,7 +94,7 @@ async def delete_product(session: SessionDep, producto_id: int):
         raise HTTPException(500, str(e))
 
 
-@router.post('/productos/{producto_id}/imagenes', response_model=ProductoPublic, dependencies=[Depends(require_admin)])
+@router.post('/productos/{producto_id}/imagenes', response_model=ProductoPublic, dependencies=[Depends(permisos.require_permission("productos:update:admin"))])
 async def agregar_imagen_producto(
     session: SessionDep,
     producto_id: int,
@@ -110,7 +110,7 @@ async def agregar_imagen_producto(
         raise HTTPException(500, str(e))
     
 
-@router.get('/admin/productos', response_model=Page[ProductoPublic], dependencies=[Depends(require_admin)])
+@router.get('/admin/productos', response_model=Page[ProductoPublic], dependencies=[Depends(permisos.require_permission("productos:read:admin"))])
 async def get_all_products_admin(
     session: SessionDep,
     q: str | None = None,

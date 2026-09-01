@@ -6,7 +6,7 @@ from database.engine import SessionDep
 from models.carrito import Carrito, EstadoCarrito
 from models.checkout import CheckoutSchema
 from models.pedido import DetallePedido, EstadoPedido, MetodoPago, Pedido, PedidoPublic
-from utils.auth import get_current_user
+from utils.permisos import permisos
 import httpx
 from utils.pedido import crear_pedido
 
@@ -28,7 +28,7 @@ async def obetener_metodos_pago():
 
 
 @router.post('/crear-orden', response_model=PedidoPublic)
-async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, current_user=Depends(get_current_user)):
+async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, current_user=Depends(permisos.require_permission("pedidos:create:own"))):
     nombre_tienda = 'tienda X'
     carrito_procesar = session.exec(select(Carrito).where(current_user['email'] == Carrito.user_email,
                                                           Carrito.estado == EstadoCarrito.abierto)).first()

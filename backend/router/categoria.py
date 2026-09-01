@@ -6,7 +6,7 @@ from services.CategoriaService import CategoriaService
 from sqlmodel import select
 from database.engine import SessionDep
 from models.categorias import Categoria, CategoriaCreate, CategoriaPublic, CategoriaUpdate
-from utils.auth import require_admin
+from utils.permisos import permisos
 router = APIRouter()
 
 categoria_service = CategoriaService()
@@ -26,7 +26,7 @@ async def get_unique_categoria(session: SessionDep, categoria_id:int):
         raise HTTPException(status_code=404, detail=e.message)
 
 
-@router.delete('/categorias/{categoria_id}', dependencies=[Depends(require_admin)])
+@router.delete('/categorias/{categoria_id}', dependencies=[Depends(permisos.require_permission("categorias:delete:admin"))])
 async def delete_categoria(session: SessionDep, categoria_id:int):
     try:
         return categoria_service.eliminar_categoria(session=session, id=categoria_id)
@@ -34,7 +34,7 @@ async def delete_categoria(session: SessionDep, categoria_id:int):
         raise HTTPException(status_code=404, detail=e.message) 
 
 
-@router.post('/categorias/', response_model=CategoriaPublic, dependencies=[Depends(require_admin)])
+@router.post('/categorias/', response_model=CategoriaPublic, dependencies=[Depends(permisos.require_permission("categorias:create:admin"))])
 async def post_categoria(session: SessionDep, categoria: CategoriaCreate):
     try:
         categoria_creada = categoria_service.crear_categoria(session=session, categoria=categoria)
@@ -43,7 +43,7 @@ async def post_categoria(session: SessionDep, categoria: CategoriaCreate):
         raise HTTPException(status_code=400, detail=e.message)
 
 
-@router.patch('/categorias/{categoria_id}', response_model=CategoriaPublic, dependencies=[Depends(require_admin)])
+@router.patch('/categorias/{categoria_id}', response_model=CategoriaPublic, dependencies=[Depends(permisos.require_permission("categorias:update:admin"))])
 async def patch_categoria(session: SessionDep, categoria: CategoriaUpdate, categoria_id:int):
     try:
         categoria_actualizada = categoria_service.modificar_categoria(session=session, categoria=categoria, id=categoria_id)

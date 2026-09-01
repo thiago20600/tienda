@@ -5,6 +5,7 @@ from router.users import router as users
 from router.login import router as login
 from router.activate_acc import router as activate_account
 from router.roles import router as roles
+from router.permisos import router as permisos
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 
@@ -21,6 +22,7 @@ app.include_router(users)
 app.include_router(login)
 app.include_router(activate_account)
 app.include_router(roles)
+app.include_router(permisos)
 
 
 app.add_middleware(
