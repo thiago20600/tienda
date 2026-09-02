@@ -24,6 +24,7 @@ import Configuracion from "./pages/configuracion/Configuracion"
 import ModificarCategoria from "./componentes/adminpanel/categorias/ModificarCategoria/ModificarCategoria"
 import ActivateAccount from "./pages/auth/activate/ActivateAccount"
 import UsuariosAdmin from './pages/admin/usuarios/UsuariosAdmin'
+import RolesAdmin from './pages/admin/roles/RolesAdmin'
 
 function App() {
 
@@ -54,7 +55,7 @@ function App() {
       </Route>
 
       {/* cambiar */}
-      <Route element={<RutaProtegida rolRequerido="admin" />}>
+      {/*<Route element={<RutaProtegida rolRequerido="admin" />}>*/}
         <Route element={<BaseLayoutAdmin/>}>
           <Route path='/admin' element={<AdminPage/>} />
           <Route path='/admin/productos' element={<ProductosAdmin/>}></Route>
@@ -64,10 +65,11 @@ function App() {
           <Route path='/admin/categorias/:id' element={<ModificarCategoria/>} />
           <Route path='/admin/configuracion' element={<ConfiguracionAdmin/>} />
           <Route path='/admin/usuarios' element={<UsuariosAdmin/>} />
+          <Route path='/admin/roles' element={<RolesAdmin/>} />
           <Route path='/admin/pedidos' element={<PedidosAdmin/>} />
           <Route path='/admin/pedidos/:id' element={<PedidoDetalleAdmin/>} />
         </Route>
-      </Route>
+      {/*</Route>*/}
 
       <Route path="*" element={<NoEncontrado />} />
 

@@ -8,6 +8,7 @@ const SideBar = () => {
         {name: 'Categorias', path: '/admin/categorias'}, 
         {name: 'Productos', path: '/admin/productos'}, 
         {name: 'Usuarios', path: '/admin/usuarios'},
+        {name: 'Roles y permisos', path: '/admin/roles'},
         {name: 'Configuracion', path: '/admin/configuracion'}]
 
 
