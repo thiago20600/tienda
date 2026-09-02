@@ -55,7 +55,7 @@ function App() {
       </Route>
 
       {/* cambiar */}
-      {/*<Route element={<RutaProtegida rolRequerido="admin" />}>*/}
+      <Route element={<RutaProtegida permisoRequerido="admin" />}>
         <Route element={<BaseLayoutAdmin/>}>
           <Route path='/admin' element={<AdminPage/>} />
           <Route path='/admin/productos' element={<ProductosAdmin/>}></Route>
@@ -69,7 +69,7 @@ function App() {
           <Route path='/admin/pedidos' element={<PedidosAdmin/>} />
           <Route path='/admin/pedidos/:id' element={<PedidoDetalleAdmin/>} />
         </Route>
-      {/*</Route>*/}
+      </Route>
 
       <Route path="*" element={<NoEncontrado />} />
 
