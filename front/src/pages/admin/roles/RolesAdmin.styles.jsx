@@ -118,3 +118,53 @@ export const MensajeRoles = styled.p`
   color: ${(props) => (props.$error ? '#b91c1c' : '#166534')};
   font-size: 0.9rem;
 `;
+
+
+export const ModulosContainer = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+`
+
+export const ModuloCard = styled.div`
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: #f8fafc;
+`
+
+export const ModuloHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    h4 {
+        margin: 0;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        color: #475569;
+    }
+`
+
+export const BotonTexto = styled.button`
+    background: none;
+    border: none;
+    color: #2563eb;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0;
+    
+    &:hover {
+        text-decoration: underline;
+    }
+`
+
+export const PermisosLista = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+`

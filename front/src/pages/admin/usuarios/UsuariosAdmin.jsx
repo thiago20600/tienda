@@ -4,6 +4,7 @@ import useUsuariosAdmin from '../../../hooks/usuarios/useUsuariosAdmin';
 import usePedidosAdmin from '../../../hooks/pedidos/usePedidosAdmin';
 import CambiarPagina from '../../../componentes/adminpanel/tablas/CambiarPagina/CambiarPagina.jsx';
 import useDebounce from '../../../../utils/useDebounce';
+import useRoles from '../../../hooks/roles/useRoles.jsx';
 import {
   UsuariosContainer,
   UsuariosTable,
@@ -21,7 +22,9 @@ const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-AR');
 const TAMANO_PAGINA_USUARIOS = 10;
 const TAMANO_PAGINA_PEDIDOS = 5;
 
+
 const UsuariosAdmin = () => {
+  const { roles } = useRoles()
   const [paginaUsuarios, setPaginaUsuarios] = useState(1);
   const [paginaPedidosUsuario, setPaginaPedidosUsuario] = useState(1);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
@@ -93,7 +96,7 @@ const UsuariosAdmin = () => {
                 >
                   <td>{usuario.username}</td>
                   <td>{usuario.email}</td>
-                  <td><RolUsuario usuario={usuario} /></td>
+                  <td><RolUsuario usuario={usuario} roles={roles} /></td>
                   <td><EstadoUsuario $activo={usuario.active}>{usuario.active ? 'Activo' : 'Pendiente de activación'}</EstadoUsuario></td>
                 </tr>
                 {estaSeleccionado && (

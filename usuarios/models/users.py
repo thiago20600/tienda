@@ -7,6 +7,9 @@ from models.rol import Rol
 
 
 class User(SQLModel, table=True):
+
+    __tablename__ = 'user'
+
     id: int | None = Field(default=None, primary_key=True)
     username: str = Field(index=True)
     password: str
@@ -15,6 +18,11 @@ class User(SQLModel, table=True):
     rol: str = Field(default="cliente")
     rol_id: int | None = Field(default=None, foreign_key="rol.id")
     rol_obj: Optional[Rol] = Relationship(back_populates="usuarios")
+
+    __mapper_args__ = {
+        "polymorphic_on": "rol",          
+        "polymorphic_identity": "cliente" 
+    }
 
 
 class UserCreate(SQLModel):

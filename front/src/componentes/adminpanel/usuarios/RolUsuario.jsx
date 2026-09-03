@@ -4,18 +4,24 @@ import useAsignarRol from "../../../hooks/usuarios/useAsignarRol"
 import { ContenedorRol, BotonRol, ItemRol,ListaRoles,MensajeError,OpcionRol } from "./RolUsuario.styles"
 import { useRef, useEffect } from "react"
 
-const RolUsuario = ({ usuario, onRolUpdated }) => {
-    const { roles } = useRoles()
+const RolUsuario = ({ usuario, onRolUpdated, roles }) => {
     const { asignarRol, statusError } = useAsignarRol()
 
     const [mostrarMenu, setMostrarMenu] = useState(false)
-    const [rolActual, setRolActual] = useState(usuario.rol || usuario.rol_obj)
+    // Nos aseguramos de guardar siempre la cadena de texto (string)
+    const [rolActual, setRolActual] = useState(usuario.rol || "Sin Rol")
     const [cargando, setCargando] = useState(false)
 
-    // 1. Creamos la referencia al contenedor principal
     const contenedorRef = useRef(null)
 
-    // 2. Efecto para detectar clics fuera del componente
+
+    useEffect(() => {
+        if (usuario.rol) {
+            setRolActual(usuario.rol)
+        }
+    }, [usuario.rol])
+
+    // Cerrar el menú desplegable al hacer clic fuera
     useEffect(() => {
         const handleClickAfuera = (event) => {
             if (contenedorRef.current && !contenedorRef.current.contains(event.target)) {
@@ -24,8 +30,6 @@ const RolUsuario = ({ usuario, onRolUpdated }) => {
         }
 
         document.addEventListener('mousedown', handleClickAfuera)
-
-
         return () => {
             document.removeEventListener('mousedown', handleClickAfuera)
         }
@@ -37,7 +41,9 @@ const RolUsuario = ({ usuario, onRolUpdated }) => {
         setCargando(false)
 
         if (ok) {
-            setRolActual(data.rol_obj || rolNombre)
+            // El backend retorna { id, username, email, active, rol: "string" }
+            const nuevoRolString = data.rol || rolNombre
+            setRolActual(nuevoRolString)
             setMostrarMenu(false)
             
             if (onRolUpdated) onRolUpdated(data)
@@ -51,7 +57,7 @@ const RolUsuario = ({ usuario, onRolUpdated }) => {
                 onClick={() => setMostrarMenu(!mostrarMenu)}
                 disabled={cargando}
             >
-                {cargando ? "Cargando..." : (rolActual || "Sin Rol")}
+                {cargando ? "Cargando..." : rolActual}
             </BotonRol>
 
             {mostrarMenu && (
