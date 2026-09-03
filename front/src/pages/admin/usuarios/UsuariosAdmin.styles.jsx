@@ -79,11 +79,6 @@ export const EstadoUsuario = styled.span`
   font-weight: 600;
 `;
 
-export const RolUsuario = styled.span`
-  color: ${(props) => props.$admin ? '#0369a1' : '#475569'};
-  font-weight: 600;
-`;
-
 export const MensajeUsuarios = styled.p`
   padding: 2rem;
   color: ${(props) => props.$error ? '#b91c1c' : '#64748b'};

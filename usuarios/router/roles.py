@@ -70,3 +70,5 @@ async def delete_rol(rol_id: int, session: SessionDep, _=Depends(require_permiss
         raise HTTPException(status_code=404, detail=e.message)
     except RolProtegidoError as e:
         raise HTTPException(status_code=400, detail=e.message)
+
+

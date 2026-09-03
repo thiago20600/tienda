@@ -9,12 +9,13 @@ import {
   UsuariosTable,
   EstadoUsuario,
   MensajeUsuarios,
-  RolUsuario,
   PedidosUsuario,
   PedidoUsuarioLink,
   BusquedaContainer,
   BusquedaInput
 } from './UsuariosAdmin.styles';
+import RolUsuario from '../../../componentes/adminpanel/usuarios/RolUsuario.jsx';
+
 
 const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-AR');
 const TAMANO_PAGINA_USUARIOS = 10;
@@ -92,7 +93,7 @@ const UsuariosAdmin = () => {
                 >
                   <td>{usuario.username}</td>
                   <td>{usuario.email}</td>
-                  <td><RolUsuario $admin={usuario.rol === 'admin'}>{usuario.rol}</RolUsuario></td>
+                  <td><RolUsuario usuario={usuario} /></td>
                   <td><EstadoUsuario $activo={usuario.active}>{usuario.active ? 'Activo' : 'Pendiente de activación'}</EstadoUsuario></td>
                 </tr>
                 {estaSeleccionado && (

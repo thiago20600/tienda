@@ -1,10 +1,11 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from database.engine import SessionDep
 from sqlmodel import Session, select
 from models.users import User, UserCreate, UserPublic, UserUpdate
 from models.rol import Rol
 from bcrypt import hashpw, gensalt
 from auth.auth import require_permission
+from exceptions.usuario import UsuarioNoEncontradoError
 from utils.mail import send_mail_innactive_account
 from models.mail import EmailSchema
 from fastapi_pagination import Page, Params
@@ -85,3 +86,13 @@ async def get_me_user(session:SessionDep, current_user = Depends(require_permiss
     user = session.exec(select(User).where(User.email == current_user["email"])).first()
 
     return user
+
+
+@router.patch('/users/{user_id}/roles/{rol_id}', response_model=UserPublic)
+async def modificar_rol_usuario(session:SessionDep, user_id: int, rol_id: int, _=Depends(require_permission('usuarios:update:admin'))):
+
+    try:
+        user = user_service.asignar_rol(session=session ,usuario_id=user_id, rol_id=rol_id)
+        return user
+    except UsuarioNoEncontradoError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)

@@ -1,13 +1,15 @@
 services:
   api_usuarios:
-    build: ./usuarios
-    ports:
-      - "8001:80"
-    env_file:
-      - ./usuarios/.env
-    depends_on:
-      db_usuarios:
-        condition: service_healthy
+      build: ./usuarios
+      ports:
+        - "8001:80"
+      env_file:
+        - ./usuarios/.env
+      volumes:
+        - ./usuarios:/code 
+      depends_on:
+        db_usuarios:
+          condition: service_healthy
 
   db_usuarios:
     image: postgres:15
@@ -25,14 +27,17 @@ services:
       retries: 5
 
   api_tienda:
-    build: ./backend
-    ports:
-      - "8000:80"
-    env_file:
-      - ./backend/.env
-    depends_on:
-      db_tienda:
-        condition: service_healthy
+      build: ./backend
+      ports:
+        - "8000:80"
+      env_file:
+        - ./backend/.env
+      volumes:
+        - ./backend:/code  
+      command: fastapi dev main.py --port 80 --host 0.0.0.0
+      depends_on:
+        db_tienda:
+          condition: service_healthy
 
   db_tienda:
     image: postgres:15

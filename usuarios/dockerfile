@@ -8,4 +8,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY . /code
 
-CMD ["fastapi", "run", "main.py", "--port", "80"]
+EXPOSE 80
+
+# Cambiamos "run" por "dev" para habilitar la recarga de archivos
+CMD ["fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "80"]

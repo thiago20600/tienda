@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     MAIL_USERNAME: str
     MAIL_APP_PASSWORD: str
     TOKEN_SERVICIO_INTERNO_API: str
+    POSTGRES_USER: str
+    POSTGRES_DB: str
+    POSTGRES_PASSWORD: str
     model_config = SettingsConfigDict(env_file='.env')
 
 

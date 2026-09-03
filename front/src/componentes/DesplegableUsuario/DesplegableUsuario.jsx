@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { MenuContainer, UserButton, DropdownNav, MenuLink } from "./DesplegableUsuario.styles";
 import { useAuth } from "../../services/auth/useAuth";
+import { getSession } from "../../services/auth/session";
 
 export const DesplegableUsuario = ({ usuario }) => {
-  const [botonActivo, setBotonActivo] = useState(false)
-  const { logout } = useAuth()
-  const userRole = usuario?.rol;
+  const [botonActivo, setBotonActivo] = useState(false);
+  const { logout } = useAuth();
+  const session = getSession();
+  const userPermisos = session?.permisos || [];
 
   const seleccionables = [
     { id: 'configuracion', nombre: 'Configuracion', acceso: 'publico', link: '/configuracion' },
@@ -14,47 +16,34 @@ export const DesplegableUsuario = ({ usuario }) => {
   ];
 
   const itemsFiltrados = seleccionables.filter(item => {
-    if (item.acceso === 'publico') return true; // Siempre mostrar públicos
-    if (item.acceso === 'privado' && userRole === 'admin') return true; // Solo admin ve privados
+    if (item.acceso === 'publico') return true;
+    if (item.acceso === 'privado' && userPermisos.some(p => p.endsWith(':admin'))) return true; 
     return false;
   });
 
   const handleLogout = () => {
     logout();
-    };
-
-
-
+  };
 
   return (
     <MenuContainer>
-            <UserButton onClick={() => {setBotonActivo(!botonActivo)}}>{usuario.username}</UserButton>
-        {botonActivo && (
-            <DropdownNav>
-                {itemsFiltrados.map((seleccionable) => {
-                return (
-                    <MenuLink key={seleccionable.id} to={seleccionable.link} 
-                    onClick={seleccionable.id === 'cerrarSesion' ? handleLogout : null}>
-                    {seleccionable.nombre}
-                    </MenuLink>
-                )
-                })}
-            </DropdownNav>)
-        }
+      <UserButton onClick={() => setBotonActivo(!botonActivo)}>
+        {usuario?.username || 'Usuario'}
+      </UserButton>
+      
+      {botonActivo && (
+        <DropdownNav>
+          {itemsFiltrados.map((seleccionable) => (
+            <MenuLink 
+              key={seleccionable.id} 
+              to={seleccionable.link} 
+              onClick={seleccionable.id === 'cerrarSesion' ? handleLogout : null}
+            >
+              {seleccionable.nombre}
+            </MenuLink>
+          ))}
+        </DropdownNav>
+      )}
     </MenuContainer>
-  )
-}
-
-
-/*
-    return(
-        <BotonUsuario> button ->
-            <ListaUsuario> -> ul
-                <OpcionUsuario> -> li, navlink
-                <OpcionUsuario/>
-            <ListaUsuario/>
-        <BotonUsuario>
-    )
-
-
-*/
+  );
+};
