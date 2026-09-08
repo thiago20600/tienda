@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from router.mercado_pago import router as mercadopagoRouter
 from fastapi_pagination import add_pagination
 from utils.permisos import permisos
+from router.banner import router as bannerRouter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,3 +37,4 @@ app.include_router(pedidoRouter)
 app.include_router(categoriaRouter)
 app.include_router(carritoRouter)
 app.include_router(mercadopagoRouter)
+app.include_router(bannerRouter)

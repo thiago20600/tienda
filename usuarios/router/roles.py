@@ -20,7 +20,6 @@ async def get_roles(session: SessionDep, _=Depends(require_permission("roles:rea
     roles = rol_service.listar_roles(session=session)
     return [RolResponse.from_rol(rol) for rol in roles]
 
-
 @router.get("/permisos", response_model=list[PermisoResponse])
 async def get_permisos(session: SessionDep, _=Depends(require_permission("permisos:read:admin"))):
     permisos = rol_service.listar_permisos(session=session)

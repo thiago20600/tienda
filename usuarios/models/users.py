@@ -36,6 +36,7 @@ class UserPublic(SQLModel):
     email: str
     active: bool
     rol: str
+    tipo: str = "cliente"
 
 
 class UserUpdate(SQLModel):

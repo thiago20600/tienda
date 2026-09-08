@@ -1,9 +1,10 @@
 from sqlmodel import Session, select
-from fastapi_pagination import Params
+from fastapi_pagination import Params, Page
 from fastapi_pagination.ext.sqlmodel import paginate
-from models.users import User
+from models.users import User, UserPublic
 from exceptions.usuario import UsuarioNoEncontradoError, CambioDeRolNoPermitido
 from services.RolService import RolService
+
 
 
 class UserService:
@@ -12,16 +13,12 @@ class UserService:
         self.rol_service = rol_service or RolService()
 
 
-    def listar_usuarios(self, session: Session, q: str | None = None, params: Params | None = None):
-        query = select(User)
-
-        if q is not None and q.strip():
-            query = query.where(User.email.ilike(f'%{q.strip()}%'))
-
-        if params is not None:
+    def listar_usuarios(self,session: Session,q: str | None = None,params: Params = Params()) -> Page[UserPublic]:
+            query = select(User)
+            if q:
+                query = query.where(User.username.ilike(f"%{q}%"))
+            
             return paginate(session, query, params)
-
-        return session.exec(query).all()
 
 
     def consultar_usuario_por_id(self, session: Session, id: int) -> User | Exception:

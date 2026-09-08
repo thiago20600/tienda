@@ -15,10 +15,9 @@ router = APIRouter()
 user_service = UserService()
 
 
-@router.get('/users', response_model=Page[UserPublic], dependencies=[Depends(require_permission("usuarios:read:admin"))])
-async def get_users(session: SessionDep, q: str | None = None, params: Params = Depends()):
+@router.get('/users', response_model=Page[UserPublic])
+async def get_users(session: SessionDep, q: str | None = None, params: Params = Depends(), _=Depends(require_permission("usuarios:read:admin"))):
     return user_service.listar_usuarios(session=session, q=q, params=params)
-
 
 @router.post('/users', response_model=UserPublic)
 async def post_user(session: SessionDep, user: UserCreate, background_tasks: BackgroundTasks):

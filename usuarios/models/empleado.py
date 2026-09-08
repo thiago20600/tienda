@@ -1,5 +1,5 @@
 from sqlmodel import Field, SQLModel
-from models.users import User
+from models.users import User, UserPublic
 
 class Empleado(User, table=True):
     __tablename__ = "empleado"
@@ -13,3 +13,8 @@ class Empleado(User, table=True):
     __mapper_args__ = {
         "polymorphic_identity": "empleado" 
     }
+
+
+class EmpleadoPublic(UserPublic):
+    telefono: int
+    domicilio: str

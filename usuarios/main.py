@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-add_pagination(app)
+
 
 app.include_router(users)
 app.include_router(login)
@@ -24,6 +24,7 @@ app.include_router(activate_account)
 app.include_router(roles)
 app.include_router(permisos)
 
+add_pagination(app)
 
 app.add_middleware(
     CORSMiddleware,
