@@ -2,7 +2,7 @@ from sqlmodel import Session, select
 from fastapi_pagination import Params
 from fastapi_pagination.ext.sqlmodel import paginate
 from models.users import User
-from exceptions.usuario import UsuarioNoEncontradoError
+from exceptions.usuario import UsuarioNoEncontradoError, CambioDeRolNoPermitido
 from services.RolService import RolService
 
 
@@ -36,6 +36,8 @@ class UserService:
         rol = self.rol_service.consultar_rol(session=session, rol_id=rol_id)
         if not usuario or not rol:
             raise UsuarioNoEncontradoError(usuario_id=usuario_id)
+        if usuario.rol == 'cliente' or rol.nombre == 'cliente':
+            raise CambioDeRolNoPermitido()
 
         usuario.rol_id = rol.id
         usuario.rol = rol.nombre

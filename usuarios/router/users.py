@@ -5,7 +5,7 @@ from models.users import User, UserCreate, UserPublic, UserUpdate
 from models.rol import Rol
 from bcrypt import hashpw, gensalt
 from auth.auth import require_permission
-from exceptions.usuario import UsuarioNoEncontradoError
+from exceptions.usuario import UsuarioNoEncontradoError, CambioDeRolNoPermitido
 from utils.mail import send_mail_innactive_account
 from models.mail import EmailSchema
 from fastapi_pagination import Page, Params
@@ -96,3 +96,5 @@ async def modificar_rol_usuario(session:SessionDep, user_id: int, rol_id: int, _
         return user
     except UsuarioNoEncontradoError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    except CambioDeRolNoPermitido as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
