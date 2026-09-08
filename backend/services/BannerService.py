@@ -2,7 +2,7 @@ import datetime
 from fastapi import HTTPException, UploadFile
 from sqlmodel import Session, select
 from models.banner import Banner, BannerUpdate
-from services import ImagenService
+from services.ImagenService import ImagenService
 
 
 class BannerService:
