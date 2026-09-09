@@ -56,6 +56,11 @@ async def get_all_products(
         raise HTTPException(500, str(e))
 
 
+@router.get('/productos/destacados', response_model=list[ProductoPublic])
+async def get_productos_destacados(session: SessionDep, limite: int = 10):
+    return producto_service.listar_destacados(session, limite=limite)
+
+
 @router.get('/productos/{producto_id}', response_model=ProductoPublic)
 async def get_product(session: SessionDep, producto_id: int):
     try:

@@ -10,12 +10,14 @@ class Categoria(SQLModel, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime | None = Field(default=None)
     estado: bool = Field(default=True)
+    destacado: bool = Field(default=False)
 
 
 class CategoriaPublic(SQLModel):
     id: int
     nombre: str
     estado: bool
+    destacado: bool
     created_at: datetime
 
 
@@ -26,3 +28,4 @@ class CategoriaCreate(SQLModel):
 class CategoriaUpdate(SQLModel):
     nombre: str | None = None
     estado: bool | None = None
+    destacado: bool | None = None

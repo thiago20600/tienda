@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usuariosRequest } from "../../services/api/apiClient";
+import { tiendaRequest } from "../../services/api/apiClient";
 
 export default function useEliminarBanner() {
     const [cargando, setCargando] = useState(false);
@@ -12,7 +12,7 @@ export default function useEliminarBanner() {
         setExito(false);
 
         try {
-            const response = await usuariosRequest(`/admin/banners/${bannerId}`, {
+            const response = await tiendaRequest(`/admin/banners/${bannerId}`, {
                 method: "DELETE",
                 auth: true,
             });

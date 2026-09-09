@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { tiendaRequest, usuariosRequest } from "../../services/api/apiClient";
+import { tiendaRequest } from "../../services/api/apiClient";
 
 export default function useBanners(admin = false) {
     const [banners, setBanners] = useState([]);
@@ -10,7 +10,7 @@ export default function useBanners(admin = false) {
         setCargando(true);
         try {
             const endpoint = admin ? "/admin/banners" : "/banners";
-            const request = admin ? usuariosRequest : tiendaRequest;
+            const request = tiendaRequest;
             
             const response = await request(endpoint, {
                 method: "GET",

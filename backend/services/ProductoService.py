@@ -80,6 +80,20 @@ class ProductoService:
         return paginate(session, query, params)
 
 
+    def listar_destacados(self, session: Session, limite: int = 10) -> list[Producto]:
+        query = (
+            select(Producto)
+            .where(
+                Producto.destacado == True,
+                Producto.producto_activo == True,
+                Producto.eliminado_at == None
+            )
+            .order_by(Producto.created_at.desc())
+            .limit(limite)
+        )
+        return session.exec(query).all()
+
+
     def _aplicar_filtro_estado(self, query, estado: bool):
         return query.where(Producto.producto_activo == estado)
 

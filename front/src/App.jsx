@@ -13,6 +13,7 @@ import AdminPage from './pages/admin/inicio/admin'
 import BaseLayoutAdmin from "./layouts/BaseLayoutAdmin/BaseLayoutAdmin"
 import ProductosAdmin from "./pages/admin/productos/productosAdmin"
 import CategoriasAdmin from "./pages/admin/categorias/categoriasAdmin"
+import BannersAdmin from "./pages/admin/banners/bannersAdmin"
 import ConfiguracionAdmin from "./pages/admin/configuracion/configuracionAdmin"
 import PedidosAdmin from "./pages/admin/pedidos/pedidosAdmin"
 import PedidoDetalleAdmin from "./componentes/adminpanel/pedidos/PedidoDetalleAdmin"
@@ -22,6 +23,7 @@ import ModificarProducto from "./componentes/adminpanel/productos/ModificarProdu
 import NoEncontrado from "./componentes/estado/NoEncontrado"
 import Configuracion from "./pages/configuracion/Configuracion"
 import ModificarCategoria from "./componentes/adminpanel/categorias/ModificarCategoria/ModificarCategoria"
+import ModificarBanner from "./componentes/adminpanel/banners/ModificarBanner/ModificarBanner"
 import ActivateAccount from "./pages/auth/activate/ActivateAccount"
 import UsuariosAdmin from './pages/admin/usuarios/UsuariosAdmin'
 import RolesAdmin from './pages/admin/roles/RolesAdmin'
@@ -63,6 +65,8 @@ function App() {
             <Route path='/admin/productos/:id' element={<ModificarProducto/>}/>
           <Route path='/admin/categorias' element={<CategoriasAdmin/>} />
           <Route path='/admin/categorias/:id' element={<ModificarCategoria/>} />
+          <Route path='/admin/banners' element={<BannersAdmin/>} />
+          <Route path='/admin/banners/:id' element={<ModificarBanner/>} />
           <Route path='/admin/configuracion' element={<ConfiguracionAdmin/>} />
           <Route path='/admin/usuarios' element={<UsuariosAdmin/>} />
           <Route path='/admin/roles' element={<RolesAdmin/>} />

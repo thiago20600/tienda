@@ -1,46 +1,41 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { tiendaRequest } from "../../services/api/apiClient"
 
+export default function useBorrarProducto() {
 
-export default function useEliminarProducto() {
-
-    const navigate = useNavigate()
-    const [message, setMessage] = useState('') 
-    const accessToken = localStorage.getItem('token')
+    const [statusError, setStatusError] = useState(null)
+    const [message, setMessage] = useState(null)
+    const [eliminando, setEliminando] = useState(null)
 
     const eliminarProducto = async (id) => {
-        if (!accessToken) {
-            setMessage('Sesion no valida')
-            navigate('/login')
-            return
-        }
-        
+        setEliminando(id)
+        setStatusError(null)
+        setMessage(null)
+
         try {
-            const response = await tiendaRequest(`/productos/${id}`,
-                {
-                    method: 'DELETE',
-                    auth: true
-                }
-            )
+            const response = await tiendaRequest(`/admin/productos/${id}`, {
+                method: "DELETE",
+                auth: true,
+            })
 
             const data = await response.json().catch(() => ({}))
+
             if (!response.ok) {
-                setMessage(data.detail || `Error ${response.status}`)
-                return false
-            } else {
-                setMessage(data.message || 'Producto eliminado')
-                return true
+                setStatusError(response.status)
+                setMessage(data.detail || "No se pudo eliminar el producto")
+                return { ok: false, data }
             }
+
+            setMessage("Producto eliminado correctamente")
+            return { ok: true, data }
         } catch (error) {
-            console.error('Error eliminando producto:', error)
-            setMessage('Error de conexión al eliminar el producto.')
-            return false
+            setStatusError(0)
+            setMessage("Error de conexión al eliminar el producto")
+            return { ok: false, data: null }
+        } finally {
+            setEliminando(null)
         }
-
-
     }
 
-    return {eliminarProducto, message}
-
+    return { eliminarProducto, message, statusError, eliminando }
 }

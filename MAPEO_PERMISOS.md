@@ -81,6 +81,7 @@ async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, curr
 ### router/users.py
 ```python
 @router.get('/users', response_model=Page[UserPublic], dependencies=[Depends(require_permission("usuarios:read:admin"))])
+# acepta ademas filtros por query: q (username), rol, tipo
 
 @router.post('/users', response_model=UserPublic)
 # publico, sin permiso (registro)
@@ -93,6 +94,12 @@ async def user_delete(session: SessionDep, user_id: int, current_user = Depends(
 
 @router.get('/users/me', response_model=UserPublic)
 async def get_me_user(session:SessionDep, current_user = Depends(require_permission("usuarios:read:own"))):
+
+@router.patch('/users/{user_id}/roles/{rol_id}', response_model=UserPublic)
+async def modificar_rol_usuario(session:SessionDep, user_id: int, rol_id: int, _=Depends(require_permission('usuarios:update:admin'))):
+
+@router.post('/admin/empleados', response_model=EmpleadoPublic)
+async def post_empleado(session: SessionDep, empleado: EmpleadoCreate, _=Depends(require_permission("usuarios:create:admin")))
 ```
 
 ### router/login.py

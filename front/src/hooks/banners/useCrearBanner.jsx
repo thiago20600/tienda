@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usuariosRequest } from "../../services/api/apiClient";
+import { tiendaRequest } from "../../services/api/apiClient";
 
 export default function useCrearBanner() {
     const [cargando, setCargando] = useState(false);
@@ -12,7 +12,7 @@ export default function useCrearBanner() {
         setExito(false);
 
         try {
-            const response = await usuariosRequest("/admin/banners", {
+            const response = await tiendaRequest("/admin/banners", {
                 method: "POST",
                 auth: true,
                 body: formData, // FormData (incluye imagen)

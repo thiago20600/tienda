@@ -17,6 +17,11 @@ async def get_all_categorias(session: SessionDep):
     return categorias
 
 
+@router.get('/categorias/destacadas', response_model=list[CategoriaPublic])
+async def get_categorias_destacadas(session: SessionDep):
+    return categoria_service.consultar_destacadas(session=session)
+
+
 @router.get('/categorias/{categoria_id}', response_model=CategoriaPublic)
 async def get_unique_categoria(session: SessionDep, categoria_id:int):
     try:

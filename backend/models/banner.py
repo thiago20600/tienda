@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlmodel import Field, SQLModel
 
@@ -11,7 +11,7 @@ class Banner(SQLModel, table=True):
     titulo: str = Field(max_length=100)
     titulo_boton: str = Field(max_length=50, default="Ver más")
     boton_color: str = Field(max_length=20, default="#2563eb")  # Color en hex (ej: #2563eb)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(datetime.timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime | None = Field(default=None)
 
 

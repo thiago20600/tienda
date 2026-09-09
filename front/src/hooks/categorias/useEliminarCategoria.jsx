@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { tiendaRequest } from "../../services/api/apiClient"
 
-export default function useEliminarCategoria () {
+export default function useEliminarCategoria() {
 
-    const [statusError, setStatusError] = useState(null)
+    const [statusError, setStatusError] = useState(null);
 
 
     const eliminarCategoria = async (id) => {

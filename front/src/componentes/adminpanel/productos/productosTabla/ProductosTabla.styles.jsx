@@ -38,7 +38,7 @@ export const TablaProductos = styled.div`
     flex: 1; /* 👈 Toma todo el ancho disponible */
     display: grid;
     /* Ajustamos las columnas para dejar espacio fluido al contenido */
-    grid-template-columns: 60px minmax(0, 2fr) minmax(0, 1.5fr) repeat(4, minmax(0, 1fr));
+    grid-template-columns: 60px minmax(0, 2fr) minmax(0, 1.5fr) repeat(5, minmax(0, 1fr));
     align-items: center;
     gap: 16px;
     padding: 12px 16px;
@@ -127,9 +127,39 @@ export const BotonEliminar = styled.button`
   }
 `;
 
+export const BotonDestacado = styled.button`
+  min-width: 0;
+  width: auto;
+  border: 1px solid ${({ $destacado }) => ($destacado ? '#fde68a' : '#e2e8f0')};
+  border-radius: 6px;
+  padding: 6px 8px;
+  background-color: ${({ $destacado }) => ($destacado ? '#fffbeb' : '#f8fafc')};
+  color: ${({ $destacado }) => ($destacado ? '#b45309' : '#94a3b8')};
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  span {
+    margin-right: 4px;
+    font-size: 15px;
+  }
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.96);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+`;
+
 export const BotonEstado = styled.button`
   min-width: 0;
-  width: 100%;
+  width: auto;
   border: 1px solid ${({ $activo }) => ($activo ? '#b7e4c7' : '#f5b7b1')};
   border-radius: 6px;
   padding: 6px 8px;

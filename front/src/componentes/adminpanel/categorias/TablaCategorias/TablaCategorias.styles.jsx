@@ -93,6 +93,35 @@ export const CategoriasTabla = styled.div`
   }
 `;
 
+export const BotonDestacar = styled.button`
+  background: transparent;
+  border: 1px solid ${({ $destacado }) => ($destacado ? '#fde68a' : '#e2e8f0')};
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-right: 8px;
+  background-color: ${({ $destacado }) => ($destacado ? '#fffbeb' : '#f8fafc')};
+  color: ${({ $destacado }) => ($destacado ? '#b45309' : '#94a3b8')};
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+
+  span {
+    margin-right: 4px;
+    font-size: 15px;
+  }
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.96);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+`;
+
 export const BotonEliminar = styled.button`
   background: transparent;
   border: none;

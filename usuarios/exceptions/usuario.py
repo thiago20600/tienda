@@ -4,6 +4,12 @@ class UsuarioNoEncontradoError(Exception):
         super().__init__(self.message)
 
 
+class UsuarioDuplicadoError(Exception):
+    def __init__(self, campo: str, valor: str):
+        self.message = f"Ya existe un usuario con {campo}: {valor}"
+        super().__init__(self.message)
+
+
 class CambioDeRolNoPermitido(Exception):
     def __init__(self):
         self.message = f'No se puede modificar el rol de este usuario'

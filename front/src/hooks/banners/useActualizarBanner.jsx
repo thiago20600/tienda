@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usuariosRequest } from "../../services/api/apiClient";
+import { tiendaRequest } from "../../services/api/apiClient";
 
 export default function useActualizarBanner() {
     const [cargando, setCargando] = useState(false);
@@ -12,10 +12,19 @@ export default function useActualizarBanner() {
         setExito(false);
 
         try {
-            const response = await usuariosRequest(`/admin/banners/${bannerId}`, {
+            // El backend espera multipart/form-data con el campo "data" (JSON) y "imagen" opcional
+            let body;
+            if (data instanceof FormData) {
+                body = data;
+            } else {
+                body = new FormData();
+                body.append("data", JSON.stringify(data));
+            }
+
+            const response = await tiendaRequest(`/admin/banners/${bannerId}`, {
                 method: "PATCH",
                 auth: true,
-                body: data, // puede ser FormData (con imagen) o JSON
+                body,
             });
 
             const responseData = await response.json().catch(() => ({}));

@@ -1,52 +1,46 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom"
-import { tiendaRequest } from "../../../../services/api/apiClient";
-import { TablaProductos, BotonEliminar, BotonEstado, MensajeTabla } from "./ProductosTabla.styles";
+import { TablaProductos, BotonEliminar, BotonEstado, BotonDestacado, MensajeTabla } from "./ProductosTabla.styles";
 import useBorrarProducto from '../../../../hooks/productos/useBorrarProducto'
+import useActualizarEstadoProducto from '../../../../hooks/productos/useActualizarEstadoProducto'
+import useDestacarProducto from '../../../../hooks/productos/useDestacarProducto'
 
 import PrecioProducto from "../../../PrecioProducto/PrecioProducto";
 
-
 const ProductosTabla = ({ productos, cargando, statusError }) => {
-  const { eliminarProducto, message } = useBorrarProducto();
-  const [estadosLocales, setEstadosLocales] = useState({});
+  const { eliminarProducto, message, statusError: statusErrorEliminar } = useBorrarProducto();
+  const { actualizarEstado, statusError: statusErrorEstado, actualizando: actualizandoEstado } = useActualizarEstadoProducto();
+  const { toggleDestacado, statusError: statusErrorDestacado, actualizando: actualizandoDestacado } = useDestacarProducto();
+
   const [productosEliminados, setProductosEliminados] = useState(new Set());
-  const [actualizandoEstado, setActualizandoEstado] = useState(null);
-  const [estadoError, setEstadoError] = useState('');
-  const [eliminandoProducto, setEliminandoProducto] = useState(null);
+  const [estadosLocales, setEstadosLocales] = useState({});
+  const [destacadosLocales, setDestacadosLocales] = useState({});
+
   const productosActuales = productos
     .filter((producto) => !productosEliminados.has(producto.id))
     .map((producto) => ({
       ...producto,
-      producto_activo: estadosLocales[producto.id] ?? producto.producto_activo
+      producto_activo: estadosLocales[producto.id] ?? producto.producto_activo,
+      destacado: destacadosLocales[producto.id] ?? producto.destacado
     }));
 
   const cambiarEstado = async (event, producto) => {
     event.preventDefault();
     event.stopPropagation();
-    setActualizandoEstado(producto.id);
-    setEstadoError('');
 
-    try {
-      const response = await tiendaRequest(`/productos/${producto.id}`, {
-        method: 'PATCH',
-        auth: true,
-        body: { producto_activo: !producto.producto_activo }
-      });
-      const data = await response.json().catch(() => ({}));
+    const resultado = await actualizarEstado(producto.id, producto.producto_activo);
+    if (resultado?.ok) {
+      setEstadosLocales((prev) => ({ ...prev, [producto.id]: !producto.producto_activo }));
+    }
+  };
 
-      if (!response.ok) {
-        setEstadoError(data.detail || 'No se pudo cambiar el estado.');
-        return;
-      }
+  const cambiarDestacado = async (event, producto) => {
+    event.preventDefault();
+    event.stopPropagation();
 
-      const nuevoEstado = !producto.producto_activo;
-      setEstadosLocales((actuales) => ({ ...actuales, [producto.id]: nuevoEstado }));
-    } catch (error) {
-      console.error('Error cambiando el estado del producto:', error);
-      setEstadoError('Error de conexión al cambiar el estado.');
-    } finally {
-      setActualizandoEstado(null);
+    const resultado = await toggleDestacado(producto.id, producto.destacado);
+    if (resultado?.ok) {
+      setDestacadosLocales((prev) => ({ ...prev, [producto.id]: !producto.destacado }));
     }
   };
 
@@ -58,14 +52,25 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
     return <MensajeTabla $error>Error al cargar productos (Código: {statusError})</MensajeTabla>;
   }
 
-  if (productosActuales.length === 0) {
+  if (productos.length === 0) {
     return <MensajeTabla>No hay productos registrados todavía.</MensajeTabla>;
+  }
+
+  if (statusErrorEliminar) {
+    return <MensajeTabla $error>Error al eliminar producto (Código: {statusErrorEliminar})</MensajeTabla>;
+  }
+
+  if (statusErrorEstado) {
+    return <MensajeTabla $error>Error al cambiar estado de producto (Código: {statusErrorEstado})</MensajeTabla>;
+  }
+
+  if (statusErrorDestacado) {
+    return <MensajeTabla $error>Error al cambiar destacado de producto (Código: {statusErrorDestacado})</MensajeTabla>;
   }
 
   return (
     <TablaProductos>
-      {message && <MensajeTabla $success={!message.toLowerCase().includes('error')}>{message}</MensajeTabla>}
-      {estadoError && <MensajeTabla $error>{estadoError}</MensajeTabla>}
+      {message && <MensajeTabla>{message}</MensajeTabla>}
       <ul>
         {productosActuales.map((producto) => (
           <li key={producto.id}>
@@ -74,32 +79,52 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
               <p>{producto.nombre}</p>
               <p>
                 {Array.isArray(producto.categoria)
-                  ? producto.categoria.map((cat) => (typeof cat === 'object' ? cat.nombre : cat)).join(', ')
+                  ? producto.categoria?.map((cat) => (typeof cat === 'object' ? cat.nombre : cat)).join(', ')
                   : producto.categoria?.nombre || producto.categoria}
               </p>
-              <div className="product-price"><PrecioProducto precio={producto.precio} precioDescuento={producto.precio_descuento} compacto /></div>
               <p>{producto.sku}</p>
               <p>{producto.stock} un.</p>
-              <BotonEstado
-                type="button"
-                $activo={producto.producto_activo}
-                disabled={actualizandoEstado === producto.id}
-                onClick={(event) => cambiarEstado(event, producto)}
-                aria-label={`Cambiar estado de ${producto.nombre}`}
-              >
-                <span aria-hidden="true">{producto.producto_activo ? '✓' : 'X'}</span>
-                {producto.producto_activo ? 'Activo' : 'Inactivo'}
-              </BotonEstado>
             </NavLink>
-            <BotonEliminar disabled={eliminandoProducto === producto.id} onClick={async () => {
-              if (!window.confirm(`¿Eliminar ${producto.nombre}?`)) return;
-              setEliminandoProducto(producto.id);
-              const eliminado = await eliminarProducto(producto.id);
-              if (eliminado) setProductosEliminados((actuales) => new Set(actuales).add(producto.id));
-              setEliminandoProducto(null);
-            }}>
+            <BotonEliminar
+              onClick={async () => {
+                if (!window.confirm(`¿Eliminar ${producto.nombre}?`)) return;
+                setProductosEliminados((prev) => new Set(prev).add(producto.id));
+                const resultado = await eliminarProducto(producto.id);
+                if (resultado?.ok) {
+                  setProductosEliminados((prev) => {
+                    const next = new Set(prev);
+                    next.delete(producto.id);
+                    return next;
+                  });
+                } else {
+                  setProductosEliminados((prev) => {
+                    const next = new Set(prev);
+                    next.delete(producto.id);
+                    return next;
+                  });
+                }
+              }}
+            >
               🗑
             </BotonEliminar>
+            <BotonEstado
+              type="button"
+              $activo={estadosLocales[producto.id] ?? producto.producto_activo}
+              disabled={actualizandoEstado === producto.id || !!statusErrorEstado}
+              onClick={(event) => cambiarEstado(event, producto)}
+            >
+              <span>{estadosLocales[producto.id] ?? producto.producto_activo ? '✓' : '✕'}</span>
+              {estadosLocales[producto.id] ?? producto.producto_activo ? 'Activo' : 'Inactivo'}
+            </BotonEstado>
+            <BotonDestacado
+              type="button"
+              $destacado={destacadosLocales[producto.id] ?? producto.destacado}
+              disabled={actualizandoDestacado === producto.id || !!statusErrorDestacado}
+              onClick={(event) => cambiarDestacado(event, producto)}
+            >
+              <span>★</span>
+              {destacadosLocales[producto.id] ?? producto.destacado ? 'Destacado' : 'Destacar'}
+            </BotonDestacado>
           </li>
         ))}
       </ul>

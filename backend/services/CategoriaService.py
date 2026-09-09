@@ -11,6 +11,12 @@ class CategoriaService:
         return session.exec(select(Categoria)).all()
 
 
+    def consultar_destacadas(self, session: Session) -> list[Categoria]:
+        return session.exec(
+            select(Categoria).where(Categoria.destacado == True, Categoria.estado == True)
+        ).all()
+
+
     def consultar_por_id(self, session: Session, ids: list[int]) -> list[Categoria]:
         if not ids:
             return []

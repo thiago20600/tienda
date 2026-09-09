@@ -21,6 +21,7 @@ class Producto(SQLModel, table=True):
     producto_activo: bool = Field(default=True)
     eliminado_at: datetime | None = Field(default=None)
     precio_descuento: float | None = Field(gt=0, index=True)
+    destacado: bool = Field(default=False)
 
 
 
@@ -35,6 +36,7 @@ class ProductoPublic(SQLModel):
     imagen_url: list[str] = []
     producto_activo: bool
     precio_descuento: float | None = None
+    destacado: bool
 
 
 class ProductCreate(SQLModel):
@@ -58,3 +60,4 @@ class ProductUpdate(SQLModel):
     imagen_url: list[str] | None = None
     producto_activo: bool | None = None
     precio_descuento: float | None = None
+    destacado: bool | None = None

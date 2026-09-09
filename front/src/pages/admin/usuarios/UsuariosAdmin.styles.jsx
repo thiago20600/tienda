@@ -101,3 +101,54 @@ export const BusquedaInput = styled.input`
     box-shadow: 0 0 0 2px rgba(0, 158, 227, 0.1);
   }
 `;
+
+export const FiltrosUsuariosContainer = styled.div`
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+`;
+
+export const FiltroUsuariosGrupo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+`;
+
+export const FiltroUsuariosLabel = styled.label`
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+`;
+
+export const FiltroUsuariosSelect = styled.select`
+  min-height: 38px;
+  box-sizing: border-box;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+`;
+
+export const BotonAltaEmpleado = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 20px;
+  background-color: #009ee3;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #0081b8;
+  }
+`;

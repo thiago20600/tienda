@@ -2,10 +2,16 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from database.engine import SessionDep
 from sqlmodel import Session, select
 from models.users import User, UserCreate, UserPublic, UserUpdate
+from models.empleado import EmpleadoCreate, EmpleadoPublic
 from models.rol import Rol
 from bcrypt import hashpw, gensalt
 from auth.auth import require_permission
-from exceptions.usuario import UsuarioNoEncontradoError, CambioDeRolNoPermitido
+from exceptions.usuario import (
+    UsuarioNoEncontradoError,
+    UsuarioDuplicadoError,
+    CambioDeRolNoPermitido,
+)
+from exceptions.rol import RolNoEncontradoError
 from utils.mail import send_mail_innactive_account
 from models.mail import EmailSchema
 from fastapi_pagination import Page, Params
@@ -16,8 +22,15 @@ user_service = UserService()
 
 
 @router.get('/users', response_model=Page[UserPublic])
-async def get_users(session: SessionDep, q: str | None = None, params: Params = Depends(), _=Depends(require_permission("usuarios:read:admin"))):
-    return user_service.listar_usuarios(session=session, q=q, params=params)
+async def get_users(
+    session: SessionDep,
+    q: str | None = None,
+    rol: str | None = None,
+    tipo: str | None = None,
+    params: Params = Depends(),
+    _=Depends(require_permission("usuarios:read:admin")),
+):
+    return user_service.listar_usuarios(session=session, q=q, rol=rol, tipo=tipo, params=params)
 
 @router.post('/users', response_model=UserPublic)
 async def post_user(session: SessionDep, user: UserCreate, background_tasks: BackgroundTasks):
@@ -96,4 +109,29 @@ async def modificar_rol_usuario(session:SessionDep, user_id: int, rol_id: int, _
     except UsuarioNoEncontradoError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
     except CambioDeRolNoPermitido as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
+
+
+@router.post('/admin/empleados', response_model=EmpleadoPublic)
+async def post_empleado(
+    session: SessionDep,
+    empleado: EmpleadoCreate,
+    _=Depends(require_permission("usuarios:create:admin")),
+):
+    try:
+        db_empleado = user_service.crear_empleado(
+            session=session,
+            username=empleado.username,
+            email=str(empleado.email),
+            password=empleado.password,
+            telefono=empleado.telefono,
+            domicilio=empleado.domicilio,
+            rol_id=empleado.rol_id,
+        )
+        return db_empleado
+    except UsuarioDuplicadoError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
+    except UsuarioNoEncontradoError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    except RolNoEncontradoError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)

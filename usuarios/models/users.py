@@ -19,11 +19,6 @@ class User(SQLModel, table=True):
     rol_id: int | None = Field(default=None, foreign_key="rol.id")
     rol_obj: Optional[Rol] = Relationship(back_populates="usuarios")
 
-    __mapper_args__ = {
-        "polymorphic_on": "tipo",      
-        "polymorphic_identity": "cliente"
-    }
-
 class UserCreate(SQLModel):
     username: str
     password: str
