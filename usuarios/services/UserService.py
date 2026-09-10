@@ -72,7 +72,7 @@ class UserService:
         username: str,
         email: str,
         password: str,
-        telefono: int,
+        telefono: str,
         domicilio: str,
         rol_id: int | None = None,
     ) -> dict:

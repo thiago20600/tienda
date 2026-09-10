@@ -7,6 +7,7 @@ from alembic import context
 # ✅ Importá SQLModel y tus modelos
 from sqlmodel import SQLModel
 from models.users import User  # importá todos los modelos que tengas
+from models.empleado import Empleado  # noqa: F401 - para que alembic detecte la tabla empleado
 from models.rol import Rol
 from models.permisos import Permiso
 

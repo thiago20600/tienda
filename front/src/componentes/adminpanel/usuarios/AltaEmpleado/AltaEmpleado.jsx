@@ -49,7 +49,7 @@ const AltaEmpleado = ({ roles = [], onEmpleadoCreado, onCerrar }) => {
       username: formData.username.trim(),
       email: formData.email.trim(),
       password: formData.password,
-      telefono: Number(formData.telefono),
+      telefono: formData.telefono.trim(),
       domicilio: formData.domicilio.trim(),
       rol_id: formData.rolId ? Number(formData.rolId) : null,
     });
@@ -114,10 +114,13 @@ const AltaEmpleado = ({ roles = [], onEmpleadoCreado, onCerrar }) => {
             Teléfono *
             <AltaEmpleadoInput
               name="telefono"
-              type="number"
+              type="tel"
               value={formData.telefono}
               onChange={handleChange}
               placeholder="ej: 1122334455"
+              pattern="[0-9+\-\s()]+"
+              minLength={6}
+              maxLength={20}
               required
             />
           </AltaEmpleadoLabel>
