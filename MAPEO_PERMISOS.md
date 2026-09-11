@@ -138,7 +138,7 @@ async def delete_rol(rol_id: int, session: SessionDep, _=Depends(require_permiss
 ### router/permisos.py
 ```python
 @router.post(path='/', dependencies=[Depends(servicio_interno)])
-# no es de usuario, es service-to-service (sync automatico desde backend). No usa recurso:accion:alcance.
+# no es de usuario, es service-to-service (sync automatico desde backend).
 ```
 
 ## Notas

@@ -1,6 +1,10 @@
 from datetime import datetime, timezone
 from exceptions.categoria import CategoriaNoEncontradaError
 from models.categorias import Categoria, CategoriaCreate, CategoriaUpdate
+from models.categorias_con_productos import CategoriaConProductos
+from models.links import ProductosCategoriaLink
+from models.productos import Producto
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 
@@ -15,6 +19,45 @@ class CategoriaService:
         return session.exec(
             select(Categoria).where(Categoria.destacado == True, Categoria.estado == True)
         ).all()
+
+
+    def consultar_destacadas_con_productos(self, session: Session, limite: int = 12) -> list[CategoriaConProductos]:
+        categorias = self.consultar_destacadas(session=session)
+        if not categorias:
+            return []
+
+        categoria_ids = [c.id for c in categorias]
+
+        # Una sola consulta con todos los productos activos de las categorias destacadas,
+        # cargando la relacion categoria para evitar consultas N+1 al serializar.
+        resultados = session.exec(
+            select(Producto, ProductosCategoriaLink.categoria_id)
+            .join(ProductosCategoriaLink, Producto.id == ProductosCategoriaLink.producto_id)
+            .where(
+                ProductosCategoriaLink.categoria_id.in_(categoria_ids),
+                Producto.producto_activo == True,
+                Producto.eliminado_at == None,
+            )
+            .options(selectinload(Producto.categoria))
+            .order_by(ProductosCategoriaLink.categoria_id, Producto.id)
+        ).all()
+
+        productos_por_categoria: dict[int, list[Producto]] = {}
+        for producto, categoria_id in resultados:
+            productos_por_categoria.setdefault(categoria_id, []).append(producto)
+
+        return [
+            CategoriaConProductos(
+                id=categoria.id,
+                nombre=categoria.nombre,
+                imagen_url=categoria.imagen_url,
+                estado=categoria.estado,
+                destacado=categoria.destacado,
+                created_at=categoria.created_at,
+                productos=productos_por_categoria.get(categoria.id, [])[:limite],
+            )
+            for categoria in categorias
+        ]
 
 
     def consultar_por_id(self, session: Session, ids: list[int]) -> list[Categoria]:

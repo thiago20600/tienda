@@ -10,7 +10,7 @@ export default function useCategoriasDestacadas() {
     useEffect(() => {
         const obtenerCategorias = async () => {
             try {
-                const response = await tiendaRequest('/categorias/destacadas', {
+                const response = await tiendaRequest('/categorias/destacadas/con-productos?limite=12', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'

@@ -10,7 +10,7 @@ export default function useCategorias() {
         useEffect(() => {
             const obtenerProductos = async () => {
                 try {
-                    const response = await tiendaRequest('/categorias', {
+                    const response = await tiendaRequest('/categorias/', {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'

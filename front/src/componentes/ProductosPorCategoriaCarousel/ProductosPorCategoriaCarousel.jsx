@@ -1,4 +1,3 @@
-import useProductosPorCategoria from '../../hooks/productos/useProductosPorCategoria';
 import Carousel from '../Carousel/Carousel';
 import ProductoCard from '../Carousel/ProductoCard';
 import {
@@ -10,10 +9,10 @@ import {
 } from './ProductosPorCategoriaCarousel.styles';
 
 const ProductosPorCategoriaCarousel = ({ categoria }) => {
-    const { productos, cargando, statusError } = useProductosPorCategoria(categoria?.id);
+    const productos = categoria?.productos || [];
     const imagen = categoria?.imagen_url?.[0] || null;
 
-    if (cargando || statusError || productos.length === 0) return null;
+    if (productos.length === 0) return null;
 
     return (
         <>

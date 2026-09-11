@@ -7,6 +7,7 @@ from services.ImagenService import ImagenService
 from sqlmodel import select
 from database.engine import SessionDep
 from models.categorias import Categoria, CategoriaCreate, CategoriaPublic, CategoriaUpdate
+from models.categorias_con_productos import CategoriaConProductos
 from utils.permisos import permisos
 router = APIRouter()
 
@@ -22,6 +23,11 @@ async def get_all_categorias(session: SessionDep):
 @router.get('/categorias/destacadas', response_model=list[CategoriaPublic])
 async def get_categorias_destacadas(session: SessionDep):
     return categoria_service.consultar_destacadas(session=session)
+
+
+@router.get('/categorias/destacadas/con-productos', response_model=list[CategoriaConProductos])
+async def get_categorias_destacadas_con_productos(session: SessionDep, limite: int = 12):
+    return categoria_service.consultar_destacadas_con_productos(session=session, limite=limite)
 
 
 @router.get('/categorias/{categoria_id}', response_model=CategoriaPublic)
