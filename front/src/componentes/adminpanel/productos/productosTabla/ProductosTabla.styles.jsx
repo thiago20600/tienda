@@ -107,29 +107,6 @@ export const MensajeTabla = styled.p`
   color: ${({ $error, $success }) => $error ? '#b91c1c' : $success ? '#15803d' : '#64748b'};
 `;
 
-export const BotonEliminar = styled.button`
-  background: transparent;
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 0.5rem 1rem; /* Margen para dar distancia al borde del li */
-  margin-right: 8px; /* Un poco de aire contra el borde derecho */
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-
-  &:hover {
-    background-color: #fef2f2;
-    transform: scale(1.1);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-`;
-
 export const BotonDestacado = styled.button`
   min-width: 0;
   width: auto;
@@ -144,7 +121,7 @@ export const BotonDestacado = styled.button`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
+  margin: 0.5rem;
   span {
     margin-right: 4px;
     font-size: 15px;
@@ -174,6 +151,7 @@ export const BotonEstado = styled.button`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
 
   span {
     margin-right: 4px;

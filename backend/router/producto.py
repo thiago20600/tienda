@@ -30,6 +30,7 @@ async def get_all_products(
     stock_max: int | None = None,
     sku: int | None = None,
     categoria_id: int | None = None,
+    ofertas: bool | None = None,
     ordenar_por: str | None = None,
     orden: str = 'asc',
     params: Params = Depends()
@@ -45,6 +46,7 @@ async def get_all_products(
             stock_max=stock_max,
             sku=sku,
             categoria_id=categoria_id,
+            ofertas=ofertas,
             ordenar_por=ordenar_por,
             orden=orden,
             solo_activos=True,

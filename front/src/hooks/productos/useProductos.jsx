@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useDebounce from "../../../utils/useDebounce";
 import { tiendaRequest } from "../../services/api/apiClient";
 
-export default function useProductos(query = '', categoriaId = '', activo = true, page = 1, size = 12) {
+export default function useProductos(query = '', categoriaId = '', activo = true, page = 1, size = 12, ofertas = false) {
     const [productos, setProductos] = useState([])
     const [cargando, setCargando] = useState(true)
     const [statusError, setStatusError] = useState(null)
@@ -33,6 +33,7 @@ export default function useProductos(query = '', categoriaId = '', activo = true
                 })
                 if (termino) parametros.set('q', termino)
                 if (categoriaId) parametros.set('categoria_id', categoriaId)
+                if (ofertas) parametros.set('ofertas', 'true')
                 const queryString = parametros.toString()
                 const response = await tiendaRequest(`/productos?${queryString}`, {
                     method: 'GET',
@@ -61,7 +62,7 @@ export default function useProductos(query = '', categoriaId = '', activo = true
         obtenerProductos()
         return () => controlador.abort()
 
-    }, [termino, categoriaId, activo, paginaActual, size])
+    }, [termino, categoriaId, activo, paginaActual, size, ofertas])
 
     const cambiarPagina = (nuevaPagina) => {
         if (nuevaPagina >= 1 && nuevaPagina <= pages) {

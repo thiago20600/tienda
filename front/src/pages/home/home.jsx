@@ -26,16 +26,17 @@ const Home = () => {
     const [searchParams] = useSearchParams()
     const categoriaId = searchParams.get('categoria_id') || ''
     const verDestacados = searchParams.get('ver') === 'destacados'
-    const hayFiltros = Boolean(query || categoriaId || verDestacados)
+    const verOfertas = searchParams.get('ver') === 'ofertas'
+    const hayFiltros = Boolean(query || categoriaId || verDestacados || verOfertas)
 
     const [pagina, setPagina] = useState(1)
-    const { productos, cargando, statusError, page, pages, cambiarPagina } = useProductos(query, categoriaId, hayFiltros && !verDestacados, pagina, TAMANO_PAGINA)
+    const { productos, cargando, statusError, page, pages, cambiarPagina } = useProductos(query, categoriaId, hayFiltros && !verDestacados, pagina, TAMANO_PAGINA, verOfertas)
     const { productos: destacados, cargando: cargandoDestacados, statusError: statusErrorDestacados } = useProductosDestacados(60, verDestacados)
     const { categoria, cargando: cargandoCategoria } = useCategoria(categoriaId)
 
     useEffect(() => {
         setPagina(1)
-    }, [query, categoriaId, verDestacados])
+    }, [query, categoriaId, verDestacados, verOfertas])
 
     const cargandoActual = verDestacados ? cargandoDestacados : cargando
     const errorActual = verDestacados ? statusErrorDestacados : statusError

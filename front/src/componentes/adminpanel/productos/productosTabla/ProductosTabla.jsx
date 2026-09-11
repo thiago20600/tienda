@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom"
-import { TablaProductos, BotonEliminar, BotonEstado, BotonDestacado, MensajeTabla } from "./ProductosTabla.styles";
+import { TablaProductos, BotonEstado, BotonDestacado, MensajeTabla } from "./ProductosTabla.styles";
 import useBorrarProducto from '../../../../hooks/productos/useBorrarProducto'
 
 import useActualizarEstadoProducto from '../../../../hooks/productos/useActualizarEstadoProducto'
 import useDestacarProducto from '../../../../hooks/productos/useDestacarProducto'
-
+import AdminButton from "../../ui/AdminButton/AdminButton";
 import PrecioProducto from "../../../PrecioProducto/PrecioProducto";
 
 const ProductosTabla = ({ productos, cargando, statusError }) => {
@@ -89,7 +89,26 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
               <p>{producto.sku}</p>
               <p>{producto.stock} un.</p>
             </NavLink>
-            <BotonEliminar
+            
+            <BotonEstado
+              type="button"
+              $activo={estadosLocales[producto.id] ?? producto.producto_activo}
+              disabled={actualizandoEstado === producto.id || !!statusErrorEstado}
+              onClick={(event) => cambiarEstado(event, producto)}
+            >
+              <span>{estadosLocales[producto.id] ?? producto.producto_activo ? '✓' : '✕'}</span>
+              {estadosLocales[producto.id] ?? producto.producto_activo ? 'Activo' : 'Inactivo'}
+            </BotonEstado>
+            <BotonDestacado
+              type="button"
+              $destacado={destacadosLocales[producto.id] ?? producto.destacado}
+              disabled={actualizandoDestacado === producto.id || !!statusErrorDestacado}
+              onClick={(event) => cambiarDestacado(event, producto)}
+            >
+              <span>★</span>
+              {destacadosLocales[producto.id] ?? producto.destacado ? 'Destacado' : 'Destacar'}
+            </BotonDestacado>
+            <AdminButton $variant="danger" $size="sm"
               onClick={async () => {
                 if (!window.confirm(`¿Eliminar ${producto.nombre}?`)) return;
                 setProductosEliminados((prev) => new Set(prev).add(producto.id));
@@ -110,25 +129,7 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
               }}
             >
               🗑
-            </BotonEliminar>
-            <BotonEstado
-              type="button"
-              $activo={estadosLocales[producto.id] ?? producto.producto_activo}
-              disabled={actualizandoEstado === producto.id || !!statusErrorEstado}
-              onClick={(event) => cambiarEstado(event, producto)}
-            >
-              <span>{estadosLocales[producto.id] ?? producto.producto_activo ? '✓' : '✕'}</span>
-              {estadosLocales[producto.id] ?? producto.producto_activo ? 'Activo' : 'Inactivo'}
-            </BotonEstado>
-            <BotonDestacado
-              type="button"
-              $destacado={destacadosLocales[producto.id] ?? producto.destacado}
-              disabled={actualizandoDestacado === producto.id || !!statusErrorDestacado}
-              onClick={(event) => cambiarDestacado(event, producto)}
-            >
-              <span>★</span>
-              {destacadosLocales[producto.id] ?? producto.destacado ? 'Destacado' : 'Destacar'}
-            </BotonDestacado>
+            </AdminButton>
           </li>
         ))}
       </ul>
