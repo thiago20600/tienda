@@ -1,5 +1,6 @@
 import ProductCard from "../ProductCard/ProductCard"
 import { ProductsListContainer, EmptyProducts } from "../ProductsList/ProductsListStyles"
+import ProductoCard from "../Carousel/ProductoCard"
 
 const ProductsGrid = ({ productos = [], mensajeVacio = {} }) => {
     if (!productos.length) {
@@ -14,7 +15,7 @@ const ProductsGrid = ({ productos = [], mensajeVacio = {} }) => {
     return (
         <ProductsListContainer>
             {productos.map((producto) => (
-                <ProductCard key={producto.id} producto={producto} />
+                <ProductoCard key={producto.id} producto={producto} />
             ))}
         </ProductsListContainer>
     )

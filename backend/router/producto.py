@@ -170,6 +170,9 @@ async def get_all_products_admin(
         return productos
     except Exception as e:
         raise HTTPException(500, str(e))
+
+
+    
 @router.post('/admin/productos/importar', dependencies=[Depends(permisos.require_permission("productos:create:admin"))])
 async def importar_productos_csv(
     session: SessionDep,

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import useDebounce from "../../../utils/useDebounce";
-import { crearSolicitudCancelable } from "../../utils/abortController";
-import { tiendaRequest } from "../../services/api/apiClient";
+import { useEffect, useState } from "react"
+import useDebounce from "../../../utils/useDebounce"
+import { crearSolicitudCancelable } from "../../utils/abortController"
+import { tiendaRequest } from "../../services/api/apiClient"
 
-export default function useProductos(query = '', categoriaId = '', activo = true, page = 1, size = 12, ofertas = false, ordenarPor = '', orden = 'asc') {
+export default function useProductos(query = '', categoriaId = '', activo = true, page = 1, size = 12, ofertas = false, ordenarPor = '', orden = 'asc', destacados = false) {
     const [productos, setProductos] = useState([])
     const [cargando, setCargando] = useState(true)
     const [statusError, setStatusError] = useState(null)
@@ -26,6 +26,27 @@ export default function useProductos(query = '', categoriaId = '', activo = true
 
             setCargando(true)
             try {
+                if (destacados) {
+                    const { cancelada, valor: response } = await solicitud.ejecutar(() =>
+                        tiendaRequest(`/productos/destacados?limite=${size}`, {
+                            method: 'GET',
+                            headers: { 'Content-Type': 'application/json' }
+                        })
+                    )
+                    if (cancelada) return
+                    if (!response.ok) {
+                        setStatusError(response.status)
+                        return
+                    }
+                    const data = await response.json()
+                    const items = Array.isArray(data) ? data : []
+                    setProductos(items)
+                    setPages(1)
+                    setTotal(items.length)
+                    setStatusError(null)
+                    return
+                }
+
                 const parametros = new URLSearchParams({
                     page: String(page),
                     size: String(size),
@@ -64,7 +85,7 @@ export default function useProductos(query = '', categoriaId = '', activo = true
         obtenerProductos()
         return () => solicitud.cancelar()
 
-    }, [termino, categoriaId, activo, page, size, ofertas, ordenarPor, orden])
+    }, [termino, categoriaId, activo, page, size, ofertas, ordenarPor, orden, destacados])
 
     return { productos, statusError, cargando, page, pages, total }
 }

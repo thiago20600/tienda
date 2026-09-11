@@ -6,7 +6,6 @@ import ProductosDestacadosCarousel from "../../componentes/ProductosDestacadosCa
 import CambiarPagina from "../../componentes/adminpanel/tablas/CambiarPagina/CambiarPagina.jsx"
 import { Link, useOutletContext, useSearchParams } from "react-router-dom"
 import useProductos from "../../hooks/productos/useProductos"
-import useProductosDestacados from "../../hooks/productos/useProductosDestacados"
 import useCategoria from "../../hooks/categorias/useCategoria"
 import SelectorOrden from "../../componentes/SelectorOrden/SelectorOrden"
 import {
@@ -17,7 +16,7 @@ import {
     CategoriaBannerTitle,
 } from "../../componentes/ProductosPorCategoriaCarousel/ProductosPorCategoriaCarousel.styles"
 
-const TAMANO_PAGINA = 12;
+const TAMANO_PAGINA = 12
 
 const Home = () => {
 
@@ -30,9 +29,20 @@ const Home = () => {
     const ordenarPor = searchParams.get('ordenar_por') || ''
     const orden = searchParams.get('orden') === 'desc' ? 'desc' : 'asc'
     const hayFiltros = Boolean(query || categoriaId || verDestacados || verOfertas || ordenarPor)
+    const ordenable = !verDestacados
 
-    const { productos, cargando, statusError, page, pages } = useProductos(query, categoriaId, hayFiltros && !verDestacados, pagina, TAMANO_PAGINA, verOfertas, ordenarPor, orden)
-    const { productos: destacados, cargando: cargandoDestacados, statusError: statusErrorDestacados } = useProductosDestacados(60, verDestacados)
+    const { productos, cargando, statusError, page, pages } = useProductos(
+        query,
+        categoriaId,
+        hayFiltros,
+        pagina,
+        TAMANO_PAGINA,
+        verOfertas,
+        ordenarPor,
+        orden,
+        verDestacados
+    )
+
     const { categoria, cargando: cargandoCategoria } = useCategoria(categoriaId)
 
     const actualizarParametros = (cambios) => {
@@ -50,11 +60,8 @@ const Home = () => {
         actualizarParametros({ ordenar_por: campo, orden: campo ? direccion : '', page: '' })
     }
 
-    const cargandoActual = verDestacados ? cargandoDestacados : cargando
-    const errorActual = verDestacados ? statusErrorDestacados : statusError
-
-    if (hayFiltros && cargandoActual) return <p>Cargando productos...</p>
-    if (hayFiltros && errorActual) return <p>No se pudieron cargar los productos.</p>
+    if (hayFiltros && cargando) return <p>Cargando productos...</p>
+    if (hayFiltros && statusError) return <p>No se pudieron cargar los productos.</p>
 
     return (
         <>
@@ -64,8 +71,6 @@ const Home = () => {
                     <ProductosOfertasCarousel />
                     <ProductosDestacadosCarousel />
                     <CategoriasDestacadasCarousel />
-                    
-                    
                 </>
             )}
             {hayFiltros && (
@@ -83,11 +88,9 @@ const Home = () => {
                             </CategoriaBannerOverlay>
                         </CategoriaBanner>
                     )}
-                    {!verDestacados && (
-                        <SelectorOrden campo={ordenarPor} direccion={orden} onCambiar={cambiarOrden} />
-                    )}
-                    <ProductsList productos={verDestacados ? destacados : productos} />
-                    {!verDestacados && (
+                    {ordenable && <SelectorOrden campo={ordenarPor} direccion={orden} onCambiar={cambiarOrden} />}
+                    <ProductsList productos={productos} />
+                    {ordenable && (
                         <CambiarPagina
                             paginaActual={page}
                             totalPaginas={pages}

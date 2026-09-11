@@ -65,6 +65,7 @@ Documento de seguimiento de mejoras y arreglos del proyecto. Leyenda: ✅ hecho 
 | 37 | Revisión de `.gitignore` / secretos | ✅ | `.gitignore` nuevo (`.env` ignorado; solo `front/.env` quedaba trackeado) |
 | 38 | Versionado de esquema | ✅ | alembic arreglado + migraciones 001–005 |
 | 39 | Dashboard admin: imágenes + top productos | ✅ | `backend/models/metricas.py` (`imagen_url` en `StockBajoItem`/`ProductoTop`), `backend/services/MetricasService.py` (popula `imagen_url`), `front/src/pages/admin/inicio/admin.jsx` (layout lista + fallback de imagen + sección Top productos), `front/src/pages/admin/inicio/admin.styles.jsx` (`DashboardList`/`DashboardListItem`/`DashboardImg`/`DashboardImgPlaceholder`) |
+| 40 | Unificar containers home + ProductList | ✅ | `front/src/hooks/productos/useProductos.jsx` (param `destacados` unifica `/productos/destacados`), `front/src/pages/home/home.jsx` (un solo hook + un solo `ProductsList` para `ver=ofertas`/`ver=destacados`/`categoria_id`), `front/src/componentes/ProductsList/ProductsListStyles.jsx` (max-width + gap reducido), `front/src/componentes/ProductCard/ProductCardStyles.jsx` (hover + `width:100%`, elimina margin duplicado — favorito ya en card) |
 
 ---
 

@@ -3,7 +3,7 @@ import io
 from datetime import datetime, timezone
 from enum import Enum
 
-from fastapi import UploadFile
+from fastapi import HTTPException, UploadFile
 from fastapi_pagination import Params
 from fastapi_pagination.ext.sqlmodel import paginate
 from sqlalchemy import String, func, or_
@@ -143,8 +143,13 @@ class ProductoService:
         creados: list[str] = []
         errores: list[dict] = []
 
+        email = current_user.get('email')
+        if not email:
+            raise HTTPException(400, "Usuario sin email válido")
+
         for numero_fila, fila in enumerate(lector, start=1):
             try:
+                # --- Validaciones ---
                 nombre = (fila.get('nombre') or '').strip()
                 if not nombre:
                     raise ValueError("El campo 'nombre' es obligatorio")
@@ -163,6 +168,7 @@ class ProductoService:
                 if stock < 0:
                     raise ValueError("El stock no puede ser negativo")
 
+
                 producto_db = Producto(
                     nombre=nombre,
                     precio=precio,
@@ -172,13 +178,26 @@ class ProductoService:
                     descripcion=(fila.get('descripcion') or '').strip() or None,
                     destacado=(fila.get('destacado') or '').strip().lower() == 'true',
                     producto_activo=(fila.get('producto_activo') or 'true').strip().lower() != 'false',
-                    user_email=current_user['email'],
-                    categoria=self._resolver_categorias_csv(session, fila.get('categorias') or fila.get('categoria')),
+                    user_email=email,
+                    categoria=self._resolver_categorias_csv(
+                        session, fila.get('categorias') or fila.get('categoria')
+                    ),
                 )
                 session.add(producto_db)
+                session.flush()
                 creados.append(nombre)
+
             except (ValueError, DescuentoNoValido) as error:
+                session.rollback()
                 errores.append({'fila': numero_fila, 'error': str(error)})
+
+            except IntegrityError as error:
+                session.rollback()
+                errores.append({'fila': numero_fila, 'error': f"Error de BD: {error.orig}"})
+
+            except Exception as error:
+                session.rollback()
+                errores.append({'fila': numero_fila, 'error': f"Error inesperado: {str(error)}"})
 
         if creados:
             session.commit()

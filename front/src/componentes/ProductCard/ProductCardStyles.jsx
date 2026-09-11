@@ -10,10 +10,9 @@ export const ProductCardContainer = styled.div`
     justify-content: space-between;
 
     padding: 1rem;
-    margin: 1rem;
 
-    width: 200px;
-    min-height: 250px;
+    width: 100%;
+    min-height: 280px;
 
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -22,6 +21,15 @@ export const ProductCardContainer = styled.div`
 
     box-sizing: border-box;
 
+    background: #ffffff;
+
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+        border-color: #0369a1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
 
 `
 
@@ -54,11 +62,12 @@ export const ProductLink = styled(Link)`
     color: inherit;
 
     display: block;
+    height: 100%;
 `
 
 export const NoDisponibleBar = styled.div`
-    width: 120%;
-    margin-left: -10%;
+    width: 112%;
+    margin-left: -6%;
     background-color: #dc3545;
     color: white;
     text-align: center;
@@ -68,12 +77,13 @@ export const NoDisponibleBar = styled.div`
 `;
 
 export const UltimasUnidadesBar = styled.div`
-    width: 120%;
-    margin-left: -10%;
+    width: 112%;
+    margin-left: -6%;
     background-color: #ffc107;
     color: #212529;
     text-align: center;
     padding: 0;
     font-size: 14px;
     font-weight: 600;
+    border-radius: 10px;
 `;

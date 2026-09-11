@@ -5,9 +5,11 @@ export const ProductsListContainer = styled.div`
 
     grid-template-columns: repeat(4, 1fr);
 
-    gap: 2rem;
+    gap: 1rem;
 
-    padding: 2rem;
+    padding: 1.5rem;
+    max-width: 1280px;
+    margin: 0 auto;
 
     width: 100%;
 
