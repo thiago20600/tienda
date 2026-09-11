@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  BotonGuardar,
-  BotonVolver,
   DetalleContainer,
   EncabezadoDetalle,
   FormularioEstado,
@@ -13,6 +11,7 @@ import {
   Seccion,
   TablaProductos
 } from './PedidoDetalleAdmin.styles';
+import AdminButton from '../ui/AdminButton/AdminButton'
 import { tiendaRequest } from '../../../services/api/apiClient';
 
 const ESTADOS = ['pendiente', 'pagado', 'en_proceso', 'en_camino', 'entregado', 'rechazado', 'cancelado'];
@@ -88,7 +87,7 @@ const PedidoDetalleAdmin = () => {
     <DetalleContainer>
       <EncabezadoDetalle>
         <div>
-          <BotonVolver type="button" onClick={() => navigate('/admin/pedidos')}>Volver a pedidos</BotonVolver>
+          <AdminButton type="button" $variant="secondary" $size="sm" onClick={() => navigate('/admin/pedidos')}>Volver a pedidos</AdminButton>
           <h1>{pedido.numero_pedido || `Pedido #${pedido.id}`}</h1>
         </div>
         <strong>{textoEstado(pedido.estado)}</strong>
@@ -131,7 +130,7 @@ const PedidoDetalleAdmin = () => {
           <label htmlFor="comentarios">Comentarios
             <textarea id="comentarios" value={comentarios} onChange={(event) => setComentarios(event.target.value)} disabled={esEstadoFinal || guardando} />
           </label>
-          <BotonGuardar type="button" onClick={guardarCambios} disabled={esEstadoFinal || guardando}>{guardando ? 'Guardando...' : 'Guardar cambios'}</BotonGuardar>
+          <AdminButton type="button" onClick={guardarCambios} disabled={esEstadoFinal || guardando}>{guardando ? 'Guardando...' : 'Guardar cambios'}</AdminButton>
         </FormularioEstado>
         {esEstadoFinal && <Mensaje>Este pedido está cerrado y no admite cambios.</Mensaje>}
         {mensaje && <Mensaje $error={Boolean(mensaje.error)}>{mensaje.error || mensaje.texto}</Mensaje>}

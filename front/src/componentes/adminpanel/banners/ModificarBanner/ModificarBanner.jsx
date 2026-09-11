@@ -4,16 +4,15 @@ import useBanner from '../../../../hooks/banners/useConsultarBanner';
 import useActualizarBanner from '../../../../hooks/banners/useActualizarBanner';
 import {
   BannerContainer,
-  BannerBack,
   BannerTitle,
   BannerForm,
   BannerLabel,
   BannerInput,
   BannerSelect,
-  BannerButton,
   BannerMessage,
   BannerPreview
 } from './ModificarBanner.styles';
+import AdminButton from '../../ui/AdminButton/AdminButton'
 
 const ModificarBanner = () => {
   const { id } = useParams();
@@ -91,7 +90,7 @@ const ModificarBanner = () => {
 
   return (
     <BannerContainer>
-      <BannerBack type="button" onClick={() => navigate('/admin/banners')}>Volver a banners</BannerBack>
+      <AdminButton type="button" $variant="secondary" $size="sm" onClick={() => navigate('/admin/banners')}>Volver a banners</AdminButton>
       <BannerTitle>Editar banner</BannerTitle>
 
       <BannerPreview>
@@ -120,7 +119,7 @@ const ModificarBanner = () => {
         <BannerLabel htmlFor="imagen">Nueva imagen (opcional)
           <BannerInput id="imagen" name="imagen" type="file" accept="image/*" onChange={handleChange} />
         </BannerLabel>
-        <BannerButton type="submit" disabled={guardando}>{guardando ? 'Guardando...' : 'Guardar cambios'}</BannerButton>
+        <AdminButton type="submit" disabled={guardando}>{guardando ? 'Guardando...' : 'Guardar cambios'}</AdminButton>
       </BannerForm>
       {mensaje && <BannerMessage $error={Boolean(mensaje.error)}>{mensaje.error || mensaje.texto}</BannerMessage>}
     </BannerContainer>

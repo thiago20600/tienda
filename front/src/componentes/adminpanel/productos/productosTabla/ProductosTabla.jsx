@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom"
 import { TablaProductos, BotonEliminar, BotonEstado, BotonDestacado, MensajeTabla } from "./ProductosTabla.styles";
 import useBorrarProducto from '../../../../hooks/productos/useBorrarProducto'
+
 import useActualizarEstadoProducto from '../../../../hooks/productos/useActualizarEstadoProducto'
 import useDestacarProducto from '../../../../hooks/productos/useDestacarProducto'
 
@@ -81,6 +82,9 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
                 {Array.isArray(producto.categoria)
                   ? producto.categoria?.map((cat) => (typeof cat === 'object' ? cat.nombre : cat)).join(', ')
                   : producto.categoria?.nombre || producto.categoria}
+              </p>
+              <p className="product-price">
+                <PrecioProducto precio={producto.precio} precioDescuento={producto.precio_descuento} tabla />
               </p>
               <p>{producto.sku}</p>
               <p>{producto.stock} un.</p>

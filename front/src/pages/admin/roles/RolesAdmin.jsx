@@ -3,8 +3,9 @@ import useRoles from "../../../hooks/roles/useRoles"
 import usePermisos from "../../../hooks/roles/usePermisos"
 import useCrearRol from "../../../hooks/roles/useCrearRol"
 import RolCardItem from "./RolCardItem"
-import {RolesContainer,RolesHeader,CrearRolForm,CrearRolInput,CrearRolBoton,MensajeRoles
+import {RolesContainer,RolesHeader,CrearRolForm,CrearRolInput,MensajeRoles
 } from "./RolesAdmin.styles"
+import AdminButton from "../../../componentes/adminpanel/ui/AdminButton/AdminButton"
 
 const RolesAdmin = () => {
     const { roles, cargando, statusError, recargarRoles } = useRoles()
@@ -49,7 +50,7 @@ const RolesAdmin = () => {
                     value={nombreNuevoRol}
                     onChange={(event) => setNombreNuevoRol(event.target.value)}
                 />
-                <CrearRolBoton type="submit">Crear rol</CrearRolBoton>
+                <AdminButton type="submit">Crear rol</AdminButton>
             </CrearRolForm>
 
             {mensajeCrear && <MensajeRoles $error={Boolean(mensajeCrear.error)}>{mensajeCrear.error || mensajeCrear.texto}</MensajeRoles>}

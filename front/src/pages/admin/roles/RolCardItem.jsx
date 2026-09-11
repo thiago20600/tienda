@@ -3,8 +3,9 @@ import useActualizarRol from "../../../hooks/roles/useActualizarRol"
 import useAsignarPermisos from "../../../hooks/roles/useAsignarPermisos"
 import useEliminarRol from "../../../hooks/roles/useEliminarRol"
 import { agruparPermisosPorModulo, obtenerEtiquetaPermiso } from "../../../../utils/permisos"
-import {RolCard,RolCardHeader,RolNombre,RolEstadoBadge,RolAcciones,BotonSecundario,BotonEliminar,PermisoCheckboxLabel,MensajeRoles,BotonTexto,ModuloCard,ModuloHeader,ModulosContainer,PermisosLista
+import {RolCard,RolCardHeader,RolNombre,RolEstadoBadge,RolAcciones,PermisoCheckboxLabel,MensajeRoles,BotonTexto,ModuloCard,ModuloHeader,ModulosContainer,PermisosLista
 } from "./RolesAdmin.styles"
+import AdminButton from "../../../componentes/adminpanel/ui/AdminButton/AdminButton"
 
 const RolCardItem = ({ rol, permisosDisponibles, onRolActualizado, onRolEliminado }) => {
     const { actualizarRol } = useActualizarRol()
@@ -93,10 +94,10 @@ const RolCardItem = ({ rol, permisosDisponibles, onRolActualizado, onRolEliminad
                     <RolEstadoBadge $activo={rol.activo}>{rol.activo ? 'Activo' : 'Inactivo'}</RolEstadoBadge>
                 </RolNombre>
                 <RolAcciones>
-                    <BotonSecundario type="button" onClick={toggleActivo}>
+                    <AdminButton type="button" $size="sm" onClick={toggleActivo}>
                         {rol.activo ? 'Desactivar' : 'Activar'}
-                    </BotonSecundario>
-                    <BotonEliminar type="button" onClick={handleEliminar}>Eliminar rol</BotonEliminar>
+                    </AdminButton>
+                    <AdminButton type="button" $variant="danger" $size="sm" onClick={handleEliminar}>Eliminar rol</AdminButton>
                 </RolAcciones>
             </RolCardHeader>
 
@@ -130,9 +131,9 @@ const RolCardItem = ({ rol, permisosDisponibles, onRolActualizado, onRolEliminad
                 })}
             </ModulosContainer>
 
-            <BotonSecundario type="button" disabled={guardando} onClick={guardarPermisos}>
+            <AdminButton type="button" disabled={guardando} onClick={guardarPermisos}>
                 {guardando ? 'Guardando...' : 'Guardar permisos'}
-            </BotonSecundario>
+            </AdminButton>
 
             {mensaje && <MensajeRoles $error={Boolean(mensaje.error)}>{mensaje.error || mensaje.texto}</MensajeRoles>}
         </RolCard>

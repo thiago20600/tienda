@@ -46,6 +46,18 @@ const FiltrosProductosAdmin = ({ filtros, onFiltroChange }) => {
           <option value="false">Inactivos</option>
         </FiltroSelect>
       </FiltroGrupo>
+      <FiltroGrupo>
+        <FiltroLabel htmlFor="producto-ofertas">Tipo</FiltroLabel>
+        <FiltroSelect
+          id="producto-ofertas"
+          value={filtros.tipo || ''}
+          onChange={(event) => onFiltroChange('tipo', event.target.value)}
+        >
+          <option value="">Todos</option>
+          <option value="ofertas">En oferta</option>
+          <option value="destacados">Destacados</option>
+        </FiltroSelect>
+      </FiltroGrupo>
     </FiltrosProductosContainer>
   );
 };

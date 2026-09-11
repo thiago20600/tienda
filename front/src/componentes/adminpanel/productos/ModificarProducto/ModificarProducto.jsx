@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ModificarProductoContainer, ModificarProductoForm, FormTitle, FormGroup, Label, Input, Select,TextArea, ModificarProductoBoton, CargarImagenContainer, DropzoneLabel,FileInputHidden,PrevisualizacionInfo,ImagenesGrid,ImagenCard,AccionesGrupo,BotonAccion,EstadoMensaje,ImagenesExistentesGrid,ImagenExistenteCard,ImagenExistenteImg,ImagenExistenteInfo} from "./ModificarProducto.styles";
+import { ModificarProductoContainer, ModificarProductoForm, FormTitle, FormGroup, Label, Input, Select,TextArea, CargarImagenContainer, DropzoneLabel,FileInputHidden,PrevisualizacionInfo,ImagenesGrid,ImagenCard,AccionesGrupo,EstadoMensaje,ImagenesExistentesGrid,ImagenExistenteCard,ImagenExistenteImg,ImagenExistenteInfo} from "./ModificarProducto.styles";
+import AdminButton from "../../ui/AdminButton/AdminButton"
 import useCategorias from "../../../../hooks/categorias/useCategorias";
 import { tiendaRequest } from "../../../../services/api/apiClient";
 
@@ -230,7 +231,7 @@ const ModificarProducto = () => {
               />
             </FormGroup>
 
-            <ModificarProductoBoton type="submit">Actualizar Producto</ModificarProductoBoton>
+            <AdminButton type="submit">Actualizar Producto</AdminButton>
 
             {errorMessage && <EstadoMensaje $esError>{errorMessage}</EstadoMensaje>}
             {exitoMessage && <EstadoMensaje $esError={false}>{exitoMessage}</EstadoMensaje>}
@@ -292,16 +293,16 @@ const ModificarProducto = () => {
           )}
 
           <AccionesGrupo>
-            <BotonAccion
+            <AdminButton
               type="button"
               onClick={cargarImagenes}
               disabled={cargandoImagenes || imagenesNuevas.length === 0}
             >
               {cargandoImagenes ? 'Subiendo...' : 'Subir Imágenes'}
-            </BotonAccion>
-            <BotonAccion type="button" onClick={() => navigate('/admin/productos')}>
+            </AdminButton>
+            <AdminButton type="button" $variant="secondary" onClick={() => navigate('/admin/productos')}>
               Finalizar
-            </BotonAccion>
+            </AdminButton>
           </AccionesGrupo>
 
           {errorMessage && <EstadoMensaje $esError>{errorMessage}</EstadoMensaje>}

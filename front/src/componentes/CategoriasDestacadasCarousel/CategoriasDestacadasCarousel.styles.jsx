@@ -11,13 +11,23 @@ export const CategoriaCard = styled(Link)`
   justify-content: center;
   height: 86px;
   padding: 0.9rem 1rem;
-  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  position: relative;
+  background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   text-decoration: none;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   overflow: hidden;
+
+  ${({ $imagen }) => $imagen && `
+    background-color: #0f172a;
+    background-image: url(${$imagen});
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: cover;
+    border-color: #cbd5e1;
+  `}
 
   &:hover {
     border-color: #009ee3;
@@ -31,9 +41,15 @@ export const CategoriaNombre = styled.span`
   font-size: 0.95rem;
   font-weight: 700;
   text-align: center;
-  white-space: normal;
+  white-space: nowrap;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.2;
+
+  ${({ $conImagen }) => $conImagen && `
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    max-width: 120px;
+  `}
 `;

@@ -28,13 +28,13 @@ export const CrearBannerBoton = styled.button`
   padding: 0.6rem 1rem;
   border: 0;
   border-radius: 6px;
-  background: #009ee3;
+  background: ${(props) => props.theme.primary};
   color: #fff;
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
-  &:hover { background: #0081b8; }
+  &:hover { background: ${(props) => props.theme.secondary}; }
   &:disabled { background: #94a3b8; cursor: not-allowed; }
 `;
 
@@ -119,8 +119,8 @@ const campoBase = `
 
   &:focus {
     outline: none;
-    border-color: #009ee3;
-    box-shadow: 0 0 0 3px rgba(0, 158, 227, 0.15);
+    border-color: ${(props) => props.theme.primary};
+    box-shadow: 0 0 0 3px ${(props) => props.theme.primary}25;
   }
 `;
 
@@ -164,13 +164,13 @@ export const BotonPrimario = styled.button`
   padding: 0.6rem 1.1rem;
   border: 0;
   border-radius: 6px;
-  background: #009ee3;
+  background: ${(props) => props.theme.primary};
   color: #fff;
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
-  &:hover { background: #0081b8; }
+  &:hover { background: ${(props) => props.theme.secondary}; }
   &:disabled { background: #94a3b8; cursor: not-allowed; }
 `;
 
@@ -183,5 +183,5 @@ export const BotonSecundario = styled.button`
   font-weight: 600;
   cursor: pointer;
 
-  &:hover { border-color: #009ee3; }
+  &:hover { border-color: ${(props) => props.theme.primary}; }
 `;

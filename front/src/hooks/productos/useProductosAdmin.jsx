@@ -5,6 +5,8 @@ export default function useProductosAdmin({
     q = '',
     categoriaId = '',
     estado = '',
+    ofertas = false,
+    destacados = false,
     precioMin = '',
     precioMax = '',
     stockMin = '',
@@ -38,6 +40,8 @@ export default function useProductosAdmin({
                     // Convertir string 'true'/'false' a booleano para el backend
                     query.set('estado', estado === 'true' ? 'true' : 'false');
                 }
+                if (ofertas) query.set('ofertas', 'true');
+                if (destacados) query.set('destacados', 'true');
                 if (precioMin) query.set('precio_min', precioMin);
                 if (precioMax) query.set('precio_max', precioMax);
                 if (stockMin) query.set('stock_min', stockMin);
@@ -71,7 +75,7 @@ export default function useProductosAdmin({
         };
 
         obtenerProductos();
-    }, [paginaActual, sizeActual, q, categoriaId, estado, precioMin, precioMax, stockMin, stockMax, sku, ordenarPor, orden]);
+    }, [paginaActual, sizeActual, q, categoriaId, estado, ofertas, destacados, precioMin, precioMax, stockMin, stockMax, sku, ordenarPor, orden]);
 
     const cambiarPagina = (nuevaPagina) => {
         if (nuevaPagina >= 1 && nuevaPagina <= pages) {

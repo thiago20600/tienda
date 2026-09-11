@@ -2,7 +2,8 @@ import { useState } from "react"
 import Buscador from "../../Buscador/Buscador"
 import { HeaderContainer } from "../../productos/productosHeader/ProductosHeader.styles"
 import useCrearCategoria from "../../../../hooks/categorias/useCrearCategoria"
-import { AgregarCategoria, AgregarCategoriaBoton } from "./HeaderCategorias.styles"
+import { AgregarCategoria } from "./HeaderCategorias.styles"
+import AdminButton from "../../ui/AdminButton/AdminButton"
 
 const HeaderCategorias = ({ onCategoriaCreada }) => {
     const { crearCategoria } = useCrearCategoria()
@@ -36,7 +37,7 @@ const HeaderCategorias = ({ onCategoriaCreada }) => {
     <HeaderContainer>
         
         <Buscador></Buscador>
-        <AgregarCategoriaBoton onClick={() => {setInstanciaCrearCategoria(true)}}>Crear categoria</AgregarCategoriaBoton>
+        <AdminButton onClick={() => {setInstanciaCrearCategoria(true)}}>Crear categoria</AdminButton>
 
         {instanciaCrearCategoria &&
          <AgregarCategoria>
@@ -45,7 +46,7 @@ const HeaderCategorias = ({ onCategoriaCreada }) => {
             <form onSubmit={handleSubmit}>
                 <label htmlFor='nombreCategoria'>categoria:</label>
                 <input id='nombreCategoria' type="text" placeholder="nombre" onChange={handleInputChange} value={nombreCategoria}></input>
-                <button type='submit'>Guardar</button>
+                <AdminButton type='submit'>Guardar</AdminButton>
             </form>
             
          </AgregarCategoria> 

@@ -19,11 +19,20 @@ const CategoriasDestacadasCarousel = () => {
                 itemsVisibles={5}
                 gapPx={12}
                 titulo={{ texto: 'Categorías destacadas' }}
-                renderItem={(categoria) => (
-                    <CategoriaCard key={categoria.id} to={`/?categoria_id=${categoria.id}`}>
-                        <CategoriaNombre>{categoria.nombre}</CategoriaNombre>
-                    </CategoriaCard>
-                )}
+                renderItem={(categoria) => {
+                    const imagen = categoria.imagen_url?.[0] || null;
+                    return (
+                        <CategoriaCard
+                            key={categoria.id}
+                            to={`/?categoria_id=${categoria.id}`}
+                            $imagen={imagen}
+                        >
+                            <CategoriaNombre $conImagen={Boolean(imagen)}>
+                                {categoria.nombre}
+                            </CategoriaNombre>
+                        </CategoriaCard>
+                    );
+                }}
             />
 
             {categorias.map((categoria) => (

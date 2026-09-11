@@ -57,7 +57,7 @@ export const CategoriaButton = styled.button`
   padding: 0.7rem;
   border: 0;
   border-radius: 6px;
-  background: #009ee3;
+  background: ${(props) => props.theme.primary};
   color: #fff;
   font-weight: 700;
   cursor: pointer;
@@ -66,4 +66,44 @@ export const CategoriaButton = styled.button`
 
 export const CategoriaMessage = styled.p`
   color: ${(props) => props.$error ? '#b91c1c' : '#166534'};
+`;
+
+export const CategoriaImagenWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+export const CategoriaImagenPreview = styled.img`
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+`;
+
+export const CategoriaImagenActual = styled.img`
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+`;
+
+export const CategoriaImagenInput = styled.input`
+  padding: 0.5rem 0;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #475569;
+`;
+
+export const CategoriaImagenButton = styled.button`
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-radius: 6px;
+  background: #16a34a;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  &:disabled { background: #94a3b8; cursor: not-allowed; }
 `;

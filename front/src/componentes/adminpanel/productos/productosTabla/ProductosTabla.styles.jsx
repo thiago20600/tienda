@@ -90,6 +90,9 @@ export const TablaProductos = styled.div`
 
   .product-price {
     min-width: 0;
+    display: block;
+    width: 100%;
+    line-height: 1.25;
   }
 
   @media (max-width: 900px) {

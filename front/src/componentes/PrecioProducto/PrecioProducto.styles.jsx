@@ -14,6 +14,7 @@ export const PrecioAnterior = styled.span`
   font-size: ${(props) => props.$compacto ? '0.75rem' : '0.85rem'};
   line-height: 1.2;
   text-decoration: line-through;
+  ${(props) => props.$tabla && 'font-size: 11px;'}
 `;
 
 export const PrecioActual = styled.strong`
@@ -22,6 +23,7 @@ export const PrecioActual = styled.strong`
   font-size: ${(props) => props.$compacto ? '0.95rem' : '1.35rem'};
   line-height: 1.25;
   font-weight: 800;
+  ${(props) => props.$tabla && 'font-size: 13px;'}
 `;
 
 export const DescuentoBadge = styled.span`
@@ -33,4 +35,5 @@ export const DescuentoBadge = styled.span`
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.02em;
+  ${(props) => props.$tabla && 'font-size: 10px; padding: 0.15rem 0.4rem;'}
 `;

@@ -18,9 +18,9 @@ import {
   FiltrosUsuariosContainer,
   FiltroUsuariosGrupo,
   FiltroUsuariosLabel,
-  FiltroUsuariosSelect,
-  BotonAltaEmpleado
+  FiltroUsuariosSelect
 } from './UsuariosAdmin.styles';
+import AdminButton from '../../../componentes/adminpanel/ui/AdminButton/AdminButton'
 import RolUsuario from '../../../componentes/adminpanel/usuarios/RolUsuario.jsx';
 
 
@@ -116,9 +116,9 @@ const UsuariosAdmin = () => {
             ))}
           </FiltroUsuariosSelect>
         </FiltroUsuariosGrupo>
-        <BotonAltaEmpleado type="button" onClick={() => setAltaEmpleadoAbierto(true)}>
+        <AdminButton type="button" onClick={() => setAltaEmpleadoAbierto(true)}>
           + Dar de alta empleado
-        </BotonAltaEmpleado>
+        </AdminButton>
       </FiltrosUsuariosContainer>
       <UsuariosTable>
         <thead>

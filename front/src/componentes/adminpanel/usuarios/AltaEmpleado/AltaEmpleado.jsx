@@ -6,10 +6,10 @@ import {
   AltaEmpleadoLabel,
   AltaEmpleadoInput,
   AltaEmpleadoSelect,
-  AltaEmpleadoBoton,
   AltaEmpleadoError,
   AltaEmpleadoMensaje,
 } from "./AltaEmpleado.styles";
+import AdminButton from "../../ui/AdminButton/AdminButton"
 
 const AltaEmpleado = ({ roles = [], onEmpleadoCreado, onCerrar }) => {
   const { crearEmpleado, cargando } = useCrearEmpleado();
@@ -149,9 +149,9 @@ const AltaEmpleado = ({ roles = [], onEmpleadoCreado, onCerrar }) => {
           {error && <AltaEmpleadoError>{error}</AltaEmpleadoError>}
           {mensaje && <AltaEmpleadoMensaje>{mensaje}</AltaEmpleadoMensaje>}
 
-          <AltaEmpleadoBoton type="submit" disabled={cargando}>
+          <AdminButton type="submit" disabled={cargando}>
             {cargando ? 'Creando empleado...' : 'Crear empleado'}
-          </AltaEmpleadoBoton>
+          </AdminButton>
         </form>
       </div>
     </AltaEmpleadoModal>

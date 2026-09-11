@@ -44,10 +44,11 @@ class ProductoService:
         orden: str = 'asc',
         solo_activos: bool = True,
         incluir_eliminados: bool = False,
-        params: Params | None = None
+        params: Params | None = None,
+        ofertas: bool | None = None,
+        destacados: bool | None = None
     ):
         query = select(Producto)
-
 
         if not incluir_eliminados:
             query = query.where(Producto.eliminado_at == None)
@@ -72,6 +73,12 @@ class ProductoService:
 
         if categoria_id is not None:
             query = self._aplicar_filtro_categoria(query, categoria_id)
+
+        if ofertas is True:
+            query = query.where(Producto.precio_descuento != None)
+
+        if destacados is True:
+            query = query.where(Producto.destacado == True)
 
         # Aplicar ordenamiento
         if ordenar_por is not None:

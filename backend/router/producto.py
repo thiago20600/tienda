@@ -61,6 +61,17 @@ async def get_productos_destacados(session: SessionDep, limite: int = 10):
     return producto_service.listar_destacados(session, limite=limite)
 
 
+@router.get('/productos/ofertas', response_model=list[ProductoPublic], response_model_exclude_unset=True)
+async def get_productos_ofertas(session: SessionDep, limite: int = 12):
+    page = producto_service.listar_productos(
+        session,
+        solo_activos=True,
+        incluir_eliminados=False,
+        ofertas=True,
+        params=Params(size=limite))
+    return list(page.items)
+
+
 @router.get('/productos/{producto_id}', response_model=ProductoPublic)
 async def get_product(session: SessionDep, producto_id: int):
     try:
@@ -126,6 +137,8 @@ async def get_all_products_admin(
     stock_max: int | None = None,
     sku: int | None = None,
     categoria_id: int | None = None,
+    ofertas: bool | None = None,
+    destacados: bool | None = None,
     ordenar_por: str | None = None,
     orden: str = 'asc',
     params: Params = Depends()
@@ -141,6 +154,8 @@ async def get_all_products_admin(
             stock_max=stock_max,
             sku=sku,
             categoria_id=categoria_id,
+            ofertas=ofertas,
+            destacados=destacados,
             ordenar_por=ordenar_por,
             orden=orden,
             solo_activos=False,

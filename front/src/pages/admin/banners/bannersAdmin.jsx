@@ -5,7 +5,6 @@ import useCrearBanner from "../../../hooks/banners/useCrearBanner";
 import {
     BannersContainer,
     BannersHeader,
-    CrearBannerBoton,
     MensajeBanners,
     ModalOverlay,
     ModalContenido,
@@ -15,10 +14,9 @@ import {
     ModalInput,
     ModalSelect,
     ModalAcciones,
-    BotonPrimario,
-    BotonSecundario,
     PreviewImagen
 } from "./bannersAdmin.styles";
+import AdminButton from "../../../componentes/adminpanel/ui/AdminButton/AdminButton"
 
 const BannersAdmin = () => {
     const { banners, cargando, statusError, recargar } = useBanners(true);
@@ -86,7 +84,7 @@ const BannersAdmin = () => {
         <BannersContainer>
             <BannersHeader>
                 <h1>Banners</h1>
-                <CrearBannerBoton type="button" onClick={() => setModalAbierto(true)}>+ Crear banner</CrearBannerBoton>
+                <AdminButton type="button" onClick={() => setModalAbierto(true)}>+ Crear banner</AdminButton>
             </BannersHeader>
 
             <TablaBanners
@@ -139,8 +137,8 @@ const BannersAdmin = () => {
                             {mensajeCrear && <MensajeBanners $error={Boolean(mensajeCrear.error)}>{mensajeCrear.error || mensajeCrear.texto}</MensajeBanners>}
 
                             <ModalAcciones>
-                                <BotonSecundario type="button" onClick={cerrarModal}>Cancelar</BotonSecundario>
-                                <BotonPrimario type="submit" disabled={cargandoCrear}>{cargandoCrear ? 'Guardando...' : 'Crear banner'}</BotonPrimario>
+                                <AdminButton type="button" $variant="secondary" onClick={cerrarModal}>Cancelar</AdminButton>
+                                <AdminButton type="submit" disabled={cargandoCrear}>{cargandoCrear ? 'Guardando...' : 'Crear banner'}</AdminButton>
                             </ModalAcciones>
                         </ModalForm>
                     </ModalContenido>

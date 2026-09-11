@@ -56,3 +56,12 @@ class CategoriaService:
         session.commit()
         session.refresh(categoria_db)
         return categoria_db
+
+    def establecer_imagen_categoria(self, session: Session, id: int, imagen_url: str) -> Categoria:
+        categoria_db = self.consultar_unica_categoria(session=session, id=id)
+        categoria_db.imagen_url = [imagen_url]
+        categoria_db.updated_at = datetime.now(timezone.utc)
+        session.add(categoria_db)
+        session.commit()
+        session.refresh(categoria_db)
+        return categoria_db

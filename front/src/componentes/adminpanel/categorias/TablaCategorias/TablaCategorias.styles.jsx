@@ -27,7 +27,7 @@ export const CategoriasTabla = styled.div`
     justify-content: space-between;
 
     &:hover {
-      border-color: #009ee3;
+      border-color: ${(props) => props.theme.primary};
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       transform: translateY(-1px);
     }

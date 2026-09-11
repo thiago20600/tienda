@@ -38,7 +38,7 @@ export const CrearRolBoton = styled.button`
   padding: 0.6rem 1rem;
   border: 0;
   border-radius: 6px;
-  background: #009ee3;
+  background: ${(props) => props.theme.primary};
   color: #fff;
   font-weight: 700;
   cursor: pointer;

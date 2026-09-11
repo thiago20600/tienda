@@ -105,7 +105,7 @@ export const AgregarCategoriaBoton = styled.button`
   justify-content: center;
   height: 40px;
   padding: 0 20px;
-  background-color: #009ee3;
+  background-color: ${(props) => props.theme.primary};
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -116,6 +116,6 @@ export const AgregarCategoriaBoton = styled.button`
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: #0081b8;
+    background-color: ${(props) => props.theme.secondary};
   }
 `

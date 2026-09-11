@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { AgregarProductoContainer, FormTitle, AgregarProductoForm, FormGroup, Label, Input, Select, TextArea, AgregarProductoBoton, CargarImagenContainer, DropzoneLabel, FileInputHidden, PrevisualizacionInfo, ImagenesGrid, ImagenCard, AccionesGrupo, BotonAccion, EstadoMensaje } from './AgregarProductoNuevo.styles';
+import { AgregarProductoContainer, FormTitle, AgregarProductoForm, FormGroup, Label, Input, Select, TextArea, CargarImagenContainer, DropzoneLabel, FileInputHidden, PrevisualizacionInfo, ImagenesGrid, ImagenCard, AccionesGrupo, EstadoMensaje } from './AgregarProductoNuevo.styles';
+import AdminButton from '../../ui/AdminButton/AdminButton'
 import useCategorias from '../../../../hooks/categorias/useCategorias';
 import { useNavigate } from 'react-router-dom';
 import { tiendaRequest } from '../../../../services/api/apiClient';
@@ -165,7 +166,7 @@ const AgregarProductoNuevo = ({ onSubmit }) => {
             <TextArea id="descripcion" name="descripcion" rows="3" placeholder="Detalles sobre el producto..." value={formData.descripcion} onChange={handleChange} />
           </FormGroup>
 
-          <AgregarProductoBoton type="submit">Guardar Producto</AgregarProductoBoton>
+          <AdminButton type="submit">Guardar Producto</AdminButton>
           {message && <div>{message}</div>}
         </AgregarProductoForm>
       </> : (
@@ -202,13 +203,13 @@ const AgregarProductoNuevo = ({ onSubmit }) => {
         )}
 
         <AccionesGrupo>
-          <BotonAccion type="button" onClick={cargarImagenes} disabled={cargandoImagenes || imagenes.length === 0}>
+          <AdminButton type="button" onClick={cargarImagenes} disabled={cargandoImagenes || imagenes.length === 0}>
             {cargandoImagenes ? 'Subiendo...' : 'Subir Imágenes'}
-          </BotonAccion>
+          </AdminButton>
           
-          <BotonAccion type="button" onClick={() => navigate('/admin/productos')}>
+          <AdminButton type="button" $variant="secondary" onClick={() => navigate('/admin/productos')}>
             Finalizar
-          </BotonAccion>
+          </AdminButton>
         </AccionesGrupo>
 
         {errorMessage && (

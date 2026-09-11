@@ -1,6 +1,6 @@
 import { PrecioContainer, PrecioAnterior, PrecioActual, DescuentoBadge } from './PrecioProducto.styles';
 
-const PrecioProducto = ({ precio, precioDescuento, compacto = false }) => {
+const PrecioProducto = ({ precio, precioDescuento, compacto = false, tabla = false }) => {
   const precioOriginal = Number(precio);
   const precioFinal = Number(precioDescuento);
   const tieneDescuento = Number.isFinite(precioFinal)
@@ -8,7 +8,7 @@ const PrecioProducto = ({ precio, precioDescuento, compacto = false }) => {
     && precioFinal < precioOriginal;
 
   if (!tieneDescuento) {
-    return <PrecioActual $compacto={compacto}>${precioOriginal.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</PrecioActual>;
+    return <PrecioActual $compacto={compacto} $tabla={tabla}>${precioOriginal.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</PrecioActual>;
   }
 
   const porcentaje = Math.round((1 - precioFinal / precioOriginal) * 100);
@@ -16,10 +16,10 @@ const PrecioProducto = ({ precio, precioDescuento, compacto = false }) => {
   return (
     <PrecioContainer $compacto={compacto}>
       <div>
-        <PrecioAnterior>${precioOriginal.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</PrecioAnterior>
-        <PrecioActual $compacto={compacto}>${precioFinal.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</PrecioActual>
+        <PrecioAnterior $tabla={tabla}>${precioOriginal.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</PrecioAnterior>
+        <PrecioActual $compacto={compacto} $tabla={tabla}>${precioFinal.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</PrecioActual>
       </div>
-      <DescuentoBadge>-{porcentaje}%</DescuentoBadge>
+      <DescuentoBadge $tabla={tabla}>-{porcentaje}%</DescuentoBadge>
     </PrecioContainer>
   );
 };

@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from exceptions.base import BusinessError
 from exceptions.categoria import CategoriaNoEncontradaError
 from services.CategoriaService import CategoriaService
+from services.ImagenService import ImagenService
 from sqlmodel import select
 from database.engine import SessionDep
 from models.categorias import Categoria, CategoriaCreate, CategoriaPublic, CategoriaUpdate
@@ -10,6 +11,7 @@ from utils.permisos import permisos
 router = APIRouter()
 
 categoria_service = CategoriaService()
+imagen_service = ImagenService()
 
 @router.get('/categorias/', response_model=list[CategoriaPublic])
 async def get_all_categorias(session: SessionDep):
@@ -46,6 +48,15 @@ async def post_categoria(session: SessionDep, categoria: CategoriaCreate):
         return categoria_creada
     except BusinessError as e:
         raise HTTPException(status_code=400, detail=e.message)
+
+
+@router.post('/categorias/{categoria_id}/imagen', response_model=CategoriaPublic, dependencies=[Depends(permisos.require_permission("categorias:update:admin"))])
+async def agregar_imagen_categoria(session: SessionDep, categoria_id: int, imagen: UploadFile = File(...)):
+    try:
+        url = imagen_service._subir_una_imagen(imagen)
+        return categoria_service.establecer_imagen_categoria(session=session, id=categoria_id, imagen_url=url)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.patch('/categorias/{categoria_id}', response_model=CategoriaPublic, dependencies=[Depends(permisos.require_permission("categorias:update:admin"))])

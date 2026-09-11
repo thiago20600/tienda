@@ -1,4 +1,4 @@
-import { SideBarContainer, ListaSeccionContainer, SeccionItem, SeccionLink } from "./SideBar.styles"
+import { SideBarContainer, SideBarBrand, BrandLogo, BrandName, ListaSeccionContainer, SeccionItem, SeccionLink } from "./SideBar.styles"
 import { getSession } from "../../../services/auth/session"
 
 const SideBar = () => {
@@ -26,6 +26,10 @@ const SideBar = () => {
 
     return (
         <SideBarContainer>
+            <SideBarBrand>
+                <BrandLogo>A</BrandLogo>
+                <BrandName>Admin</BrandName>
+            </SideBarBrand>
             <ListaSeccionContainer>
                 {seccionesVisibles.map((seccion) => (
                     <SeccionItem key={seccion.name}>

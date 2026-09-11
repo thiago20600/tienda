@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useCategorias from "../../../../hooks/categorias/useCategorias"
-import { CategoriasTabla, BotonEliminar, BotonDestacar } from "./TablaCategorias.styles";
+import { CategoriasTabla } from "./TablaCategorias.styles";
+import AdminButton from "../../ui/AdminButton/AdminButton"
 import useOrdenamiento from "../../../../hooks/useOrdenar";
 import { NavLink } from "react-router-dom";
 import useEliminarCategoria from "../../../../hooks/categorias/useEliminarCategoria";
@@ -60,17 +61,25 @@ const TablaCategorias = ({ sortConfig }) => {
                                 {categoria.destacado ? 'Destacada' : 'Normal'}
                             </p>
                         </NavLink>
-                        <BotonDestacar
+                        <AdminButton
                             type="button"
-                            $destacado={destacadosLocales[categoria.id] ?? categoria.destacado}
+                            $size="sm"
+                            $variant="secondary"
                             disabled={actualizandoDestacado === categoria.id || !!statusErrorDestacado}
                             onClick={(event) => cambiarDestacado(event, categoria)}
                             aria-label={`Cambiar destacado de ${categoria.nombre}`}
                         >
                             <span aria-hidden="true">★</span>
                             {(destacadosLocales[categoria.id] ?? categoria.destacado) ? "Destacada" : "Destacar"}
-                        </BotonDestacar>
-                        <BotonEliminar onClick={async () => {if (window.confirm(`¿Eliminar ${categoria.nombre}?`)) await eliminarCategoria(categoria.id)}}>🗑</BotonEliminar>
+                        </AdminButton>
+                        <AdminButton
+                            type="button"
+                            $size="sm"
+                            $variant="danger"
+                            onClick={async () => {if (window.confirm(`¿Eliminar ${categoria.nombre}?`)) await eliminarCategoria(categoria.id)}}
+                        >
+                            🗑
+                        </AdminButton>
                     </li>
                 ))}
             </ul>

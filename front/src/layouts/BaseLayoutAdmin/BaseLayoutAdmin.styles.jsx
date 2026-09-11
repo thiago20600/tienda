@@ -4,7 +4,8 @@ export const LayoutAdminContainer = styled.div`
   display: flex;
   width: 100%;
   min-height: 100vh;
-  background-color: #f8f9fa; /* Fondo gris muy suave para el área de contenido */
+  background-color: #f8f9fa;
+  font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   @media (max-width: 800px) {
     flex-direction: column;
@@ -12,9 +13,10 @@ export const LayoutAdminContainer = styled.div`
 `;
 
 export const MainContent = styled.main`
-  flex: 1; /* Ocupa todo el espacio restante a la derecha */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Previene que el contenido desborde el flexbox */
-  overflow-y: auto; /* Permite scroll solo en el contenido si es muy largo */
+  min-width: 0;
+  overflow-y: auto;
+  background-color: #f8f9fa;
 `;

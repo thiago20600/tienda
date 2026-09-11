@@ -6,11 +6,7 @@ from models.empleado import EmpleadoCreate, EmpleadoPublic
 from models.rol import Rol
 from bcrypt import hashpw, gensalt
 from auth.auth import require_permission
-from exceptions.usuario import (
-    UsuarioNoEncontradoError,
-    UsuarioDuplicadoError,
-    CambioDeRolNoPermitido,
-)
+from exceptions.usuario import (UsuarioNoEncontradoError, UsuarioDuplicadoError, CambioDeRolNoPermitido)
 from exceptions.rol import RolNoEncontradoError
 from utils.mail import send_mail_innactive_account
 from models.mail import EmailSchema

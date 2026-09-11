@@ -7,9 +7,9 @@ import {
     ImagenBanner,
     EstadoBadge,
     BotonPreview,
-    BotonEliminar,
     MensajeTabla
 } from "./TablaBanners.styles"
+import AdminButton from "../../ui/AdminButton/AdminButton"
 
 const TablaBanners = ({ banners = [], cargando, statusError, onRecargar }) => {
     const { eliminarBanner, cargando: cargandoEliminar } = useEliminarBanner();
@@ -56,14 +56,16 @@ const TablaBanners = ({ banners = [], cargando, statusError, onRecargar }) => {
                                 <EstadoBadge $activo={banner.activo}>{banner.activo ? 'Activo' : 'Inactivo'}</EstadoBadge>
                             </FilaBanner>
                         </NavLink>
-                        <BotonEliminar
+                        <AdminButton
                             type="button"
+                            $variant="danger"
+                            $size="sm"
                             title="Eliminar banner"
                             disabled={cargandoEliminar}
                             onClick={(e) => manejarEliminar(e, banner)}
                         >
                             🗑
-                        </BotonEliminar>
+                        </AdminButton>
                     </li>
                 ))}
             </ul>

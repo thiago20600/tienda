@@ -1,36 +1,65 @@
-import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import styled from 'styled-components'
+import { NavLink } from 'react-router-dom'
 
-export const SideBarContainer = styled.div`
+export const SideBarContainer = styled.aside`
   width: 250px;
   min-height: 100vh;
   background-color: #ffffff;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid #e5e7eb;
   padding: 1.5rem 1rem;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 
   @media (max-width: 800px) {
     width: 100%;
     min-height: auto;
     border-right: none;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e5e7eb;
     padding: 0.75rem;
   }
-`;
+`
 
-export const ListaSeccionContainer = styled.ul`
+export const SideBarBrand = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
+`
+
+export const BrandLogo = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: ${(props) => props.theme.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+`
+
+export const BrandName = styled.span`
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+`
+
+export const ListaSeccionContainer = styled.nav`
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 
   @media (max-width: 800px) {
     flex-direction: row;
     flex-wrap: wrap;
   }
-`;
+`
 
 export const SeccionItem = styled.li`
   width: 100%;
@@ -38,29 +67,27 @@ export const SeccionItem = styled.li`
   @media (max-width: 800px) {
     width: auto;
   }
-`;
+`
 
 export const SeccionLink = styled(NavLink)`
   display: flex;
   align-items: center;
-  padding: 0.75rem 1rem;
-  color: #4a5568;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.95rem;
+  padding: 0.625rem 0.875rem;
+  color: #475569;
+  font-size: 0.9rem;
   font-weight: 500;
   text-decoration: none;
   border-radius: 6px;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.15s ease-in-out;
 
   &:hover {
-    background-color: #f7fafc;
-    color: #1a202c;
+    background-color: ${(props) => props.theme.primary}10;
+    color: ${(props) => props.theme.primary};
   }
 
-  /* React Router le agrega automáticamente la clase .active al link según la ruta actual */
   &.active {
-    background-color: #ebf8ff;
-    color: #009ee3;
+    background-color: ${(props) => props.theme.primary}15;
+    color: ${(props) => props.theme.primary};
     font-weight: 600;
   }
-`;
+`

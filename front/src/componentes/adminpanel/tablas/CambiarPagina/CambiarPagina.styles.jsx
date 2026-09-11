@@ -27,7 +27,7 @@ export const BotonPagina = styled.button`
   }
 
   &:focus-visible {
-    outline: 2px solid #6366f1;
+    outline: 2px solid ${(props) => props.theme.primary};
     outline-offset: 2px;
   }
 

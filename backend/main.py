@@ -7,12 +7,14 @@ from router.categoria import router as categoriaRouter
 from router.pedidos import router as pedidoRouter
 from router.carrito import router as carritoRouter
 from models.categorias import Categoria
+from models.configuracion import ConfiguracionGeneral
 from models.productos import Producto
 from fastapi.middleware.cors import CORSMiddleware
 from router.mercado_pago import router as mercadopagoRouter
 from fastapi_pagination import add_pagination
 from utils.permisos import permisos
 from router.banner import router as bannerRouter
+from router.configuracion import router as configuracionRouter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,3 +40,4 @@ app.include_router(categoriaRouter)
 app.include_router(carritoRouter)
 app.include_router(mercadopagoRouter)
 app.include_router(bannerRouter)
+app.include_router(configuracionRouter)

@@ -89,7 +89,7 @@ export const BotonGuardar = styled.button`
   border: 0;
   border-radius: 6px;
   padding: 0.7rem 1rem;
-  background: #009ee3;
+  background: ${(props) => props.theme.primary};
   color: #fff;
   font-weight: 600;
   cursor: pointer;
