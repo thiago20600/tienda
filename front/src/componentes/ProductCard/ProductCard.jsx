@@ -6,6 +6,7 @@ import { ProductLink } from "./ProductCardStyles"
 import { ProductImage } from "./ProductCardStyles"
 import PrecioProducto from "../PrecioProducto/PrecioProducto"
 import { UltimasUnidadesBar, NoDisponibleBar } from "./ProductCardStyles"
+import BotonFavorito from "../BotonFavorito/BotonFavorito"
 
 const IMAGEN_FALLBACK = 'https://res.cloudinary.com/dfnnundpn/image/upload/v1781797763/sistema_1/mirsnducpj6tdy5hjewy.jpg';
 
@@ -13,6 +14,7 @@ const ProductCard = ({ producto }) => {
     return (
         <ProductLink to={`/productos/${producto.id}`}>
             <ProductCardContainer>
+                <BotonFavorito productoId={producto.id} />
                 <ProductImage
                     src={producto.imagen_url?.[0] || IMAGEN_FALLBACK}
                     alt={producto.nombre}

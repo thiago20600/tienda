@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_PASSWORD: str
     DATABASE_URL: str
+    FRONT_URL: str = "http://localhost:5173"
     model_config = SettingsConfigDict(env_file='.env')
 
 

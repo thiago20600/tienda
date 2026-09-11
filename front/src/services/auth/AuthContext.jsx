@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { usuariosRequest } from '../api/apiClient';
-import { clearSession, getAccessToken, getSession } from './session';
+import { clearSession, guardarSesionDesdeToken, getSession } from './session';
 import AuthContext from './authContext';
 
 export const AuthProvider = ({ children }) => {
@@ -8,12 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [cargando, setCargando] = useState(true);
 
   const cargarUsuario = async () => {
-    if (!getAccessToken()) {
-      setUsuario(null);
-      setCargando(false);
-      return;
-    }
-
     try {
       const response = await usuariosRequest('/users/me/', { auth: true });
       if (!response.ok) {
@@ -47,11 +41,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (token) => {
-    localStorage.setItem('token', token);
+    guardarSesionDesdeToken(token);
     await cargarUsuario();
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await usuariosRequest('/logout', { method: 'POST', auth: true });
+    } catch {
+      // si el servicio de usuarios no responde, la cookie local expira sola
+    }
     clearSession();
     setUsuario(null);
   };

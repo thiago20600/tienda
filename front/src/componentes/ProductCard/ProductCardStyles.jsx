@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 
 export const ProductCardContainer = styled.div`
 
+    position: relative;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from enum import Enum
 import uuid
-from sqlmodel import Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 from models.productos import Producto, ProductoPublic
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -32,13 +32,14 @@ class Pedido(SQLModel, table=True):
     entregado_at: datetime | None = Field(default=None)
     user_email: str
     comentarios: str | None = None
+    updated_by_email: str | None = None
     #productos: list['Producto'] = Relationship(back_populates="pedidos", link_model=PedidoProductoLink)
     detalles: list['DetallePedido'] = Relationship(back_populates='pedido')
     metodo_pago: MetodoPago
     precio_total: float
     idempotency_key: str = Field(default_factory=lambda: str(uuid.uuid4()))
     mp_payment_id: str | None = Field(default=None)
-    mp_response_raw: dict | None = Field(default=None, sa_column=Column(JSONB))
+    mp_response_raw: dict | None = Field(default=None, sa_column=Column(JSONB().with_variant(JSON(), "sqlite")))
     
 
 
@@ -73,6 +74,17 @@ class PedidoPublic(SQLModel):
     mp_payment_id: str | None = Field(default=None)
     mp_response_raw: dict | None = None
     user_email: str
+
+
+class PedidoClientePublic(SQLModel):
+    id: int
+    numero_pedido: str | None
+    estado: EstadoPedido
+    metodo_pago: MetodoPago
+    precio_total: float
+    created_at: datetime
+    comentarios: str | None = None
+    detalles: list[DetallePedidoPublic] = []
 
 
 class PedidoUpdate(SQLModel):

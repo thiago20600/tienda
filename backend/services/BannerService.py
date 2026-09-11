@@ -12,12 +12,12 @@ class BannerService:
 
     def listar_activos(self, session: Session) -> list[Banner]:
         return session.exec(
-            select(Banner).where(Banner.activo == True)
+            select(Banner).where(Banner.activo == True).order_by(Banner.orden, Banner.id)
         ).all()
 
 
     def listar_todos(self, session: Session) -> list[Banner]:
-        return session.exec(select(Banner).order_by(Banner.id)).all()
+        return session.exec(select(Banner).order_by(Banner.orden, Banner.id)).all()
 
 
     def obtener_por_id(self, session: Session, banner_id: int) -> Banner:
@@ -27,7 +27,7 @@ class BannerService:
         return banner
 
 
-    def crear(self, session: Session, imagen: UploadFile, titulo: str, enlace: str, titulo_boton: str = "Ver más", boton_color: str = "#2563eb", activo: bool = True) -> Banner:
+    def crear(self, session: Session, imagen: UploadFile, titulo: str, enlace: str, titulo_boton: str = "Ver más", boton_color: str = "#2563eb", activo: bool = True, orden: int = 0) -> Banner:
 
         imagen_url = self.imagen_service._subir_una_imagen(imagen)
 
@@ -37,7 +37,8 @@ class BannerService:
             enlace=enlace,
             titulo_boton=titulo_boton,
             boton_color=boton_color,
-            activo=activo
+            activo=activo,
+            orden=orden
         )
         session.add(banner)
         session.commit()

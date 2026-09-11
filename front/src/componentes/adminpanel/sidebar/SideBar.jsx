@@ -33,9 +33,9 @@ const SideBar = () => {
             <ListaSeccionContainer>
                 {seccionesVisibles.map((seccion) => (
                     <SeccionItem key={seccion.name}>
-                        <SeccionLink to={seccion.path} end={seccion.path === '/admin' || seccion.path === '/'}>
+                        <SeccionLink to={seccion.path} end={seccion.path === '/admin' || seccion.path === '/'}><strong>
                             {seccion.name}
-                        </SeccionLink>
+                        </strong></SeccionLink>
                     </SeccionItem>
                 ))}
             </ListaSeccionContainer>

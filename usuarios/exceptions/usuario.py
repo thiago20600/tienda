@@ -14,3 +14,7 @@ class CambioDeRolNoPermitido(Exception):
     def __init__(self):
         self.message = f'No se puede modificar el rol de este usuario'
         super().__init__(self.message)
+class TokenResetInvalidoError(Exception):
+    def __init__(self):
+        self.message = 'El enlace de recuperación no es válido o expiró'
+        super().__init__(self.message)

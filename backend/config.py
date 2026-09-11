@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     TOKEN_SERVICIO_INTERNO_API: str
     API_USUARIOS_URL: str
+    CORS_ORIGINS: str = "http://localhost:5173"
+    MP_WEBHOOK_SECRET: str | None = None
 
     model_config = SettingsConfigDict(env_file='.env')
 

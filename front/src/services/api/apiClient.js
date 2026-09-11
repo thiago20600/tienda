@@ -1,14 +1,12 @@
 const API_PRODUCTOS = import.meta.env.VITE_API_URL;
 const API_USUARIOS = import.meta.env.VITE_API_URL_USUARIOS;
 
-const getToken = () => localStorage.getItem('token');
-
 const request = async (baseUrl, path, options = {}) => {
   const { auth = false, headers = {}, body, ...fetchOptions } = options;
   const requestHeaders = new Headers(headers);
 
   if (auth) {
-    const token = getToken();
+    const token = localStorage.getItem('token');
     if (token) requestHeaders.set('Authorization', `Bearer ${token}`);
   }
 
@@ -19,6 +17,7 @@ const request = async (baseUrl, path, options = {}) => {
   const response = await fetch(`${baseUrl}${path}`, {
     ...fetchOptions,
     headers: requestHeaders,
+    credentials: 'include',
     body: body instanceof FormData || typeof body === 'string' ? body : body ? JSON.stringify(body) : undefined,
   });
 

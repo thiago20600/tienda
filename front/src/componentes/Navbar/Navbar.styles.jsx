@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { NavLink } from 'react-router-dom';
 
 // Contenedor principal (Encabezado)
 export const NavbarContainer = styled.header`
@@ -70,5 +71,25 @@ export const GrupoLinks = styled.nav`
   @media (max-width: 760px) {
     justify-content: flex-start;
     gap: 12px 18px;
+  }
+`;
+
+export const Marca = styled(NavLink)`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #1a1a1a;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  white-space: nowrap;
+
+  img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    border-radius: 8px;
+    background-color: #ffffff;
   }
 `;

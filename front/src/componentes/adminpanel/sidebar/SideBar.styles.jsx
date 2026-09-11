@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 export const SideBarContainer = styled.aside`
   width: 250px;
   min-height: 100vh;
-  background-color: #ffffff;
+  background-color: ${(props) => props.theme.primary};
   border-right: 1px solid #e5e7eb;
   padding: 1.5rem 1rem;
   box-sizing: border-box;
@@ -32,7 +32,7 @@ export const BrandLogo = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background-color: ${(props) => props.theme.primary};
+  background-color: ${(props) => props.theme.secondary};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,7 +44,7 @@ export const BrandLogo = styled.div`
 export const BrandName = styled.span`
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: ${(props) => props.theme.secondary};
 `
 
 export const ListaSeccionContainer = styled.nav`
@@ -73,7 +73,7 @@ export const SeccionLink = styled(NavLink)`
   display: flex;
   align-items: center;
   padding: 0.625rem 0.875rem;
-  color: #475569;
+  color: ${(props) => props.theme.secondary};
   font-size: 0.9rem;
   font-weight: 500;
   text-decoration: none;
@@ -81,13 +81,13 @@ export const SeccionLink = styled(NavLink)`
   transition: all 0.15s ease-in-out;
 
   &:hover {
-    background-color: ${(props) => props.theme.primary}10;
+    background-color: ${(props) => props.theme.secondary};
     color: ${(props) => props.theme.primary};
   }
 
   &.active {
-    background-color: ${(props) => props.theme.primary}15;
-    color: ${(props) => props.theme.primary};
+    background-color: ${(props) => props.theme.secondary}50;
+    color: ${(props) => props.theme.secondary};
     font-weight: 600;
   }
 `

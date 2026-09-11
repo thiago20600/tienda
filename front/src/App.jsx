@@ -25,8 +25,13 @@ import Configuracion from "./pages/configuracion/Configuracion"
 import ModificarCategoria from "./componentes/adminpanel/categorias/ModificarCategoria/ModificarCategoria"
 import ModificarBanner from "./componentes/adminpanel/banners/ModificarBanner/ModificarBanner"
 import ActivateAccount from "./pages/auth/activate/ActivateAccount"
+import RecuperarContrasena from "./pages/auth/recuperar/RecuperarContrasena"
+import RestablecerContrasena from "./pages/auth/restablecer/RestablecerContrasena"
 import UsuariosAdmin from './pages/admin/usuarios/UsuariosAdmin'
 import RolesAdmin from './pages/admin/roles/RolesAdmin'
+import ImportarProductos from "./pages/admin/productos/importar/ImportarProductos"
+import MisPedidos from "./pages/misPedidos/MisPedidos"
+import Favoritos from "./pages/favoritos/Favoritos"
 
 function App() {
 
@@ -43,12 +48,16 @@ function App() {
         <Route path='/login' element={<LoginPage/>}/>
         <Route path='/register' element={<RegisterPage/>}/>
         <Route path='/activate_account/:token' element={<ActivateAccount/>}/>
+        <Route path='/recuperar-contrasena' element={<RecuperarContrasena/>}/>
+        <Route path='/restablecer-contrasena/:token' element={<RestablecerContrasena/>}/>
       </Route>
 
       <Route element={<BaseLayout/>}>
         <Route path='/carrito' element={<Carrito/>}/>
         <Route element={<RutaProtegida />}>
           <Route path='/configuracion' element={<Configuracion />} />
+          <Route path='/mis-pedidos' element={<MisPedidos />} />
+          <Route path='/favoritos' element={<Favoritos />} />
         </Route>
       </Route>
 
@@ -62,6 +71,7 @@ function App() {
           <Route path='/admin' element={<AdminPage/>} />
           <Route path='/admin/productos' element={<ProductosAdmin/>}></Route>
             <Route path='/admin/productos/nuevo' element={<AgregarProductoNuevo/>}></Route>
+            <Route path='/admin/productos/importar' element={<ImportarProductos/>}></Route>
             <Route path='/admin/productos/:id' element={<ModificarProducto/>}/>
           <Route path='/admin/categorias' element={<CategoriasAdmin/>} />
           <Route path='/admin/categorias/:id' element={<ModificarCategoria/>} />

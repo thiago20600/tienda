@@ -5,8 +5,11 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# Import models for autogenerate support
-from models.productos import SQLModel
+from config import settings
+
+from sqlmodel import SQLModel
+
+from models.banner import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -22,14 +25,11 @@ if config.config_file_name is not None:
 target_metadata = SQLModel.metadata
 
 # Set sqlalchemy.url from environment variable
-db_url = os.getenv("DATABASE_URL")
-if db_url:
-    config.set_main_option("sqlalchemy.url", db_url)
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+current_url = config.get_main_option("sqlalchemy.url", "")
+if not current_url:
+    db_url = os.getenv("DATABASE_URL") or settings.DB_URL
+    if db_url:
+        config.set_main_option("sqlalchemy.url", db_url)
 
 
 def run_migrations_offline() -> None:

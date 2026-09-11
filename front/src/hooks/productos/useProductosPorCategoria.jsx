@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { crearSolicitudCancelable } from "../../utils/abortController";
 import { tiendaRequest } from "../../services/api/apiClient";
 
 export default function useProductosPorCategoria(categoriaId) {
@@ -7,7 +8,7 @@ export default function useProductosPorCategoria(categoriaId) {
     const [statusError, setStatusError] = useState(null);
 
     useEffect(() => {
-        const controlador = new AbortController();
+        const solicitud = crearSolicitudCancelable();
 
         const obtenerProductos = async () => {
             if (!categoriaId) {
@@ -19,11 +20,13 @@ export default function useProductosPorCategoria(categoriaId) {
 
             setCargando(true);
             try {
-                const response = await tiendaRequest(`/productos?categoria_id=${categoriaId}&size=12`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                    signal: controlador.signal
-                });
+                const { cancelada, valor: response } = await solicitud.ejecutar(() =>
+                    tiendaRequest(`/productos?categoria_id=${categoriaId}&size=12`, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                );
+                if (cancelada) return;
                 if (!response.ok) {
                     setStatusError(response.status);
                 } else {
@@ -32,7 +35,6 @@ export default function useProductosPorCategoria(categoriaId) {
                     setStatusError(null);
                 }
             } catch (error) {
-                if (error.name === 'AbortError') return;
                 setStatusError(0);
             } finally {
                 setCargando(false);
@@ -40,7 +42,7 @@ export default function useProductosPorCategoria(categoriaId) {
         };
 
         obtenerProductos();
-        return () => controlador.abort();
+        return () => solicitud.cancelar();
     }, [categoriaId]);
 
     return { productos, cargando, statusError };

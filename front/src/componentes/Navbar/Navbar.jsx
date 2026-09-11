@@ -1,19 +1,25 @@
 import { NavbarContainer } from './Navbar.styles'
 import { GrupoLinks } from './Navbar.styles'
+import { Marca } from './Navbar.styles'
 import SearchBar from '../SearchBar/SearchBar'
 import { DesplegableUsuario } from '../DesplegableUsuario/DesplegableUsuario'
 import { NavLink } from 'react-router-dom'
 import CategoryMenu from './CategoryMenu'
+import useConfiguracion from '../../hooks/configuracion/useConfiguracion'
 
 const Navbar = ({ usuario, setQuery }) => {
-    
+    const { configuracion } = useConfiguracion()
+
     return (
 
         <NavbarContainer>
 
             <GrupoLinks>
 
-                <NavLink to="/">Inicio</NavLink>
+                <Marca to="/">
+                    {configuracion?.logo_url && <img src={configuracion.logo_url} alt={configuracion.nombre_tienda} />}
+                    {configuracion?.nombre_tienda || 'Inicio'}
+                </Marca>
                 <CategoryMenu />
 
             </GrupoLinks>
@@ -30,6 +36,8 @@ const Navbar = ({ usuario, setQuery }) => {
                 )}
 
                 <NavLink to="/carrito">Carrito</NavLink>
+                {usuario && <NavLink to="/mis-pedidos">Mis pedidos</NavLink>}
+                {usuario && <NavLink to="/favoritos">Favoritos</NavLink>}
 
                 {usuario && (
                     <DesplegableUsuario usuario={usuario}></DesplegableUsuario>

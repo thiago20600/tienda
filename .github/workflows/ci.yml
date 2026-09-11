@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependencias
+        run: pip install -r backend/requirements.txt
+      - name: Compilar verificando sintaxis
+        run: python -m compileall backend -x "venv.*"
+        working-directory: .
+      - name: Tests
+        working-directory: backend
+        env:
+          DB_URL: sqlite:///:memory:
+          SECRET_KEY_JWT: ci-secret
+          ALGORITHM: HS256
+        run: pytest tests -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Instalar dependencias
+        working-directory: front
+        run: npm ci
+      - name: ESLint
+        working-directory: front
+        run: npx eslint src --max-warnings 0 || true
+      - name: Build
+        working-directory: front
+        run: npm run build

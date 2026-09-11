@@ -124,6 +124,8 @@ async def actualizar_cantidad_carritoitem(session: SessionDep, producto_id: int,
         raise HTTPException(status_code=400, detail=str(e))
     except CarritoNoEncontradoError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 

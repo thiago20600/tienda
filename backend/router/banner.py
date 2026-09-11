@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from database.engine import SessionDep
 from models.banner import BannerPublic, BannerUpdate
 from services.BannerService import BannerService
@@ -34,7 +34,8 @@ async def create_banner(
     enlace: str = Form(...),
     titulo_boton: str = Form("Ver más"),
     boton_color: str = Form("#2563eb"),
-    activo: bool = Form(True)
+    activo: bool = Form(True),
+    orden: int = Form(0),
 ):
     return banner_service.crear(
         session=session,
@@ -43,7 +44,8 @@ async def create_banner(
         enlace=enlace,
         titulo_boton=titulo_boton,
         boton_color=boton_color,
-        activo=activo
+        activo=activo,
+        orden=orden,
     )
 
 
@@ -51,10 +53,14 @@ async def create_banner(
 async def update_banner(
     session: SessionDep,
     banner_id: int,
-    data: BannerUpdate,
-    imagen: UploadFile | None = File(None)
+    data: str = Form(...),
+    imagen: UploadFile | None = File(None),
 ):
-    return banner_service.actualizar(session, banner_id, data, imagen)
+    try:
+        banner_update = BannerUpdate.model_validate_json(data)
+    except Exception:
+        raise HTTPException(status_code=400, detail="El campo data debe ser un JSON válido")
+    return banner_service.actualizar(session, banner_id, banner_update, imagen)
 
 
 @router.delete("/admin/banners/{banner_id}", dependencies=[Depends(permisos.require_permission("banners:delete:admin"))])

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom"
 import ProductDetailCard from "../../componentes/ProductDetailCard/ProductDetailCard"
 import { ProductDetailStyle, ProductDetailWrapper } from "./ProductDetail.styles"
 import AddToCartProduct from "../../componentes/AddToCartProduct/AddToCartProduct"
+import ProductosRelacionados from "../../componentes/ProductosRelacionados/ProductosRelacionados"
 import { tiendaRequest } from "../../services/api/apiClient"
 
 const ProductDetail = () => {
@@ -50,6 +51,7 @@ const ProductDetail = () => {
             <ProductDetailCard producto={producto} />
             <AddToCartProduct producto={producto} />
             </ProductDetailStyle>
+            <ProductosRelacionados productoId={id} />
         </ProductDetailWrapper>
     );
 

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { LoginFormContainer, LoginFormStyle } from "./LoginForm.styles"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, NavLink } from "react-router-dom"
 import { usuariosRequest } from "../../services/api/apiClient"
 import { useAuth } from "../../services/auth/useAuth"
 
@@ -74,7 +74,7 @@ export const LoginForm = () => {
                 <button type="submit" disabled={enviando}>{enviando ? 'Ingresando...' : 'Iniciar sesion'}</button>
             </LoginFormStyle>
             {message && <p>{message}</p>}
-            <span>Recuperar contraseña próximamente</span>
+            <NavLink to="/recuperar-contrasena">Olvidé mi contraseña</NavLink>
         </LoginFormContainer>
     )
 

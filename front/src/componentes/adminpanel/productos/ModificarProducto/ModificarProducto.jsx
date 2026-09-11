@@ -1,17 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ModificarProductoContainer, ModificarProductoForm, FormTitle, FormGroup, Label, Input, Select,TextArea, CargarImagenContainer, DropzoneLabel,FileInputHidden,PrevisualizacionInfo,ImagenesGrid,ImagenCard,AccionesGrupo,EstadoMensaje,ImagenesExistentesGrid,ImagenExistenteCard,ImagenExistenteImg,ImagenExistenteInfo} from "./ModificarProducto.styles";
+import { ProductoFormContainer, FormLayout, FormTitle, FormGroup, Label, Input, Select, TextArea, CargarImagenContainer, DropzoneLabel, FileInputHidden, PrevisualizacionInfo, ImagenesGrid, ImagenCard, AccionesGrupo, EstadoMensaje, ImagenesExistentesGrid, ImagenExistenteCard, ImagenExistenteImg, ImagenExistenteInfo, CAMPOS_FORMULARIO } from "../ProductoForm.styles";
 import AdminButton from "../../ui/AdminButton/AdminButton"
 import useCategorias from "../../../../hooks/categorias/useCategorias";
 import { tiendaRequest } from "../../../../services/api/apiClient";
-
-const CAMPOS_FORMULARIO = [
-  { name: 'nombre', label: 'Nombre *', type: 'text', required: true, placeholder: 'Ej: Remera Oversize' },
-  { name: 'sku', label: 'SKU (Opcional)', type: 'number', required: false, placeholder: '10024' },
-  { name: 'precio', label: 'Precio ($) *', type: 'number', step: '0.01', required: true, placeholder: '1500.50' },
-  { name: 'precio_descuento', label: 'Precio promocional ($)', type: 'number', step: '0.01', required: false, placeholder: 'Dejá vacío para quitarlo' },
-  { name: 'stock', label: 'Stock *', type: 'number', required: true, placeholder: '10' },
-];
 
 const ModificarProducto = () => {
   const { id } = useParams(); 
@@ -182,12 +174,12 @@ const ModificarProducto = () => {
   }
 
   return (
-    <ModificarProductoContainer>
+    <ProductoFormContainer>
       {!productoActualizado ? (
 
         <>
           <FormTitle>Editar Producto</FormTitle>
-          <ModificarProductoForm onSubmit={actualizarProducto}>
+          <FormLayout onSubmit={actualizarProducto}>
             {CAMPOS_FORMULARIO.map(({ name, label, ...inputProps }) => (
               <FormGroup key={name}>
                 <Label htmlFor={name}>{label}</Label>
@@ -235,7 +227,7 @@ const ModificarProducto = () => {
 
             {errorMessage && <EstadoMensaje $esError>{errorMessage}</EstadoMensaje>}
             {exitoMessage && <EstadoMensaje $esError={false}>{exitoMessage}</EstadoMensaje>}
-          </ModificarProductoForm>
+          </FormLayout>
         </>
       ) : (
       
@@ -309,7 +301,7 @@ const ModificarProducto = () => {
           {exitoMessage && <EstadoMensaje $esError={false}>{exitoMessage}</EstadoMensaje>}
         </CargarImagenContainer>
       )}
-    </ModificarProductoContainer>
+    </ProductoFormContainer>
   );
 };
 

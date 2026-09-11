@@ -6,10 +6,10 @@ from router.login import router as login
 from router.activate_acc import router as activate_account
 from router.roles import router as roles
 from router.permisos import router as permisos
-# Importar modelos derivados para que SQLModel cree sus tablas y registre el mapeo polimorfico
 import models.empleado  # noqa: F401
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
+from config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,7 +30,7 @@ add_pagination(app)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[settings.FRONT_URL, "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

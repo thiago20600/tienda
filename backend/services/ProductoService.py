@@ -1,19 +1,38 @@
-from fastapi import UploadFile
-from models.categorias import Categoria
-from sqlmodel import Session, select
-from sqlalchemy.exc import IntegrityError
+import csv
+import io
 from datetime import datetime, timezone
 from enum import Enum
-from models.productos import ProductCreate, ProductUpdate, Producto
-from exceptions.producto import ProductoNoEncontradoError, StockInsuficienteError, DescuentoNoValido
-from services.CategoriaService import CategoriaService
-from services.ImagenService import ImagenService
+
+from fastapi import UploadFile
 from fastapi_pagination import Params
 from fastapi_pagination.ext.sqlmodel import paginate
+from sqlalchemy import String, func, or_
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
+from sqlmodel import Session, select
+
+from exceptions.producto import DescuentoNoValido, ProductoNoEncontradoError, StockInsuficienteError
+from models.categorias import Categoria
+from models.links import ProductosCategoriaLink
+from models.productos import ProductCreate, ProductUpdate, Producto
+from services.CategoriaService import CategoriaService
+from services.ImagenService import ImagenService
 
 class OperacionStock(Enum):
     AUMENTAR = 'AUMENTAR'
     RESTAR = 'RESTAR'
+
+
+def _parsear_float(valor) -> float | None:
+    if valor is None or str(valor).strip() == '':
+        return None
+    return float(str(valor).strip())
+
+
+def _parsear_int(valor) -> int | None:
+    if valor is None or str(valor).strip() == '':
+        return None
+    return int(str(valor).strip())
 
 
 class ProductoService:
@@ -87,18 +106,84 @@ class ProductoService:
         return paginate(session, query, params)
 
 
-    def listar_destacados(self, session: Session, limite: int = 10) -> list[Producto]:
+    def listar_relacionados(self, session: Session, producto_id: int, limite: int = 4) -> list[Producto]:
+        producto = self.consultar_producto(session=session, producto_id=producto_id)
+        categoria_ids = [categoria.id for categoria in (producto.categoria or [])]
+
+        if not categoria_ids:
+            return []
+
+        subquery = (
+            select(ProductosCategoriaLink.producto_id)
+            .where(
+                ProductosCategoriaLink.producto_id == Producto.id,
+                ProductosCategoriaLink.categoria_id.in_(categoria_ids),
+            )
+        )
+
         query = (
             select(Producto)
             .where(
-                Producto.destacado == True,
+                Producto.id != producto_id,
                 Producto.producto_activo == True,
-                Producto.eliminado_at == None
+                Producto.eliminado_at == None,
+                subquery.exists(),
             )
+            .options(selectinload(Producto.categoria))
             .order_by(Producto.created_at.desc())
             .limit(limite)
         )
+
         return session.exec(query).all()
+
+
+    def importar_productos_csv(self, session: Session, archivo, current_user: dict) -> dict:
+        lector = csv.DictReader(io.TextIOWrapper(archivo, encoding='utf-8-sig'))
+
+        creados: list[str] = []
+        errores: list[dict] = []
+
+        for numero_fila, fila in enumerate(lector, start=1):
+            try:
+                nombre = (fila.get('nombre') or '').strip()
+                if not nombre:
+                    raise ValueError("El campo 'nombre' es obligatorio")
+
+                precio = _parsear_float(fila.get('precio'))
+                if precio is None:
+                    raise ValueError("El campo 'precio' es obligatorio")
+
+                precio_descuento = _parsear_float(fila.get('precio_descuento'))
+                if precio_descuento is not None:
+                    self._validar_descuento(precio, precio_descuento)
+
+                stock = _parsear_int(fila.get('stock'))
+                if stock is None:
+                    raise ValueError("El campo 'stock' es obligatorio")
+                if stock < 0:
+                    raise ValueError("El stock no puede ser negativo")
+
+                producto_db = Producto(
+                    nombre=nombre,
+                    precio=precio,
+                    stock=stock,
+                    sku=_parsear_int(fila.get('sku')),
+                    precio_descuento=precio_descuento,
+                    descripcion=(fila.get('descripcion') or '').strip() or None,
+                    destacado=(fila.get('destacado') or '').strip().lower() == 'true',
+                    producto_activo=(fila.get('producto_activo') or 'true').strip().lower() != 'false',
+                    user_email=current_user['email'],
+                    categoria=self._resolver_categorias_csv(session, fila.get('categorias') or fila.get('categoria')),
+                )
+                session.add(producto_db)
+                creados.append(nombre)
+            except (ValueError, DescuentoNoValido) as error:
+                errores.append({'fila': numero_fila, 'error': str(error)})
+
+        if creados:
+            session.commit()
+
+        return {'creados': creados, 'errores': errores}
 
 
     def _aplicar_filtro_estado(self, query, estado: bool):
@@ -106,7 +191,13 @@ class ProductoService:
 
 
     def _aplicar_filtro_nombre(self, query, q: str):
-        return query.where(Producto.nombre.ilike(f'%{q}%'))
+        termino = f'%{q.strip()}%'
+        return query.where(
+            or_(
+                Producto.nombre.ilike(termino),
+                func.cast(Producto.sku, String).ilike(termino),
+            )
+        )
 
 
     def _aplicar_filtro_precio(self, query, precio_min: float | None, precio_max: float | None):
@@ -130,21 +221,52 @@ class ProductoService:
 
 
     def _aplicar_filtro_categoria(self, query, categoria_id: int):
-        return query.join(Producto.categoria).where(Categoria.id == categoria_id)
+        return (
+            query
+            .join(ProductosCategoriaLink, Producto.id == ProductosCategoriaLink.producto_id)
+            .where(ProductosCategoriaLink.categoria_id == categoria_id)
+        )
 
 
-    def _aplicar_ordenamiento(self, query, ordenar_por: str, orden: str = 'asc'):
-        campos_validos = {'nombre', 'precio', 'stock', 'sku'}
-        
-        if ordenar_por not in campos_validos:
+    def _aplicar_ordenamiento(self, query, ordenar_por: str, orden: str):
+        columnas = {
+            'nombre': Producto.nombre,
+            'precio': Producto.precio,
+            'stock': Producto.stock,
+            'created_at': Producto.created_at,
+        }
+        columna = columnas.get(ordenar_por)
+        if columna is None:
             return query
+        return query.order_by(columna.desc() if orden == 'desc' else columna.asc())
 
-        campo = getattr(Producto, ordenar_por)
-        
-        if orden.lower() == 'desc':
-            return query.order_by(campo.desc())
-        else:
-            return query.order_by(campo.asc())
+
+    def _validar_descuento(self, precio: float, precio_descuento: float) -> None:
+        if precio_descuento >= precio:
+            raise DescuentoNoValido()
+
+
+    def _resolver_categorias_csv(self, session: Session, valor: str | None) -> list[Categoria]:
+        nombres = [n.strip() for n in (valor or '').split(',') if n.strip()]
+        if not nombres:
+            return []
+        categorias = self.categoria_service.consultar_por_nombres(session, nombres)
+        encontrados = {c.nombre for c in categorias}
+        faltantes = [n for n in nombres if n not in encontrados]
+        if faltantes:
+            raise ValueError(f"Categorias inexistentes: {', '.join(faltantes)}")
+        return categorias
+
+
+    def listar_destacados(self, session: Session, limite: int = 10) -> list[Producto]:
+        query = (
+            select(Producto)
+            .options(selectinload(Producto.categoria))
+            .where(Producto.producto_activo == True, Producto.eliminado_at == None, Producto.destacado == True)
+            .order_by(Producto.updated_at.desc().nullslast(), Producto.id.desc())
+            .limit(limite)
+        )
+        return list(session.exec(query).all())
 
 
     def actualizar_stock(self, producto: Producto, cantidad: int, operacion: OperacionStock) -> Producto:
@@ -226,10 +348,3 @@ class ProductoService:
         session.commit()
         session.refresh(producto)
         return producto
-
-
-    def _validar_descuento(self, precio: float, precio_descuento: float):
-        if precio is None or precio_descuento is None:
-            return
-        if precio < precio_descuento:
-            raise DescuentoNoValido()

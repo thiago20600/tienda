@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from auth.auth import create_access_token
 from models.mail import EmailSchema
 from fastapi_mail import FastMail, MessageSchema
-from config import conf
+from config import conf, settings
 
 async def send_mail_innactive_account(
         background_tasks: BackgroundTasks,
@@ -15,6 +15,23 @@ async def send_mail_innactive_account(
         recipients=email.model_dump().get('email'),
         #OJITOOOOOOOO
         body=f'http://localhost:8001/activate_account/{token}',
+        subtype='html'
+    )
+
+    fm = FastMail(conf)
+
+    background_tasks.add_task(fm.send_message, message)
+    return JSONResponse(status_code=200, content={'message': 'email enviado'})
+
+async def send_mail_reset_password(
+        background_tasks: BackgroundTasks,
+        email: EmailSchema,
+        token: str
+) -> JSONResponse:
+    message = MessageSchema(
+        subject='Restablecer contraseña',
+        recipients=email.model_dump().get('email'),
+        body=f'{settings.FRONT_URL}/restablecer-contrasena/{token}',
         subtype='html'
     )
 

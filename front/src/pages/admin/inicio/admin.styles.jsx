@@ -4,7 +4,7 @@ export const DashboardContainer = styled.main`
 	padding: 2rem;
 	color: #1e293b;
 
-	h1 { margin: 0 0 0.5rem; font-size: 1.7rem; }
+	h1 { margin: 0 0 0.5rem; font-size: 1.7rem}
 	p { margin: 0; color: #64748b; }
 
 	@media (max-width: 600px) { padding: 1rem; }
@@ -41,5 +41,47 @@ export const DashboardLink = styled.a`
 `;
 
 export const DashboardMessage = styled.p`
-	margin-top: 1rem;
+    margin-top: 1rem;
+`;
+
+export const DashboardList = styled.ul`
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+`;
+
+export const DashboardListItem = styled.li`
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        background: #f1f5f9;
+    }
+`;
+
+export const DashboardImg = styled.img`
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #f1f5f9;
+`;
+
+export const DashboardImgPlaceholder = styled.div`
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    border: 1px dashed #cbd5e1;
+    background: #f1f5f9;
+    flex-shrink: 0;
 `;

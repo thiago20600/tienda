@@ -23,7 +23,6 @@ producto_service = ProductoService(categoria_service, imagen_service)
 async def get_all_products(
     session: SessionDep,
     q: str | None = None,
-    estado: bool | None = None,
     precio_min: float | None = None,
     precio_max: float | None = None,
     stock_min: int | None = None,
@@ -39,7 +38,6 @@ async def get_all_products(
         productos = producto_service.listar_productos(
             session,
             q=q,
-            estado=estado,
             precio_min=precio_min,
             precio_max=precio_max,
             stock_min=stock_min,
@@ -61,6 +59,11 @@ async def get_all_products(
 @router.get('/productos/destacados', response_model=list[ProductoPublic])
 async def get_productos_destacados(session: SessionDep, limite: int = 10):
     return producto_service.listar_destacados(session, limite=limite)
+
+
+@router.get('/productos/{producto_id}/relacionados', response_model=list[ProductoPublic])
+async def get_productos_relacionados(session: SessionDep, producto_id: int, limite: int = 4):
+    return producto_service.listar_relacionados(session, producto_id, limite=limite)
 
 
 @router.get('/productos/ofertas', response_model=list[ProductoPublic], response_model_exclude_unset=True)
@@ -167,3 +170,10 @@ async def get_all_products_admin(
         return productos
     except Exception as e:
         raise HTTPException(500, str(e))
+@router.post('/admin/productos/importar', dependencies=[Depends(permisos.require_permission("productos:create:admin"))])
+async def importar_productos_csv(
+    session: SessionDep,
+    archivo: UploadFile = File(...),
+    current_user=Depends(permisos.require_permission("productos:create:admin")),
+):
+    return producto_service.importar_productos_csv(session=session, archivo=archivo.file, current_user=current_user)

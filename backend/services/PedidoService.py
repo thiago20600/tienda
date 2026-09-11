@@ -47,11 +47,12 @@ class PedidoService:
             raise PedidoNoEncontrado(id=id)
         return pedido
 
-    def modificar_pedido(self, session: Session, id: int, pedido_update: PedidoUpdate) -> Pedido:
+    def modificar_pedido(self, session: Session, id: int, pedido_update: PedidoUpdate, user_email: str | None = None) -> Pedido:
         pedido = self.consultar_pedido_id(session=session, id=id)
 
         self._validar_modificable(pedido)
         self._aplicar_cambios(pedido, pedido_update)
+        pedido.updated_by_email = user_email
         self._actualizar_timestamps(pedido)
 
         session.add(pedido)

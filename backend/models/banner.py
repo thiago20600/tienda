@@ -11,6 +11,7 @@ class Banner(SQLModel, table=True):
     titulo: str = Field(max_length=100)
     titulo_boton: str = Field(max_length=50, default="Ver más")
     boton_color: str = Field(max_length=20, default="#2563eb")  # Color en hex (ej: #2563eb)
+    orden: int = Field(default=0, index=True)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime | None = Field(default=None)
 
@@ -21,6 +22,7 @@ class BannerCreate(SQLModel):
     titulo: str
     titulo_boton: str = "Ver más"
     boton_color: str = "#2563eb"
+    orden: int = 0
     activo: bool = True
 
 
@@ -30,6 +32,7 @@ class BannerUpdate(SQLModel):
     titulo: str | None = None
     titulo_boton: str | None = None
     boton_color: str | None = None
+    orden: int | None = None
     activo: bool | None = None
 
 class BannerPublic(SQLModel):
@@ -40,5 +43,6 @@ class BannerPublic(SQLModel):
     titulo: str
     titulo_boton: str
     boton_color: str
+    orden: int
     created_at: datetime
     updated_at: datetime | None = None

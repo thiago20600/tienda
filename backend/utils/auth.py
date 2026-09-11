@@ -1,17 +1,32 @@
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer, HTTPAuthorizationCredentials
+from fastapi import Depends, HTTPException, Request
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from config import settings
 from typing import Optional
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
+http_bearer = HTTPBearer(auto_error=False)
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Token inválido o expirado",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+CREDENCIALES_INVALIDAS = HTTPException(
+    status_code=401,
+    detail="Token inválido o expirado",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
+
+async def extraer_token(
+    request: Request,
+    credenciales: HTTPAuthorizationCredentials | None = Depends(http_bearer),
+) -> str:
+    if credenciales:
+        return credenciales.credentials
+    token_cookie = request.cookies.get('access_token')
+    if token_cookie:
+        return token_cookie
+    raise CREDENCIALES_INVALIDAS
+
+
+def get_current_user(token: str = Depends(extraer_token)):
     try:
         payload = jwt.decode(
             token,
@@ -22,10 +37,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         rol = payload.get("rol")
         permisos: list[str] = payload.get("permisos", [])
         if email is None or rol is None:
-            raise credentials_exception
+            raise CREDENCIALES_INVALIDAS
         return {"email": email, "rol": rol, "permisos": permisos}
     except JWTError:
-        raise credentials_exception
+        raise CREDENCIALES_INVALIDAS
     
 
 def require_admin(current_user = Depends(get_current_user)):

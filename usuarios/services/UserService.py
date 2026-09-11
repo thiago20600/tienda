@@ -1,3 +1,7 @@
+from datetime import datetime, timedelta, timezone
+from typing import Optional
+
+from jose import JWTError, jwt
 from sqlmodel import Session, select
 from fastapi_pagination import Params, Page
 from fastapi_pagination.ext.sqlmodel import paginate
@@ -5,13 +9,18 @@ from bcrypt import hashpw, gensalt
 from models.users import User, UserPublic
 from models.empleado import Empleado
 from models.rol import Rol
+from config import settings
 from exceptions.usuario import (
     UsuarioNoEncontradoError,
     UsuarioDuplicadoError,
     CambioDeRolNoPermitido,
+    TokenResetInvalidoError,
 )
 from exceptions.rol import RolNoEncontradoError
 from services.RolService import RolService
+
+
+RESET_TOKEN_MINUTOS = 15
 
 
 
@@ -123,6 +132,35 @@ class UserService:
             "active": usuario.active,
             "rol": usuario.rol,
             "tipo": usuario.tipo,
-            "telefono": empleado.telefono,
-            "domicilio": empleado.domicilio,
-        }
+            "telefono": empleado.telefono}
+
+    def solicitar_reset_password(self, session: Session, email: str) -> Optional[str]:
+        usuario = session.exec(select(User).where(User.email == email)).first()
+        if not usuario:
+            return None
+
+        expira = datetime.now(timezone.utc) + timedelta(minutes=RESET_TOKEN_MINUTOS)
+        return jwt.encode(
+            {'sub': usuario.email, 'type': 'pw_reset', 'exp': expira},
+            settings.SECRET_KEY_JWT,
+            algorithm=settings.ALGORITHM,
+        )
+
+    def reset_password(self, session: Session, token: str, nueva_password: str) -> User:
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY_JWT, algorithms=[settings.ALGORITHM])
+        except JWTError as error:
+            raise TokenResetInvalidoError() from error
+
+        if payload.get('type') != 'pw_reset':
+            raise TokenResetInvalidoError()
+
+        usuario = session.exec(select(User).where(User.email == payload.get('sub'))).first()
+        if not usuario:
+            raise TokenResetInvalidoError()
+
+        usuario.password = hashpw(nueva_password.encode('utf-8'), gensalt()).decode('utf-8')
+        session.add(usuario)
+        session.commit()
+        session.refresh(usuario)
+        return usuario

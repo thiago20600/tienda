@@ -13,7 +13,7 @@ export const HeaderTitle = styled.h1`
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #ffffff;
+   color: ${(props) => props.theme.secondary};
 `
 
 export const HeaderActions = styled.div`
@@ -25,15 +25,15 @@ export const HeaderActions = styled.div`
 export const UserName = styled.span`
   font-size: 0.9rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+   color: ${(props) => props.theme.secondary};
 `
 
 export const UserAvatar = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background-color: ${(props) => props.theme.secondary};
+  color: ${(props) => props.theme.primary};
   display: flex;
   align-items: center;
   justify-content: center;

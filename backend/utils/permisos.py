@@ -1,5 +1,9 @@
 from fastapi import Depends, HTTPException, status
+import logging
+
 import httpx
+
+logger = logging.getLogger(__name__)
 from utils.auth import get_current_user
 from config import settings
 
@@ -38,9 +42,8 @@ class Permisos:
                         timeout=5.0 
                     )
                     response.raise_for_status()
-                    print(f"Sincronización de permisos exitosa: {response.status_code}")
             except Exception as e:
-                print(f"Error al sincronizar permisos con el servicio central: {e}")
+                logger.error("Error al sincronizar permisos con el servicio central: %s", e)
 
 
 permisos = Permisos()

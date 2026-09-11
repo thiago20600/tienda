@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom"
-import { TablaProductos, BotonEstado, BotonDestacado, MensajeTabla } from "./ProductosTabla.styles";
+import { TablaProductos, BotonEstado, BotonDestacado, MensajeTabla, InputStock } from "./ProductosTabla.styles";
 import useBorrarProducto from '../../../../hooks/productos/useBorrarProducto'
 
 import useActualizarEstadoProducto from '../../../../hooks/productos/useActualizarEstadoProducto'
 import useDestacarProducto from '../../../../hooks/productos/useDestacarProducto'
+import useActualizarStockProducto from '../../../../hooks/productos/useActualizarStockProducto'
 import AdminButton from "../../ui/AdminButton/AdminButton";
 import PrecioProducto from "../../../PrecioProducto/PrecioProducto";
 
@@ -12,10 +13,12 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
   const { eliminarProducto, message, statusError: statusErrorEliminar } = useBorrarProducto();
   const { actualizarEstado, statusError: statusErrorEstado, actualizando: actualizandoEstado } = useActualizarEstadoProducto();
   const { toggleDestacado, statusError: statusErrorDestacado, actualizando: actualizandoDestacado } = useDestacarProducto();
+  const { actualizarStock, statusError: statusErrorStock, actualizando: actualizandoStock } = useActualizarStockProducto();
 
   const [productosEliminados, setProductosEliminados] = useState(new Set());
   const [estadosLocales, setEstadosLocales] = useState({});
   const [destacadosLocales, setDestacadosLocales] = useState({});
+  const [stockLocales, setStockLocales] = useState({});
 
   const productosActuales = productos
     .filter((producto) => !productosEliminados.has(producto.id))
@@ -32,6 +35,19 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
     const resultado = await actualizarEstado(producto.id, producto.producto_activo);
     if (resultado?.ok) {
       setEstadosLocales((prev) => ({ ...prev, [producto.id]: !producto.producto_activo }));
+    }
+  };
+
+  const guardarStock = async (event, producto) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const valor = Number(event.currentTarget.value);
+    if (!Number.isInteger(valor) || valor < 0 || valor === producto.stock) return;
+
+    const resultado = await actualizarStock(producto.id, valor);
+    if (resultado?.ok) {
+      setStockLocales((prev) => ({ ...prev, [producto.id]: valor }));
     }
   };
 
@@ -69,6 +85,10 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
     return <MensajeTabla $error>Error al cambiar destacado de producto (Código: {statusErrorDestacado})</MensajeTabla>;
   }
 
+  if (statusErrorStock) {
+    return <MensajeTabla $error>Error al actualizar stock (Código: {statusErrorStock})</MensajeTabla>;
+  }
+
   return (
     <TablaProductos>
       {message && <MensajeTabla>{message}</MensajeTabla>}
@@ -87,7 +107,19 @@ const ProductosTabla = ({ productos, cargando, statusError }) => {
                 <PrecioProducto precio={producto.precio} precioDescuento={producto.precio_descuento} tabla />
               </p>
               <p>{producto.sku}</p>
-              <p>{producto.stock} un.</p>
+              <InputStock
+                type="number"
+                min="0"
+                defaultValue={stockLocales[producto.id] ?? producto.stock}
+                key={`${producto.id}-${stockLocales[producto.id] ?? producto.stock}`}
+                disabled={actualizandoStock === producto.id}
+                title="Editar stock"
+                onClick={(event) => event.preventDefault()}
+                onBlur={(event) => guardarStock(event, producto)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') event.currentTarget.blur();
+                }}
+              />
             </NavLink>
             
             <BotonEstado

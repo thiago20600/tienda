@@ -167,3 +167,24 @@ export const BotonEstado = styled.button`
     opacity: 0.65;
   }
 `;
+
+export const InputStock = styled.input`
+  width: 64px;
+  min-width: 0;
+  border: 1px solid #d5dbe3;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: right;
+
+  &:focus {
+    outline: none;
+    border-color: #3bc5c5;
+  }
+
+  &:disabled {
+    background: #f5f7fa;
+    cursor: wait;
+  }
+`;

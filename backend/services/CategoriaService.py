@@ -66,6 +66,12 @@ class CategoriaService:
         return session.exec(select(Categoria).where(Categoria.id.in_(ids))).all()
 
 
+    def consultar_por_nombres(self, session: Session, nombres: list[str]) -> list[Categoria]:
+        if not nombres:
+            return []
+        return session.exec(select(Categoria).where(Categoria.nombre.in_(nombres))).all()
+
+
     def consultar_unica_categoria(self, session: Session, id: int) -> Categoria:
         categoria = session.get(Categoria, id)
         if not categoria:

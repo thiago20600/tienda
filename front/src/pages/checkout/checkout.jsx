@@ -6,6 +6,7 @@ import DatosAdicionalesForm from "../../componentes/Checkout/DatosAdicionalesFor
 import BricksForm from "../../componentes/Checkout/BrickForm/BricksForm"
 import { useNavigate } from "react-router-dom"
 import { tiendaRequest } from "../../services/api/apiClient"
+import usePedidoEfectivo from "../../hooks/checkout/usePedidoEfectivo"
 
 let claveMercadoPagoInicializada = null
 
@@ -20,6 +21,7 @@ const Checkout = () => {
     const [errorBrick, setErrorBrick] = useState(null)
     const [procesandoPago, setProcesandoPago] = useState(false)
     const { carrito, statusError: carritoError, cargando: carritoCargando } = useCarrito()
+    const { crearPedidoEfectivo, cargando: cargandoEfectivo } = usePedidoEfectivo()
     const amount = useMemo(() => ({ amount: carrito?.total }), [carrito?.total])
     const errorConfiguracion = MP_PUBLIC_KEY ? null : 'Falta configurar la clave pública de Mercado Pago.'
 
@@ -100,7 +102,6 @@ const Checkout = () => {
             const resultado = await response.json()
             setPaymentId(resultado.mp_payment_id)
             setPedido(resultado)
-            console.log(resultado.mp_payment_id)
         } catch (err) {
             console.error('Error en payload_tarjeta:', err)
             setErrorPago('No se pudo conectar con la pasarela de pago.')
@@ -116,6 +117,16 @@ const Checkout = () => {
         setErrorBrick('No se pudo cargar el formulario de pago. Recargá la página e intentá nuevamente.')
     }, [])
 
+    const pagarEnEfectivo = useCallback(async () => {
+        setErrorPago(null)
+        const resultado = await crearPedidoEfectivo()
+        if (!resultado.ok) {
+            setErrorPago(resultado.detalle || 'No se pudo crear el pedido en efectivo.')
+            return
+        }
+        setPedido(resultado.pedido)
+    }, [crearPedidoEfectivo])
+
     const handleBrickReady = useCallback(() => {
         setErrorBrick(null)
     }, [])
@@ -128,11 +139,11 @@ const Checkout = () => {
     <CheckoutWrapper>
         <PaymentGrid>
             
-            {pedido && pedido.estado === 'pagado' ? (
+            {pedido && (pedido.estado === 'pagado' || pedido.metodo_pago === 'efectivo') ? (
                 <PagoExitosoContainer>
-                    <h2>¡Pago exitoso!</h2>
+                    <h2>{pedido.metodo_pago === 'efectivo' ? '¡Pedido registrado!' : '¡Pago exitoso!'}</h2>
                     <p><strong>Número de pedido:</strong> {pedido.numero_pedido}</p>
-                    <p><strong>Total pagado:</strong> ${pedido.precio_total?.toLocaleString('es-AR')}</p>
+                    <p><strong>{pedido.metodo_pago === 'efectivo' ? 'Total a pagar al recibir:' : 'Total pagado:'}</strong> ${pedido.precio_total?.toLocaleString('es-AR')}</p>
                     <p><strong>Método de pago:</strong> {pedido.metodo_pago}</p>
                     <p><strong>Cliente:</strong> {pedido.user_email}</p>
                     <p><strong>Productos:</strong> {pedido.detalles?.reduce((total, detalle) => total + detalle.cantidad, 0)}</p>
@@ -165,7 +176,14 @@ const Checkout = () => {
                     paymentId={paymentId}
                     onSubmit={payload_tarjeta}
                     onError={handleBrickError}
-                    onReady={handleBrickReady}/>} 
+                    onReady={handleBrickReady}/>}
+                <button
+                    type="button"
+                    onClick={pagarEnEfectivo}
+                    disabled={cargandoEfectivo || procesandoPago}
+                >
+                    {cargandoEfectivo ? 'Generando pedido...' : 'Pagar en efectivo al recibir'}
+                </button>
             </div>
         </CheckoutColumns>
         </>)}
