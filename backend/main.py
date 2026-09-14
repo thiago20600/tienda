@@ -30,7 +30,7 @@ add_pagination(app)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=[settings.CORS_ORIGINS, "http://44.220.63.175",],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
