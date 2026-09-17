@@ -3,6 +3,7 @@ from typing import Optional
 
 from jose import JWTError, jwt
 from sqlmodel import Session, select
+from sqlalchemy.orm import selectinload
 from fastapi_pagination import Params, Page
 from fastapi_pagination.ext.sqlmodel import paginate
 from bcrypt import hashpw, gensalt
@@ -35,17 +36,14 @@ class UserService:
         session: Session,
         q: str | None = None,
         rol: str | None = None,
-        tipo: str | None = None,
         params: Params = Params(),
     ) -> Page[UserPublic]:
-        query = select(User)
+        query = select(User).options(selectinload(User.rol_obj))
 
         if q:
             query = query.where(User.username.ilike(f"%{q}%"))
         if rol:
-            query = query.where(User.rol == rol)
-        if tipo:
-            query = query.where(User.tipo == tipo)
+            query = query.join(Rol, User.rol_id == Rol.id).where(Rol.nombre == rol)
 
         return paginate(session, query, params)
 
@@ -66,7 +64,7 @@ class UserService:
             raise CambioDeRolNoPermitido()
 
         usuario.rol_id = rol.id
-        usuario.rol = rol.nombre
+        usuario.rol_obj = rol
 
         session.add(usuario)
         session.commit()
@@ -100,7 +98,7 @@ class UserService:
         if not rol:
             rol = session.exec(select(Rol).where(Rol.nombre == "empleado")).first()
             if not rol:
-                rol = Rol(nombre="empleado", activo=True)
+                rol = Rol(nombre="empleado")
                 session.add(rol)
                 session.flush()
 
@@ -109,8 +107,6 @@ class UserService:
             email=email,
             password=hashpw(password.encode("utf-8"), gensalt()).decode("utf-8"),
             active=True,
-            rol=rol.nombre,
-            tipo="empleado",
             rol_id=rol.id,
         )
         session.add(usuario)
@@ -130,9 +126,9 @@ class UserService:
             "username": usuario.username,
             "email": usuario.email,
             "active": usuario.active,
-            "rol": usuario.rol,
-            "tipo": usuario.tipo,
-            "telefono": empleado.telefono}
+            "rol": rol.nombre,
+            "telefono": empleado.telefono,
+            "domicilio": empleado.domicilio}
 
     def solicitar_reset_password(self, session: Session, email: str) -> Optional[str]:
         usuario = session.exec(select(User).where(User.email == email)).first()

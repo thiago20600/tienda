@@ -22,11 +22,10 @@ async def get_users(
     session: SessionDep,
     q: str | None = None,
     rol: str | None = None,
-    tipo: str | None = None,
     params: Params = Depends(),
     _=Depends(require_permission("usuarios:read:admin")),
 ):
-    return user_service.listar_usuarios(session=session, q=q, rol=rol, tipo=tipo, params=params)
+    return user_service.listar_usuarios(session=session, q=q, rol=rol, params=params)
 
 @router.post('/users', response_model=UserPublic)
 async def post_user(session: SessionDep, user: UserCreate, background_tasks: BackgroundTasks):
@@ -38,7 +37,6 @@ async def post_user(session: SessionDep, user: UserCreate, background_tasks: Bac
     db_user = User.model_validate(user)
     hash_pw = hashpw(db_user.password.encode('utf-8'), gensalt()).decode('utf-8')
     db_user.password = hash_pw
-    db_user.rol = 'cliente'
     db_user.rol_id = rol_cliente.id
 
     session.add(db_user)

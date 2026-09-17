@@ -27,18 +27,18 @@ class RolService:
             raise RolNoEncontradoError(rol_id=rol_id)
         return rol
 
-    def crear_rol(self, session: Session, nombre: str, activo: bool = True) -> Rol:
+    def crear_rol(self, session: Session, nombre: str) -> Rol:
         existe = session.exec(select(Rol).where(Rol.nombre == nombre)).first()
         if existe:
             raise RolNombreDuplicadoError(nombre=nombre)
 
-        rol = Rol(nombre=nombre, activo=activo)
+        rol = Rol(nombre=nombre)
         session.add(rol)
         session.commit()
         session.refresh(rol)
         return rol
 
-    def actualizar_rol(self, session: Session, rol_id: int, nombre: str | None, activo: bool | None) -> Rol:
+    def actualizar_rol(self, session: Session, rol_id: int, nombre: str | None) -> Rol:
         rol = self.consultar_rol(session=session, rol_id=rol_id)
 
         if nombre:
@@ -46,9 +46,6 @@ class RolService:
             if existe and existe.id != rol_id:
                 raise RolNombreDuplicadoError(nombre=nombre)
             rol.nombre = nombre
-
-        if activo is not None:
-            rol.activo = activo
 
         session.add(rol)
         session.commit()

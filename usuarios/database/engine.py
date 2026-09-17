@@ -7,6 +7,7 @@ import os
 from config import settings
 from models.rol import Rol
 from models.permisos import Permiso
+import models.empleado  # noqa: F401 - registra Empleado para resolver la forward-ref de User
 from auth.auth import PERMISOS_REGISTRADOS
 
 
@@ -16,15 +17,12 @@ engine = create_engine(settings.DB_URL, echo=False)
 def _seed_roles(session: Session):
     """Seed default roles (admin, cliente). Los permisos se registran
     dinamicamente por servicio via /permisos y se asignan a roles manualmente."""
-    roles_data = {
-        "admin": True,
-        "cliente": True
-    }
+    roles_data = ["admin", "cliente"]
 
-    for nombre, activo in roles_data.items():
+    for nombre in roles_data:
         existe = session.exec(select(Rol).where(Rol.nombre == nombre)).first()
         if not existe:
-            session.add(Rol(nombre=nombre, activo=activo))
+            session.add(Rol(nombre=nombre))
 
     session.commit()
 

@@ -29,7 +29,7 @@ async def get_permisos(session: SessionDep, _=Depends(require_permission("permis
 @router.post("/roles", response_model=RolResponse)
 async def create_rol(rol_data: RolCreate, session: SessionDep, _=Depends(require_permission("roles:create:admin"))):
     try:
-        rol = rol_service.crear_rol(session=session, nombre=rol_data.nombre, activo=rol_data.activo)
+        rol = rol_service.crear_rol(session=session, nombre=rol_data.nombre)
         return RolResponse.from_rol(rol)
     except RolNombreDuplicadoError as e:
         raise HTTPException(status_code=400, detail=e.message)
@@ -39,7 +39,7 @@ async def create_rol(rol_data: RolCreate, session: SessionDep, _=Depends(require
 async def update_rol(rol_id: int, rol_data: RolUpdate, session: SessionDep, _=Depends(require_permission("roles:update:admin"))):
     try:
         rol = rol_service.actualizar_rol(
-            session=session, rol_id=rol_id, nombre=rol_data.nombre, activo=rol_data.activo
+            session=session, rol_id=rol_id, nombre=rol_data.nombre
         )
         return RolResponse.from_rol(rol)
     except RolNoEncontradoError as e:
