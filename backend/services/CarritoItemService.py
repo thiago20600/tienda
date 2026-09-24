@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from services.ProductoService import OperacionStock, ProductoService
 from exceptions.carrito import ItemNoEncontradoError
 from sqlmodel import Session, select
@@ -25,7 +27,7 @@ class CarritoItemService:
         return item
 
 
-    def crear_item(self, session: Session, carrito_id: int, producto_id: int, precio_unitario: float, cantidad: int) -> CarritoItem:
+    def crear_item(self, session: Session, carrito_id: int, producto_id: int, precio_unitario: Decimal, cantidad: int) -> CarritoItem:
         item = CarritoItem(carrito_id=carrito_id,
                            producto_id=producto_id,
                            precio_unitario=precio_unitario,

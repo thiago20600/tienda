@@ -4,7 +4,7 @@ import json
 
 import httpx
 import mercadopago
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from sqlmodel import select
 
 from config import settings
@@ -14,6 +14,7 @@ from models.carrito import Carrito, EstadoCarrito
 from models.checkout import CheckoutSchema
 from models.pedido import DetallePedido, EstadoPedido, MetodoPago, Pedido, PedidoPublic
 from services.ConfiguracionService import ConfiguracionService
+from utils.facturacion import notificar_facturacion
 from utils.pedido import crear_pedido
 from utils.permisos import permisos
 
@@ -35,7 +36,7 @@ async def obtener_metodos_pago():
 
 
 @router.post('/crear-orden', response_model=PedidoPublic)
-async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, current_user=Depends(permisos.require_permission("pedidos:create:own"))):
+async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, background_tasks: BackgroundTasks, current_user=Depends(permisos.require_permission("pedidos:create:own"))):
     nombre_tienda = ConfiguracionService().obtener_configuracion(session=session).nombre_tienda
     carrito_procesar = session.exec(select(Carrito).where(current_user['email'] == Carrito.user_email,
                                                           Carrito.estado == EstadoCarrito.abierto)).first()
@@ -183,6 +184,9 @@ async def procesar_pago(session: SessionDep, checkout_data: CheckoutSchema, curr
     session.commit()
     session.refresh(pedido)
 
+    # El pedido quedó pagado: se notifica al microservicio de facturación (fire-and-forget)
+    notificar_facturacion(background_tasks=background_tasks, session=session, pedido_id=pedido.id)
+
     return pedido
 
 
@@ -239,7 +243,7 @@ async def crear_orden_efectivo(session: SessionDep, current_user=Depends(permiso
 
 
 @router.post('/mp/webhook')
-async def mp_webhook(session: SessionDep, request: Request):
+async def mp_webhook(session: SessionDep, request: Request, background_tasks: BackgroundTasks):
     cuerpo = await request.body()
 
     if settings.MP_WEBHOOK_SECRET:
@@ -278,6 +282,13 @@ async def mp_webhook(session: SessionDep, request: Request):
 
             session.add(pedido)
             session.commit()
+
+            if pedido.estado == EstadoPedido.pagado:
+                notificar_facturacion(
+                    background_tasks=background_tasks,
+                    session=session,
+                    pedido_id=pedido.id,
+                )
         except Exception:
             return {'ok': True}
 

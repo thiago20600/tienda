@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from sqlmodel import Session, func, select
 
 from models.categorias import Categoria
@@ -39,13 +41,13 @@ class MetricasService:
             )
         ).one()
 
-    def _calcular_ingresos(self, session: Session) -> float:
+    def _calcular_ingresos(self, session: Session) -> Decimal:
         ingresos = session.exec(
-            select(func.coalesce(func.sum(Pedido.precio_total), 0.0)).where(
+            select(func.coalesce(func.sum(Pedido.precio_total), Decimal("0"))).where(
                 Pedido.estado.in_(ESTADOS_VALIDOS_VENTA)
             )
         ).one()
-        return float(ingresos)
+        return Decimal(str(ingresos))
 
     def _contar_pedidos_por_estado(self, session: Session) -> list[ConteoPorEstado]:
         filas = session.exec(

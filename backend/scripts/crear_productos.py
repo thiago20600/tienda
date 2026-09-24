@@ -1,4 +1,5 @@
 import random
+from decimal import Decimal
 from database.engine import engine
 from models.productos import ProductCreate, Producto
 from models.carrito import CarritoItem
@@ -15,7 +16,7 @@ def main():
     for i in range(101):
 
         nombre_producto = f"{random.choice(productos)} {random.choice(adjetivos)}"
-        precio = float(random.randint(10000, 100000))
+        precio = Decimal(random.randint(10000, 100000))
         stock = random.randint(0, 30)
         sku = random.randint(100000, 200000)
         user_email = {'email': 'tavellathiagolautaro@gmail.com'}

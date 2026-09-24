@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
-from models.pedido import PedidoClientePublic, PedidoPublic, PedidoUpdate
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from models.pedido import EstadoPedido, PedidoClientePublic, PedidoPublic, PedidoUpdate
 from database.engine import SessionDep
 from exceptions.pedido import PedidoNoEncontrado
 from services.PedidoService import PedidoService
+from utils.facturacion import notificar_facturacion
 from utils.permisos import permisos
 from fastapi_pagination import Page, Params
 
@@ -58,10 +59,11 @@ async def patch_pedido(
     session: SessionDep,
     pedido_id: int,
     pedido_update: PedidoUpdate,
+    background_tasks: BackgroundTasks,
     current_user=Depends(permisos.require_permission("pedidos:update:admin")),
 ):
     try:
-        return pedido_service.modificar_pedido(
+        resultado = pedido_service.modificar_pedido(
             session=session,
             id=pedido_id,
             pedido_update=pedido_update,
@@ -69,3 +71,9 @@ async def patch_pedido(
         )
     except PedidoNoEncontrado as error:
         raise HTTPException(status_code=404, detail=error.message)
+
+    # Si el admin marcó el pedido como pagado, se notifica a facturación (fire-and-forget)
+    if resultado.estado == EstadoPedido.pagado:
+        notificar_facturacion(background_tasks=background_tasks, session=session, pedido_id=pedido_id)
+
+    return resultado

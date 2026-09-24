@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 from fastapi import HTTPException
 from models.pedido import EstadoPedido, Pedido, PedidoUpdate
 from exceptions.pedido import PedidoNoEncontrado
@@ -34,7 +35,7 @@ class PedidoService:
             query = query.where(Pedido.metodo_pago == metodo_pago.strip())
 
         if precio_total is not None and precio_total.strip():
-            query = query.where(Pedido.precio_total == float(precio_total.strip()))
+            query = query.where(Pedido.precio_total == Decimal(precio_total.strip()))
 
         if params is not None:
             return paginate(session, query, params)

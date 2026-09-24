@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 import uuid
 from sqlmodel import select
 from database.engine import SessionDep
@@ -30,7 +31,7 @@ def crear_pedido(session: SessionDep, carrito: Carrito, metodo_pago: MetodoPago,
         item.precio_unitario = producto.precio_descuento or producto.precio
         session.add(item)
 
-    total = sum(item.cantidad * item.precio_unitario for item in carrito.items)
+    total = sum((item.cantidad * item.precio_unitario for item in carrito.items), Decimal("0"))
 
     pedido = Pedido(
         carrito_id=carrito.id,

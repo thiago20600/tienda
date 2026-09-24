@@ -1,6 +1,7 @@
 import csv
 import io
 from datetime import datetime, timezone
+from decimal import Decimal
 from enum import Enum
 
 from fastapi import HTTPException, UploadFile
@@ -23,10 +24,10 @@ class OperacionStock(Enum):
     RESTAR = 'RESTAR'
 
 
-def _parsear_float(valor) -> float | None:
+def _parsear_decimal(valor) -> Decimal | None:
     if valor is None or str(valor).strip() == '':
         return None
-    return float(str(valor).strip())
+    return Decimal(str(valor).strip())
 
 
 def _parsear_int(valor) -> int | None:
@@ -53,8 +54,8 @@ class ProductoService:
         session: Session,
         q: str | None = None,
         estado: bool | None = None,
-        precio_min: float | None = None,
-        precio_max: float | None = None,
+        precio_min: Decimal | None = None,
+        precio_max: Decimal | None = None,
         stock_min: int | None = None,
         stock_max: int | None = None,
         sku: int | None = None,
@@ -154,11 +155,11 @@ class ProductoService:
                 if not nombre:
                     raise ValueError("El campo 'nombre' es obligatorio")
 
-                precio = _parsear_float(fila.get('precio'))
+                precio = _parsear_decimal(fila.get('precio'))
                 if precio is None:
                     raise ValueError("El campo 'precio' es obligatorio")
 
-                precio_descuento = _parsear_float(fila.get('precio_descuento'))
+                precio_descuento = _parsear_decimal(fila.get('precio_descuento'))
                 if precio_descuento is not None:
                     self._validar_descuento(precio, precio_descuento)
 
@@ -219,7 +220,7 @@ class ProductoService:
         )
 
 
-    def _aplicar_filtro_precio(self, query, precio_min: float | None, precio_max: float | None):
+    def _aplicar_filtro_precio(self, query, precio_min: Decimal | None, precio_max: Decimal | None):
         if precio_min is not None:
             query = query.where(Producto.precio >= precio_min)
         if precio_max is not None:
@@ -260,7 +261,7 @@ class ProductoService:
         return query.order_by(columna.desc() if orden == 'desc' else columna.asc())
 
 
-    def _validar_descuento(self, precio: float, precio_descuento: float) -> None:
+    def _validar_descuento(self, precio: Decimal, precio_descuento: Decimal) -> None:
         if precio_descuento >= precio:
             raise DescuentoNoValido()
 

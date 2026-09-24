@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     API_USUARIOS_URL: str
     CORS_ORIGINS: str = "http://localhost:5173"
     MP_WEBHOOK_SECRET: str | None = None
+    # Microservicio de facturación (opcional: si es None, la tienda no notifica pedidos pagados)
+    API_FACTURACION_URL: str | None = None
 
     model_config = SettingsConfigDict(env_file='.env')
 

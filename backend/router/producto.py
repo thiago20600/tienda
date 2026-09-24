@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from decimal import Decimal
 from sqlmodel import Session
 from typing import List
 from database.engine import SessionDep
@@ -23,8 +24,8 @@ producto_service = ProductoService(categoria_service, imagen_service)
 async def get_all_products(
     session: SessionDep,
     q: str | None = None,
-    precio_min: float | None = None,
-    precio_max: float | None = None,
+    precio_min: Decimal | None = None,
+    precio_max: Decimal | None = None,
     stock_min: int | None = None,
     stock_max: int | None = None,
     sku: int | None = None,
@@ -136,8 +137,8 @@ async def get_all_products_admin(
     session: SessionDep,
     q: str | None = None,
     estado: bool | None = None,
-    precio_min: float | None = None,
-    precio_max: float | None = None,
+    precio_min: Decimal | None = None,
+    precio_max: Decimal | None = None,
     stock_min: int | None = None,
     stock_max: int | None = None,
     sku: int | None = None,

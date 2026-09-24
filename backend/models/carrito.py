@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
-from pydantic import computed_field, model_validator
+from decimal import Decimal
+from pydantic import computed_field, field_serializer, model_validator
 from sqlmodel import Field, Relationship, SQLModel
 from enum import Enum
 
@@ -31,19 +32,23 @@ class CarritoItem(SQLModel, table=True):
     producto_id: int = Field(foreign_key='producto.id')
     producto: 'Producto' = Relationship(back_populates='items')
     cantidad: int = Field(default=1)
-    precio_unitario: float = Field(gt=0)
+    precio_unitario: Decimal = Field(gt=0)
 
 
 class CarritoItemPublic(SQLModel):
     id: int
     producto_id: int
     cantidad: int
-    precio_unitario: float
+    precio_unitario: Decimal
     producto: ProductoPublic
 
     @computed_field
-    def subtotal(self) -> float:
+    def subtotal(self) -> Decimal:
         return self.precio_unitario * self.cantidad
+
+    @field_serializer('precio_unitario', 'subtotal', when_used='json')
+    def serializar_precio(self, valor: Decimal) -> float:
+        return float(valor)
 
 
 class CarritoPublic(SQLModel):
@@ -52,12 +57,16 @@ class CarritoPublic(SQLModel):
     estado: EstadoCarrito
     created_at: datetime
     items: list[CarritoItemPublic]
-    total: float = 0.0
+    total: Decimal = Decimal("0")
 
     @model_validator(mode='after')
     def calcular_total(self):
-        self.total = sum(item.cantidad * item.precio_unitario for item in self.items)
+        self.total = sum((item.cantidad * item.precio_unitario for item in self.items), Decimal("0"))
         return self
+
+    @field_serializer('total', when_used='json')
+    def serializar_total(self, valor: Decimal) -> float:
+        return float(valor)
     
 
 class CarritoItemUpdate(SQLModel):
