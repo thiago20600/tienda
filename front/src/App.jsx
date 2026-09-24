@@ -31,7 +31,9 @@ import UsuariosAdmin from './pages/admin/usuarios/UsuariosAdmin'
 import RolesAdmin from './pages/admin/roles/RolesAdmin'
 import ImportarProductos from "./pages/admin/productos/importar/ImportarProductos"
 import MisPedidos from "./pages/misPedidos/MisPedidos"
+import MisFacturas from "./pages/misFacturas/MisFacturas"
 import Favoritos from "./pages/favoritos/Favoritos"
+import FacturasAdmin from "./pages/admin/facturas/facturasAdmin"
 
 function App() {
 
@@ -57,6 +59,7 @@ function App() {
         <Route element={<RutaProtegida />}>
           <Route path='/configuracion' element={<Configuracion />} />
           <Route path='/mis-pedidos' element={<MisPedidos />} />
+          <Route path='/mis-facturas' element={<MisFacturas />} />
           <Route path='/favoritos' element={<Favoritos />} />
         </Route>
       </Route>
@@ -82,6 +85,7 @@ function App() {
           <Route path='/admin/roles' element={<RolesAdmin/>} />
           <Route path='/admin/pedidos' element={<PedidosAdmin/>} />
           <Route path='/admin/pedidos/:id' element={<PedidoDetalleAdmin/>} />
+          <Route path='/admin/facturas' element={<FacturasAdmin/>} />
         </Route>
       </Route>
 

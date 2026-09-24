@@ -1,14 +1,12 @@
 import { useState, useEffect, useMemo } from "react"
-import useActualizarRol from "../../../hooks/roles/useActualizarRol"
 import useAsignarPermisos from "../../../hooks/roles/useAsignarPermisos"
 import useEliminarRol from "../../../hooks/roles/useEliminarRol"
 import { agruparPermisosPorModulo, obtenerEtiquetaPermiso } from "../../../../utils/permisos"
-import {RolCard,RolCardHeader,RolNombre,RolEstadoBadge,RolAcciones,PermisoCheckboxLabel,MensajeRoles,BotonTexto,ModuloCard,ModuloHeader,ModulosContainer,PermisosLista
+import {RolCard,RolCardHeader,RolNombre,RolAcciones,PermisoCheckboxLabel,MensajeRoles,BotonTexto,ModuloCard,ModuloHeader,ModulosContainer,PermisosLista
 } from "./RolesAdmin.styles"
 import AdminButton from "../../../componentes/adminpanel/ui/AdminButton/AdminButton"
 
 const RolCardItem = ({ rol, permisosDisponibles, onRolActualizado, onRolEliminado }) => {
-    const { actualizarRol } = useActualizarRol()
     const { asignarPermisos, statusError: errorAsignar } = useAsignarPermisos()
     const { eliminarRol, statusError: errorEliminar } = useEliminarRol()
 
@@ -67,15 +65,6 @@ const RolCardItem = ({ rol, permisosDisponibles, onRolActualizado, onRolEliminad
         setGuardando(false)
     }
 
-    const toggleActivo = async () => {
-        const resultado = await actualizarRol(rol.id, { activo: !rol.activo })
-        if (resultado.ok) {
-            onRolActualizado()
-        } else {
-            setMensaje({ error: resultado.data?.detail || 'Error al cambiar el estado.' })
-        }
-    }
-
     const handleEliminar = async () => {
         if (!window.confirm(`¿Eliminar el rol "${rol.nombre}"?`)) return
         const resultado = await eliminarRol(rol.id)
@@ -91,12 +80,8 @@ const RolCardItem = ({ rol, permisosDisponibles, onRolActualizado, onRolEliminad
             <RolCardHeader>
                 <RolNombre>
                     {rol.nombre}
-                    <RolEstadoBadge $activo={rol.activo}>{rol.activo ? 'Activo' : 'Inactivo'}</RolEstadoBadge>
                 </RolNombre>
                 <RolAcciones>
-                    <AdminButton type="button" $size="sm" onClick={toggleActivo}>
-                        {rol.activo ? 'Desactivar' : 'Activar'}
-                    </AdminButton>
                     <AdminButton type="button" $variant="danger" $size="sm" onClick={handleEliminar}>Eliminar rol</AdminButton>
                 </RolAcciones>
             </RolCardHeader>

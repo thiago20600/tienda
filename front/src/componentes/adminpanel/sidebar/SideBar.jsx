@@ -6,6 +6,7 @@ const SideBar = () => {
     const sideBarSecciones = [
         {name: 'Inicio', path: '/admin', permisos: []},
         {name: 'Pedidos', path: '/admin/pedidos', permisos: ['pedidos:read:admin']},
+        {name: 'Facturas', path: '/admin/facturas', permisos: ['facturas:read:admin', 'facturas:update:admin']},
         {name: 'Categorias', path: '/admin/categorias', permisos: ['categorias:read:admin', 'categorias:create:admin', 'categorias:update:admin', 'categorias:delete:admin']},
         {name: 'Productos', path: '/admin/productos', permisos: ['productos:read:admin']},
         {name: 'Banners', path: '/admin/banners', permisos: ['banners:read:admin']},

@@ -27,11 +27,6 @@ import RolUsuario from '../../../componentes/adminpanel/usuarios/RolUsuario.jsx'
 const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-AR');
 const TAMANO_PAGINA_USUARIOS = 10;
 const TAMANO_PAGINA_PEDIDOS = 5;
-const TIPOS_USUARIOS = [
-  { value: '', label: 'Todos los tipos' },
-  { value: 'cliente', label: 'Clientes' },
-  { value: 'empleado', label: 'Empleados' },
-];
 
 
 const UsuariosAdmin = () => {
@@ -41,14 +36,12 @@ const UsuariosAdmin = () => {
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [busqueda, setBusqueda] = useState('');
   const [filtroRol, setFiltroRol] = useState('');
-  const [filtroTipo, setFiltroTipo] = useState('');
   const [altaEmpleadoAbierto, setAltaEmpleadoAbierto] = useState(false);
   const busquedaDebounce = useDebounce(busqueda, 500);
 
   const { usuarios, cargando, statusError, page: pageUsuarios, pages: pagesUsuarios, cambiarPagina: cambiarPaginaUsuarios, recargar: recargarUsuarios } = useUsuariosAdmin({
     q: busquedaDebounce,
     rol: filtroRol,
-    tipo: filtroTipo,
     page: paginaUsuarios,
     size: TAMANO_PAGINA_USUARIOS,
   });
@@ -68,7 +61,7 @@ const UsuariosAdmin = () => {
 
   useEffect(() => {
     setPaginaUsuarios(1);
-  }, [busquedaDebounce, filtroRol, filtroTipo]);
+  }, [busquedaDebounce, filtroRol]);
 
   const handleEmpleadoCreado = () => {
     setPaginaUsuarios(1);
@@ -77,7 +70,7 @@ const UsuariosAdmin = () => {
 
   if (cargando) return <MensajeUsuarios>Cargando usuarios...</MensajeUsuarios>;
   if (statusError) return <MensajeUsuarios $error>Error al cargar usuarios (código: {statusError}).</MensajeUsuarios>;
-  if (!usuarios.length && !busquedaDebounce && !filtroRol && !filtroTipo) return <MensajeUsuarios>No hay usuarios registrados.</MensajeUsuarios>;
+  if (!usuarios.length && !busquedaDebounce && !filtroRol) return <MensajeUsuarios>No hay usuarios registrados.</MensajeUsuarios>;
 
   return (
     <UsuariosContainer>
@@ -91,18 +84,6 @@ const UsuariosAdmin = () => {
         />
       </BusquedaContainer>
       <FiltrosUsuariosContainer>
-        <FiltroUsuariosGrupo>
-          <FiltroUsuariosLabel htmlFor="filtro-usuario-tipo">Tipo</FiltroUsuariosLabel>
-          <FiltroUsuariosSelect
-            id="filtro-usuario-tipo"
-            value={filtroTipo}
-            onChange={(e) => setFiltroTipo(e.target.value)}
-          >
-            {TIPOS_USUARIOS.map((tipo) => (
-              <option key={tipo.value} value={tipo.value}>{tipo.label}</option>
-            ))}
-          </FiltroUsuariosSelect>
-        </FiltroUsuariosGrupo>
         <FiltroUsuariosGrupo>
           <FiltroUsuariosLabel htmlFor="filtro-usuario-rol">Rol</FiltroUsuariosLabel>
           <FiltroUsuariosSelect

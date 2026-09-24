@@ -1,5 +1,6 @@
 const API_PRODUCTOS = import.meta.env.VITE_API_URL;
 const API_USUARIOS = import.meta.env.VITE_API_URL_USUARIOS;
+const API_FACTURACION = import.meta.env.VITE_API_URL_FACTURACION;
 
 const request = async (baseUrl, path, options = {}) => {
   const { auth = false, headers = {}, body, ...fetchOptions } = options;
@@ -27,4 +28,5 @@ const request = async (baseUrl, path, options = {}) => {
 
 export const tiendaRequest = (path, options) => request(API_PRODUCTOS, path, options);
 export const usuariosRequest = (path, options) => request(API_USUARIOS, path, options);
-export { API_PRODUCTOS, API_USUARIOS };
+export const facturacionRequest = (path, options) => request(API_FACTURACION, path, options);
+export { API_PRODUCTOS, API_USUARIOS, API_FACTURACION };

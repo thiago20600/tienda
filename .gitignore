@@ -9,6 +9,19 @@ venv/
 .env
 *.env
 !.env.example
+.env.*
+!.env.example
+
+# Documentacion de desarrollo (no va al repositorio)
+/*.md
+!README.md
+
+# Caches y artefactos de desarrollo
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.sqlite3
 
 # Node / Vite
 node_modules/

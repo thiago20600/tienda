@@ -68,15 +68,6 @@ export const RolNombre = styled.h2`
   gap: 0.5rem;
 `;
 
-export const RolEstadoBadge = styled.span`
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  background: ${(props) => (props.$activo ? '#dcfce7' : '#fee2e2')};
-  color: ${(props) => (props.$activo ? '#166534' : '#b91c1c')};
-`;
-
 export const RolAcciones = styled.div`
   display: flex;
   gap: 0.5rem;

@@ -19,7 +19,7 @@ const RolesAdmin = () => {
         event.preventDefault()
         if (!nombreNuevoRol.trim()) return
 
-        const resultado = await crearRol({ nombre: nombreNuevoRol.trim(), activo: true })
+        const resultado = await crearRol({ nombre: nombreNuevoRol.trim() })
         if (resultado.ok) {
             setNombreNuevoRol('')
             setMensajeCrear({ texto: 'Rol creado correctamente.' })

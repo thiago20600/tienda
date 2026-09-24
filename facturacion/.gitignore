@@ -1,0 +1,11 @@
+# Certificados ARCA (ex AFIP): clave privada y certificado. NUNCA al repositorio.
+# Se ignora todo el contenido de certs/ excepto el README con la guia.
+certs/*
+!certs/README.MD
+*.crt
+*.key
+*.pem
+
+venv
+.env
+__pycache__

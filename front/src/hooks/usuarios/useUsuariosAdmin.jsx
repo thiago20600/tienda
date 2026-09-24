@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { usuariosRequest } from '../../services/api/apiClient';
 
-const useUsuariosAdmin = ({ q = '', rol = '', tipo = '', page = 1, size = 10 } = {}) => {
+const useUsuariosAdmin = ({ q = '', rol = '', page = 1, size = 10 } = {}) => {
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [statusError, setStatusError] = useState(null);
@@ -19,7 +19,6 @@ const useUsuariosAdmin = ({ q = '', rol = '', tipo = '', page = 1, size = 10 } =
 
       if (q) query.set('q', q);
       if (rol) query.set('rol', rol);
-      if (tipo) query.set('tipo', tipo);
 
       const response = await usuariosRequest(`/users?${query.toString()}`, { auth: true });
       const data = await response.json().catch(() => ({ items: [], total: 0, page: 1, size, pages: 1 }));
@@ -44,7 +43,7 @@ const useUsuariosAdmin = ({ q = '', rol = '', tipo = '', page = 1, size = 10 } =
 
   useEffect(() => {
     cargarUsuarios();
-  }, [q, rol, tipo, paginaActual, size]);
+  }, [q, rol, paginaActual, size]);
 
   const cambiarPagina = (nuevaPagina) => {
     if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {

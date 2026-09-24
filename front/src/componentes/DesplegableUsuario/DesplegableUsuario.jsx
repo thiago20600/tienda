@@ -12,6 +12,7 @@ export const DesplegableUsuario = ({ usuario }) => {
   const seleccionables = [
     { id: 'configuracion', nombre: 'Configuracion', acceso: 'publico', link: '/configuracion' },
     { id: 'misPedidos', nombre: 'Mis pedidos', acceso: 'publico', link: '/mis-pedidos' },
+    { id: 'misFacturas', nombre: 'Mis facturas', acceso: 'publico', link: '/mis-facturas' },
     { id: 'favoritos', nombre: 'Favoritos', acceso: 'publico', link: '/favoritos' },
     { id: 'cerrarSesion', nombre: 'Cerrar sesion', acceso: 'publico', link: '/' },
     { id: 'admin', nombre: 'Admin', acceso: 'privado', link: '/admin' },

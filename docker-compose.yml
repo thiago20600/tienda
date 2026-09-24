@@ -54,6 +54,34 @@ services:
       timeout: 5s
       retries: 5
 
+  api_facturacion:
+    build: ./facturacion
+    ports:
+      - "8002:80"
+    env_file:
+      - ./facturacion/.env
+    volumes:
+      - ./facturacion:/code
+    command: sh -c "alembic upgrade head && fastapi dev main.py --port 80 --host 0.0.0.0"
+    depends_on:
+      db_facturacion:
+        condition: service_healthy
+
+  db_facturacion:
+    image: postgres:15
+    container_name: postgres_db_facturacion
+    env_file:
+      - ./facturacion/.env
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_facturacion_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   frontend:
     image: node:22
     working_dir: /app
@@ -69,3 +97,4 @@ services:
 volumes:
   postgres_usuarios_data:
   postgres_tienda_data:
+  postgres_facturacion_data:
